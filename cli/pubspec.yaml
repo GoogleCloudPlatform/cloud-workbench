@@ -1,0 +1,13 @@
+name: cpClient
+publish_to: none # not intended for publication to pub.dev
+
+environment:
+  sdk: ">=2.13.0 <3.0.0"
+
+dependencies:
+  http: ^0.13.5
+  googleapis: 7.0.0
+  googleapis_auth: 1.3.1
+
+dev_dependencies:
+  lints: ^2.0.0
