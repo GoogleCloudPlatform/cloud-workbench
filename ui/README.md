@@ -2,7 +2,7 @@
 
 
 ```bash
-gcloud run deploy cloudprovisionui-1 --source . \
+gcloud run deploy cloudprovisionui --source . \
   --region us-east1 \
   --allow-unauthenticated
 ```
