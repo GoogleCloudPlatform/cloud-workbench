@@ -1,7 +1,9 @@
-import 'package:cloudprovision/data/repositories/build_repository.dart';
 import 'package:cloudprovision/models/template_model.dart';
+import 'package:cloudprovision/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'template_config.dart';
 
 class TemplateList extends StatelessWidget {
   final List<TemplateModel> _templates;
@@ -33,15 +35,13 @@ class TemplateList extends StatelessWidget {
         children: <Widget>[
           Row(
             children: [
-              const Text("Template: ",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text("Template: ", style: AppText.fontWeightBold),
               Text(template.name),
             ],
           ),
           Row(
             children: [
-              const Text("Description: ",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text("Description: ", style: AppText.fontWeightBold),
               Text(template.name),
             ],
           ),
@@ -73,34 +73,7 @@ class TemplateList extends StatelessWidget {
   }
 
   _deployTemplate(TemplateModel template, BuildContext context) async {
-    String? buildDetails = await BuildRepository().deployTemplate(template);
-
-    await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Column(
-          children: [
-            SelectableText(
-              buildDetails!,
-              textAlign: TextAlign.left,
-              style: const TextStyle(fontSize: 14),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            child: const Text('OK'),
-            onPressed: () => Navigator.of(context).pop(false),
-          ),
-        ],
-      ),
-    );
-
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-    scaffoldMessenger.showSnackBar(
-      const SnackBar(
-        content: Text('Template deployed'),
-      ),
-    );
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => TemplateConfigPage(template)));
   }
 }
