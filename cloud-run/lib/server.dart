@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_provision_server/models/template_model.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart' as shelf_router;
@@ -36,27 +37,6 @@ final _router = shelf_router.Router()
   ..options('/v1/templates', _getTemplates)
   ..post('/v1/builds', _startBuild)
   ..options('/v1/builds', _startBuild);
-
-final _templates = [
-  {
-    'id': 1,
-    'name': 'Trigerring Workflows with Eventarc',
-    'git':
-        'https://github.com/gcp-solutions/cloud-provision-templates/workflows-eventarc'
-  },
-  {
-    'id': 2,
-    'name': 'Secure Serverless Apps with IAP',
-    'git':
-        'https://github.com/gcp-solutions/cloud-provision-templates/cloudrun-iap'
-  },
-  {
-    'id': 3,
-    'name': 'Triggering Cloud Functions from GCS',
-    'git':
-        'https://github.com/gcp-solutions/cloud-provision-templates/cloudfunctions-gcs'
-  },
-];
 
 bool isValidToken(Request request) {
   if (request.method == "OPTIONS") {
@@ -126,7 +106,7 @@ Response _handleOptions(Request request) {
   );
 }
 
-Response _getTemplates(Request request) {
+Future<Response> _getTemplates(Request request) async {
   if (request.method == "OPTIONS") {
     return _handleOptions(request);
   }
@@ -141,11 +121,23 @@ Response _getTemplates(Request request) {
   }
 
   return Response.ok(
-    _jsonEncode(_templates),
+    _jsonEncode(await _fetchTemplates()),
     headers: {
       ..._jsonHeaders,
     },
   );
+}
+
+Future<List<TemplateModel>> _fetchTemplates() async {
+  final http.Client client = new http.Client();
+  var response = await client.get(Uri.parse(
+      "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates.json"));
+
+  Iterable templateList = json.decode(response.body);
+  List<TemplateModel> templates = List<TemplateModel>.from(
+      templateList.map((model) => TemplateModel.fromJson(model)));
+
+  return templates;
 }
 
 // var uuid = Uuid();
