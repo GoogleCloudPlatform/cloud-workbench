@@ -1,7 +1,7 @@
-import 'package:cloudprovision/bloc/bloc/auth_bloc.dart';
+import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
 import 'package:cloudprovision/data/repositories/auth_repository.dart';
-import 'package:cloudprovision/presentation/Dashboard/dashboard.dart';
-import 'package:cloudprovision/presentation/SignIn/sign_in.dart';
+import 'package:cloudprovision/screens/templates/dashboard.dart';
+import 'package:cloudprovision/screens/signin/sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
