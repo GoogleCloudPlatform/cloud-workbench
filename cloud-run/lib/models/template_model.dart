@@ -7,6 +7,7 @@ class TemplateModel {
   String description;
   String sourceUrl;
   List<ParamModel> params;
+
   TemplateModel(
       this.id, this.name, this.description, this.sourceUrl, this.params);
 
@@ -27,7 +28,7 @@ class TemplateModel {
       'name': name,
       'description': description,
       'sourceUrl': sourceUrl,
-      'params': jsonEncode(params),
+      'params': params,
     };
   }
 }
