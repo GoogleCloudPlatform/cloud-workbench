@@ -6,9 +6,7 @@ class AuthRepository {
   // TODO set cliend id
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId: "",
-    scopes: <String>[
-      'https://www.googleapis.com/auth/cloud-platform',
-    ],
+    scopes: <String>[],
   );
 
   // Future<bool> get isSignedIn => _googleSignIn.isSignedIn();
