@@ -1,6 +1,6 @@
 import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
 import 'package:cloudprovision/data/repositories/auth_repository.dart';
-import 'package:cloudprovision/screens/templates/dashboard.dart';
+import 'package:cloudprovision/screens/main/main_screen.dart';
 import 'package:cloudprovision/screens/signin/sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,11 +16,11 @@ Future<void> main() async {
     options: const FirebaseOptions(
 
   );
-  runApp(const MyApp());
+  runApp(const CloudProvisionApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class CloudProvisionApp extends StatelessWidget {
+  const CloudProvisionApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final authRepository = AuthRepository();
@@ -38,9 +38,9 @@ class MyApp extends StatelessWidget {
               stream: FirebaseAuth.instance
                   .authStateChanges(), //authRepository.onCurrentUserChanged,
               builder: (context, snapshot) {
-                // If the snapshot has user data, then they're already signed in. So Navigating to the Dashboard.
+                // If the snapshot has user data, then they're already signed in. So Navigating to the Main Screen.
                 if (snapshot.hasData) {
-                  return const Dashboard();
+                  return const MainScreen();
                 }
                 // Otherwise, they're not signed in. Show the sign in page.
                 return const SignIn();

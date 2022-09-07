@@ -1,5 +1,5 @@
 import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
-import 'package:cloudprovision/screens/templates/dashboard.dart';
+import 'package:cloudprovision/screens/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,7 +27,7 @@ class _SignInState extends State<SignIn> {
           if (state is Authenticated) {
             // Navigating to the dashboard screen if the user is authenticated
             Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const Dashboard()));
+                MaterialPageRoute(builder: (context) => const MainScreen()));
           }
           if (state is AuthError) {
             // Showing the error message if the user has entered invalid credentials
