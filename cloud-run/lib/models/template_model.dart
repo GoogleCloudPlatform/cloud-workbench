@@ -1,7 +1,4 @@
-// TODO
-// add description and other fields, ex required user input fields like project id, etc.
 import 'dart:convert';
-
 import 'package:cloud_provision_server/models/param_model.dart';
 
 class TemplateModel {

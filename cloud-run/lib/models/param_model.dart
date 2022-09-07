@@ -1,5 +1,3 @@
-// TODO
-// add description and other fields, ex required user input fields like project id, etc.
 class ParamModel {
   String param;
   String label;
