@@ -140,12 +140,12 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
       ),
     );
 
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    /*final scaffoldMessenger = ScaffoldMessenger.of(context);
     scaffoldMessenger.showSnackBar(
       const SnackBar(
         content: Text('Template deployed'),
       ),
-    );
+    );*/
   }
 
   _params(BuildContext context) {
