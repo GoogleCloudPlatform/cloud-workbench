@@ -5,16 +5,18 @@ class TemplateModel {
   String name;
   String description;
   String sourceUrl;
+  String cloudProvisionConfigUrl;
   List<ParamModel> params;
 
-  TemplateModel(
-      this.id, this.name, this.description, this.sourceUrl, this.params);
+  TemplateModel(this.id, this.name, this.description, this.sourceUrl,
+      this.cloudProvisionConfigUrl, this.params);
 
   TemplateModel.fromJson(Map<String, dynamic> parsedJson)
       : id = parsedJson['id'],
         name = parsedJson['name'],
         description = parsedJson['description'],
         sourceUrl = parsedJson['sourceUrl'],
+        cloudProvisionConfigUrl = parsedJson['cloudProvisionConfigUrl'],
         params = parsedJson['params'] == null
             ? []
             : (parsedJson['params'] as List)
@@ -27,6 +29,7 @@ class TemplateModel {
       'name': name,
       'description': description,
       'sourceUrl': sourceUrl,
+      'cloudProvisionConfigUrl': cloudProvisionConfigUrl,
       'params': params,
     };
   }
