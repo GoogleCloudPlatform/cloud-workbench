@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloudprovision/data/repositories/template_repository.dart';
 import 'package:cloudprovision/models/param_model.dart';
 import 'package:cloudprovision/models/template_model.dart';
@@ -16,7 +18,10 @@ class TemplateConfigPage extends StatefulWidget {
 
 class _TemplateConfigPageState extends State<TemplateConfigPage> {
   late TemplateModel _template;
+  Map<String, dynamic> _cloudBuildDetails = {};
   final _templateRepository = TemplateRepository();
+
+  bool _building = false;
 
   _TemplateConfigPageState(this._template);
 
@@ -48,111 +53,36 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
               },
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            padding: const EdgeInsets.all(10.0),
-            margin: const EdgeInsets.all(10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: [
-                    const Text("Template: ",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: Colors.black,
-                        )),
-                    Text(_template.name,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        )),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Text("Description: ",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: Colors.black,
-                        )),
-                    Text(_template.name,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        )),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Text("Template Source: ",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: Colors.black,
-                        )),
-                    TextButton(
-                      onPressed: () async {
-                        final Uri _url = Uri.parse(_template.sourceUrl);
-                        if (!await launchUrl(_url)) {
-                          throw 'Could not launch $_url';
-                        }
-                      },
-                      child: Text("GitHub repo"),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Text("CloudBuild config: ",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: Colors.black,
-                        )),
-                    TextButton(
-                      onPressed: () async {
-                        final Uri _url =
-                            Uri.parse(_template.cloudProvisionConfigUrl);
-                        if (!await launchUrl(_url)) {
-                          throw 'Could not launch $_url';
-                        }
-                      },
-                      child: Text("GitHub repo"),
-                    ),
-                  ],
-                ),
-                _params(context),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: ElevatedButton(
-                    child: const Text('Deploy template'),
-                    onPressed: () => _deployTemplate(_template, context),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _templateDetails(),
+          _buildDetails(),
         ],
       ),
     );
   }
 
   _deployTemplate(TemplateModel template, BuildContext context) async {
-    String? buildDetails = await BuildRepository().deployTemplate(template);
+    setState(() {
+      _building = true;
+      _cloudBuildDetails = {};
+    });
+    String buildDetails = await BuildRepository().deployTemplate(template);
 
-    await showDialog<bool>(
+    if (buildDetails != "") {
+      Map<String, dynamic> buildConfig = jsonDecode(buildDetails);
+
+      setState(() {
+        _cloudBuildDetails = buildConfig;
+        _building = false;
+      });
+    }
+
+    /*await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Column(
           children: [
             SelectableText(
-              buildDetails!,
+              buildDetails,
               textAlign: TextAlign.left,
               style: const TextStyle(fontSize: 14),
             ),
@@ -165,7 +95,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
           ),
         ],
       ),
-    );
+    );*/
 
     /*final scaffoldMessenger = ScaffoldMessenger.of(context);
     scaffoldMessenger.showSnackBar(
@@ -199,6 +129,200 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
           child: TextFormField(),
         ),
       ],
+    );
+  }
+
+  _templateDetails() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.all(10.0),
+      margin: const EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: [
+              const Text("Template: ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.black,
+                  )),
+              Text(_template.name,
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.black,
+                  )),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+            child: Row(
+              children: [
+                const Text("Description: ",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Colors.black,
+                    )),
+                Text(_template.name,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                    )),
+              ],
+            ),
+          ),
+          Row(
+            children: [
+              const Text("Template Source: ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.black,
+                  )),
+              TextButton(
+                onPressed: () async {
+                  final Uri _url = Uri.parse(_template.sourceUrl);
+                  if (!await launchUrl(_url)) {
+                    throw 'Could not launch $_url';
+                  }
+                },
+                child: Text("GitHub repo"),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              const Text("CloudBuild config: ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.black,
+                  )),
+              TextButton(
+                onPressed: () async {
+                  final Uri _url = Uri.parse(_template.cloudProvisionConfigUrl);
+                  if (!await launchUrl(_url)) {
+                    throw 'Could not launch $_url';
+                  }
+                },
+                child: Text("GitHub repo"),
+              ),
+            ],
+          ),
+          _params(context),
+          Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: ElevatedButton(
+              child: const Text('Deploy template'),
+              onPressed: () => _deployTemplate(_template, context),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _buildDetails() {
+    if (_cloudBuildDetails.isEmpty)
+      return _building ? Center(child: CircularProgressIndicator()) : Text('');
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.all(10.0),
+      margin: const EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: [
+              const Text("Build ID: ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.black,
+                  )),
+              Text(_cloudBuildDetails['build']['id'],
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black,
+                  )),
+            ],
+          ),
+          Row(
+            children: [
+              const Text("Project ID: ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.black,
+                  )),
+              Text(_cloudBuildDetails['build']['projectId'],
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black,
+                  )),
+            ],
+          ),
+          Row(
+            children: [
+              const Text("Create Time: ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.black,
+                  )),
+              Text(_cloudBuildDetails['build']['createTime'],
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black,
+                  )),
+            ],
+          ),
+          Row(
+            children: [
+              const Text("Log Url: ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.black,
+                  )),
+              TextButton(
+                onPressed: () async {
+                  final Uri _url =
+                      Uri.parse(_cloudBuildDetails['build']['logUrl']);
+                  if (!await launchUrl(_url)) {
+                    throw 'Could not launch $_url';
+                  }
+                },
+                child: Text("Cloud Build"),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              const Text("Status: ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.black,
+                  )),
+              Text(_cloudBuildDetails['build']['status'],
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black,
+                  )),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
