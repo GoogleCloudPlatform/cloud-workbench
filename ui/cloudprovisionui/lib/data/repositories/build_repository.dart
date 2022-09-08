@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloudprovision/models/template_model.dart';
 import 'dart:io';
 
@@ -20,14 +22,16 @@ class BuildRepository {
     try {
       Map<String, String> requestHeaders = {
         HttpHeaders.authorizationHeader: "Bearer " + identityToken,
+        HttpHeaders.contentTypeHeader: "application/json"
       };
 
       var endpointPath = '/v1/builds';
 
       var url = Uri.https(cloudRunUrl, endpointPath);
 
-      var response = await http.post(url,
-          headers: requestHeaders, body: {"template_id": "${template.id}"});
+      var body = json.encode({"template_id": "${template.id}"});
+
+      var response = await http.post(url, headers: requestHeaders, body: body);
 
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
