@@ -11,13 +11,14 @@ import 'package:http/http.dart' as http;
 const cloudRunUrl = "cloud-provision-server-4mizdq5szq-ue.a.run.app";
 
 class BuildRepository {
-  Future<String?> deployTemplate(TemplateModel template) async {
+  Future<String> deployTemplate(TemplateModel template) async {
     return await callCloudProvisionService(template);
   }
 
-  Future<String?> callCloudProvisionService(TemplateModel template) async {
+  Future<String> callCloudProvisionService(TemplateModel template) async {
     final user = FirebaseAuth.instance.currentUser!;
     var identityToken = await user.getIdToken();
+    String result = "";
 
     try {
       Map<String, String> requestHeaders = {
@@ -33,12 +34,11 @@ class BuildRepository {
 
       var response = await http.post(url, headers: requestHeaders, body: body);
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
-      return response.body;
+      result = response.body;
     } catch (e) {
       print(e);
     }
+
+    return result;
   }
 }
