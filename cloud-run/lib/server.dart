@@ -140,6 +140,13 @@ Future<List<TemplateModel>> _fetchTemplates() async {
   return templates;
 }
 
+Future<Map<String, dynamic>> _fetchCloudProvisionConfig(
+    String cloudProvisionConfigUrl) async {
+  final http.Client client = new http.Client();
+  var response = await client.get(Uri.parse(cloudProvisionConfigUrl));
+  return json.decode(response.body);
+}
+
 // var uuid = Uuid();
 
 Future<Response> _startBuild(Request request) async {
@@ -156,35 +163,47 @@ Future<Response> _startBuild(Request request) async {
     );
   }
 
-  final body = await request.readAsString();
+  try {
+    final body = await request.readAsString();
+    Map<String, dynamic> requestMap = jsonDecode(body);
 
-  AuthClient client = await clientViaMetadataServer();
+    List<TemplateModel> templates = await _fetchTemplates();
+    var templatesMap =
+        Map.fromIterable(templates, key: (t) => t.id, value: (t) => t);
 
-  var cloudBuildApi = cb.CloudBuildApi(client);
+    TemplateModel? template =
+        templatesMap[int.parse(requestMap['template_id'])];
 
-  // TODO needs to be provided by user
-  var projectId = 'andrey-cp-8-9';
+    Map<String, dynamic> jsonConfig =
+        await _fetchCloudProvisionConfig(template!.cloudProvisionConfigUrl);
 
-  String parent = "projects/${projectId}/locations/global";
-  var _json = {
-    "name": "bash",
-    "args": [
-      "echo",
-      "Cloud Provision - Running a bash command for template ${body}"
-    ]
-  };
-  var buildStep = cb.BuildStep.fromJson(_json);
-  var buildRequest = cb.Build(steps: [buildStep]);
-  cb.Operation buildOp = await cloudBuildApi.projects.builds
-      .create(buildRequest, projectId, parent: parent);
-  print(buildOp.metadata);
+    var projectId = 'andrey-cp-8-9';
+    String parent = "projects/${projectId}/locations/global";
 
-  return Response.ok(
-    _jsonEncode(buildOp.metadata),
-    headers: {
-      ..._jsonHeaders,
-    },
-  );
+    AuthClient client = await clientViaMetadataServer();
+    var cloudBuildApi = cb.CloudBuildApi(client);
+
+    var buildStep = cb.BuildStep.fromJson(jsonConfig);
+    var buildRequest = cb.Build(steps: [buildStep]);
+    cb.Operation buildOp = await cloudBuildApi.projects.builds
+        .create(buildRequest, projectId, parent: parent);
+    print(buildOp.metadata);
+
+    return Response.ok(
+      _jsonEncode(buildOp.metadata),
+      headers: {
+        ..._jsonHeaders,
+      },
+    );
+  } on Exception catch (e) {
+    print(e);
+    return Response.internalServerError(
+      body: _jsonEncode({"msg": "Internal Server Error"}),
+      headers: {
+        ..._jsonHeaders,
+      },
+    );
+  }
 }
 
 Future<Response> _getProjects(Request request) async {
