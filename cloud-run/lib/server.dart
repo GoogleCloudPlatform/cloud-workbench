@@ -36,7 +36,10 @@ final _router = shelf_router.Router()
   ..get('/v1/templates', _getTemplates)
   ..options('/v1/templates', _getTemplates)
   ..post('/v1/builds', _startBuild)
-  ..options('/v1/builds', _startBuild);
+  ..options('/v1/builds', _startBuild)
+  ..get('/v1/builds', _getBuild)
+  ..post('/v1/triggers', _runTrigger)
+  ..options('/v1/triggers', _runTrigger);
 
 bool isValidToken(Request request) {
   if (request.method == "OPTIONS") {
@@ -177,17 +180,22 @@ Future<Response> _startBuild(Request request) async {
     Map<String, dynamic> jsonConfig =
         await _fetchCloudProvisionConfig(template!.cloudProvisionConfigUrl);
 
-    var projectId = 'andrey-cp-8-9';
+    var projectId = requestMap['project_id'];
     String parent = "projects/${projectId}/locations/global";
+
+    Map<String, String> m = Map<String, String>.from(requestMap['params']);
+
+    // Map<String, String> substitutions = jsonDecode(requestMap['params']);
 
     AuthClient client = await clientViaMetadataServer();
     var cloudBuildApi = cb.CloudBuildApi(client);
 
     var buildStep = cb.BuildStep.fromJson(jsonConfig);
-    var buildRequest = cb.Build(steps: [buildStep]);
+    var buildRequest = cb.Build(substitutions: m, steps: [buildStep]);
     cb.Operation buildOp = await cloudBuildApi.projects.builds
         .create(buildRequest, projectId, parent: parent);
-    print(buildOp.metadata);
+
+    var list = await cloudBuildApi.projects.triggers.list(projectId);
 
     return Response.ok(
       _jsonEncode(buildOp.metadata),
@@ -291,5 +299,113 @@ class GoogleAuthClient extends http.BaseClient {
 
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     return _client.send(request..headers.addAll(_headers));
+  }
+}
+
+Future<Response> _getBuild(Request request) async {
+  if (request.method == "OPTIONS") {
+    return _handleOptions(request);
+  }
+
+  if (!isValidToken(request)) {
+    return Response.forbidden(
+      _jsonEncode({"msg": "Forbidden"}),
+      headers: {
+        ..._jsonHeaders,
+      },
+    );
+  }
+
+  String? projectId = request.url.queryParameters['projectId'];
+  String? buildId = request.url.queryParameters['buildId'];
+
+  return Response.ok(
+    _jsonEncode(await _getBuildDetails(projectId, buildId)),
+    headers: {
+      ..._jsonHeaders,
+    },
+  );
+}
+
+Future<cb.Build> _getBuildDetails(projectId, buildId) async {
+  AuthClient client = await clientViaMetadataServer();
+  var cloudBuildApi = cb.CloudBuildApi(client);
+
+  cb.Build build = await cloudBuildApi.projects.builds.get(projectId, buildId);
+  print(build);
+  print(build.status);
+
+  return build;
+}
+
+Future<Response> _runTrigger(Request request) async {
+  if (request.method == "OPTIONS") {
+    return _handleOptions(request);
+  }
+
+  if (!isValidToken(request)) {
+    return Response.forbidden(
+      _jsonEncode({"msg": "Forbidden"}),
+      headers: {
+        ..._jsonHeaders,
+      },
+    );
+  }
+
+  try {
+    final body = await request.readAsString();
+    Map<String, dynamic> requestMap = jsonDecode(body);
+
+    var projectId = requestMap['project_id'];
+    var branchName = "main";
+
+    AuthClient client = await clientViaMetadataServer();
+    var cloudBuildApi = cb.CloudBuildApi(client);
+
+    var list = await cloudBuildApi.projects.triggers.list(projectId);
+    late cb.BuildTrigger buildTrigger;
+    bool foundTrigger = false;
+
+    list.triggers!.forEach((trigger) {
+      if (trigger.name == requestMap['app_name'] + "-trigger") {
+        buildTrigger = trigger;
+        foundTrigger = true;
+      }
+    });
+
+    if (foundTrigger) {
+      String? triggerId = buildTrigger.id;
+      String? triggerName =
+          "projects/${projectId}/locations/global/triggers/${buildTrigger.name}";
+
+      cb.RepoSource repoSource = cb.RepoSource(branchName: branchName);
+      cb.RunBuildTriggerRequest rbtr = cb.RunBuildTriggerRequest(
+          source: repoSource, projectId: projectId, triggerId: triggerId);
+
+      var operation = await cloudBuildApi.projects.locations.triggers
+          .run(rbtr, triggerName!);
+
+      return Response.ok(
+        _jsonEncode(operation.metadata),
+        headers: {
+          ..._jsonHeaders,
+        },
+      );
+    }
+
+    return Response.internalServerError(
+      body: _jsonEncode({"msg": "Failed to run trigger"}),
+      headers: {
+        ..._jsonHeaders,
+      },
+    );
+  } on Exception catch (e) {
+    print(e);
+    return Response.internalServerError(
+      body: _jsonEncode({"msg": "Internal Server Error"}),
+      headers: {
+        ..._jsonHeaders,
+      },
+    );
   }
 }
