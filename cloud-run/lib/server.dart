@@ -1,27 +1,40 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_provision_server/controllers/ServerController.dart';
+import 'package:cloud_provision_server/middleware/CORSHeadersHandler.dart';
+import 'package:cloud_provision_server/middleware/TokenValidationHandler.dart';
 import 'package:cloud_provision_server/models/template_model.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart' as shelf_router;
-import 'package:uuid/uuid.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:googleapis/cloudbuild/v1.dart' as cb;
 import 'package:googleapis/cloudresourcemanager/v1.dart' as crm;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:http/http.dart' as http;
+// import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 
 Future<void> main() async {
   final port = int.parse(Platform.environment['PORT'] ?? '8080');
 
-  final cascade = Cascade().add(_router);
+  ServerController serverController = ServerController();
+  TokenValidationHandler tokenValidationHandler = TokenValidationHandler();
+  CORSHeadersHandler corsHeadersHandler = CORSHeadersHandler();
+
+  final handler = const Pipeline()
+      .addMiddleware(corsHeadersHandler.corsHeadersHandler())
+      .addMiddleware(tokenValidationHandler.tokenValidationHandler())
+      .addHandler(serverController.handler);
 
   final server = await shelf_io.serve(
-    logRequests().addHandler(cascade.handler),
+    handler,
     InternetAddress.anyIPv4, // Allows external connections
     port,
   );
+
+  // Enable content compression
+  server.autoCompress = true;
 
   print('Serving at http://${server.address.host}:${server.port}');
 }
@@ -33,8 +46,6 @@ final _router = shelf_router.Router()
   ..options('/v1/templates', _getTemplates)
   ..get('/v1/projects', _getProjects)
   ..options('/v1/projects', _getProjects)
-  ..get('/v1/templates', _getTemplates)
-  ..options('/v1/templates', _getTemplates)
   ..post('/v1/builds', _startBuild)
   ..options('/v1/builds', _startBuild)
   ..get('/v1/builds', _getBuild)
@@ -42,9 +53,9 @@ final _router = shelf_router.Router()
   ..options('/v1/triggers', _runTrigger);
 
 bool isValidToken(Request request) {
-  if (request.method == "OPTIONS") {
-    return true;
-  }
+  // if (request.method == "OPTIONS") {
+  //   return true;
+  // }
 
   if (request.headers[HttpHeaders.authorizationHeader] != null) {
     try {
