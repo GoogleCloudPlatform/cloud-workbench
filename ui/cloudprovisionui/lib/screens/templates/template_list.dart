@@ -35,16 +35,27 @@ class TemplateList extends StatelessWidget {
         children: <Widget>[
           Row(
             children: [
-              const Text("Template: ", style: AppText.fontWeightBold),
-              Text(template.name),
+              const Text(
+                "Template: ",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.black),
+              ),
+              Text(
+                template.name,
+                style: TextStyle(fontSize: 24, color: Colors.black),
+              ),
             ],
           ),
+          const SizedBox(height: 10),
           Row(
             children: [
               const Text("Description: ", style: AppText.fontWeightBold),
               Text(template.name),
             ],
           ),
+          const SizedBox(height: 10),
           Row(
             children: [
               TextButton(
