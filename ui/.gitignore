@@ -5,6 +5,7 @@ cloudprovisionui/.flutter-plugins-dependencies
 cloudprovisionui/.packages
 cloudprovisionui/.dart_tool
 cloudprovisionui/.dart_tool/*
+cloudprovisionui/lib/generated_plugin_registrant.dart
 
 # Miscellaneous
 *.class
