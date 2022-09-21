@@ -5,6 +5,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class AuthRepository {
   final _firebaseAuth = FirebaseAuth.instance;
 
+  // Set CLIENT_ID value in assets/.env
+  // example: CLIENT_ID="Client ID value from the GCP Auth Credentials"
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId: dotenv.get('CLIENT_ID'),
     scopes: <String>[],

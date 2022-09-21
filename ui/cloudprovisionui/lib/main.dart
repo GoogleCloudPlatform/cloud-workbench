@@ -6,15 +6,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
+  await dotenv.load(fileName: "assets/.env");
+
   WidgetsFlutterBinding.ensureInitialized();
-
-  // TODO set FirebaseOptions from Firebase console - web app config
-
+  // FirebaseOptions from Firebase console - web app config
+  // Set values in assets/.env
+  // example: PROJECT_ID="your-project-name"
   await Firebase.initializeApp(
-    options: const FirebaseOptions(
-
+    options: FirebaseOptions(
+        apiKey: dotenv.get('API_KEY'),
+        authDomain: dotenv.get('AUTH_DOMAIN'),
+        projectId: dotenv.get('PROJECT_ID'),
+        storageBucket: dotenv.get('STORAGE_BUCKET'),
+        messagingSenderId: dotenv.get('MESSAGING_SENDER_ID'),
+        appId: dotenv.get('APP_ID'),
+        measurementId: dotenv.get('MEASUREMENT_ID')),
   );
   runApp(const CloudProvisionApp());
 }
