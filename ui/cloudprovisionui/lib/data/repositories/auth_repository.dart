@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AuthRepository {
   final _firebaseAuth = FirebaseAuth.instance;
-  // TODO set cliend id
+
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: "",
+    clientId: dotenv.get('CLIENT_ID'),
     scopes: <String>[],
   );
 
