@@ -5,10 +5,9 @@ import 'package:cloudprovision/models/template_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-// TODO set it during startup in Dockerfile
-// const cloudRunUrl = String.fromEnvironment('CLOUD_PROVISION_SERVICE_URL');
-const cloudRunUrl = "cloud-provision-server-4mizdq5szq-ue.a.run.app";
+var cloudRunUrl = dotenv.get('CLOUD_PROVISION_API_URL');
 
 class TemplateRepository {
   Future<List<TemplateModel>> loadTemplates(BuildContext context) async {
