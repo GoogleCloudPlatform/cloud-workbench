@@ -1,6 +1,6 @@
 ### Cloud Provision UI
 
-Set the values in assets/.env file.
+Set the values in cloudprovisionui/assets/.env file.
 ```
 # FirebaseOptions from Firebase console - web app config
 PROJECT_ID=''
