@@ -22,8 +22,8 @@ class ProjectsController extends BaseController {
         jsonResponseEncode(
             await _projectsService.getUserProjects(userIdentityToken)),
       );
-    } on Exception catch (e) {
-      print(e);
+    } on Exception catch (e, stacktrace) {
+      print("Exception occurred: $e stackTrace: $stacktrace");
       return Response.internalServerError(
         body: jsonResponseEncode({"msg": "Internal Server Error"}),
       );

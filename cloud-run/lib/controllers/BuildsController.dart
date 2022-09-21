@@ -1,4 +1,5 @@
 import 'package:cloud_provision_server/controllers/BaseController.dart';
+import 'package:cloud_provision_server/services/ConfigService.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf/shelf.dart';
 import '../services/BuildsService.dart';
@@ -7,13 +8,13 @@ import 'dart:convert';
 
 import 'package:cloud_provision_server/models/template_model.dart';
 import 'package:googleapis/cloudbuild/v1.dart' as cb;
-import 'package:http/http.dart' as http;
 
 import '../services/TemplatesService.dart';
 
 class BuildsController extends BaseController {
   BuildsService _buildsService = BuildsService();
   TemplatesService _templatesService = TemplatesService();
+  ConfigService _configService = ConfigService();
 
   Router get router {
     final router = Router();
@@ -31,8 +32,8 @@ class BuildsController extends BaseController {
         jsonResponseEncode(
             await _buildsService.getBuildDetails(projectId, buildId)),
       );
-    } on Exception catch (e) {
-      print(e);
+    } on Exception catch (e, stacktrace) {
+      print("Exception occurred: $e stackTrace: $stacktrace");
       return Response.internalServerError(
         body: jsonResponseEncode({"msg": "Internal Server Error"}),
       );
@@ -52,7 +53,7 @@ class BuildsController extends BaseController {
           templatesMap[int.parse(requestMap['template_id'])];
 
       Map<String, dynamic> cloudProvisionJsonConfig =
-          await _fetchCloudProvisionConfig(template!.cloudProvisionConfigUrl);
+          await _configService.getJson(template!.cloudProvisionConfigUrl);
 
       var projectId = requestMap['project_id'];
 
@@ -65,18 +66,11 @@ class BuildsController extends BaseController {
       return Response.ok(
         jsonResponseEncode(buildOp.metadata),
       );
-    } on Exception catch (e) {
-      print(e);
+    } on Exception catch (e, stacktrace) {
+      print("Exception occurred: $e stackTrace: $stacktrace");
       return Response.internalServerError(
         body: jsonResponseEncode({"msg": "Internal Server Error"}),
       );
     }
-  }
-
-  Future<Map<String, dynamic>> _fetchCloudProvisionConfig(
-      String cloudProvisionConfigUrl) async {
-    final http.Client client = new http.Client();
-    var response = await client.get(Uri.parse(cloudProvisionConfigUrl));
-    return json.decode(response.body);
   }
 }

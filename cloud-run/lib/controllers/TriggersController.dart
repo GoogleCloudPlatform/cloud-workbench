@@ -41,8 +41,8 @@ class TriggersController extends BaseController {
           body: jsonResponseEncode({"msg": "Failed to run trigger"}),
         );
       }
-    } on Exception catch (e) {
-      print(e);
+    } on Exception catch (e, stacktrace) {
+      print("Exception occurred: $e stackTrace: $stacktrace");
       return Response.internalServerError(
         body: jsonResponseEncode({"msg": "Internal Server Error"}),
       );
