@@ -3,6 +3,8 @@ cloudprovisionui/build/*
 cloudprovisionui/.flutter-plugins
 cloudprovisionui/.flutter-plugins-dependencies
 cloudprovisionui/.packages
+cloudprovisionui/.dart_tool
+cloudprovisionui/.dart_tool/*
 
 # Miscellaneous
 *.class
