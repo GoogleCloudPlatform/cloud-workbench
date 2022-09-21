@@ -1,4 +1,8 @@
 cloudprovisionui/assets/.env
+cloudprovisionui/build/*
+cloudprovisionui/.flutter-plugins
+cloudprovisionui/.flutter-plugins-dependencies
+cloudprovisionui/.packages
 
 # Miscellaneous
 *.class
