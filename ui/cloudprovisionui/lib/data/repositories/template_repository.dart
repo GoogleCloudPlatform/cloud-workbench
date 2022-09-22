@@ -35,7 +35,7 @@ class TemplateRepository {
   Future<TemplateModel> loadTemplateById(int templateId) async {
     var endpointPath = '/v1/templates';
     final queryParameters = {
-      'templateId': "4",
+      'templateId': templateId.toString(),
     };
 
     var url = Uri.https(cloudRunUrl, endpointPath, queryParameters);
