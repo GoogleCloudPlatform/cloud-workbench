@@ -1,4 +1,4 @@
-cloudprovisionui/assets/.env
+cloudprovisionui/assets/env
 cloudprovisionui/build/*
 cloudprovisionui/.flutter-plugins
 cloudprovisionui/.flutter-plugins-dependencies
