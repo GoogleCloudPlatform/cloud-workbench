@@ -52,7 +52,7 @@ class TemplateList extends StatelessWidget {
           Row(
             children: [
               const Text("Description: ", style: AppText.fontWeightBold),
-              Text(template.name),
+              Text(template.description),
             ],
           ),
           const SizedBox(height: 10),
