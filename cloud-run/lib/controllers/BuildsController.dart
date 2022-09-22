@@ -61,7 +61,7 @@ class BuildsController extends BaseController {
           Map<String, String>.from(requestMap['params']);
 
       cb.Operation buildOp = await _buildsService.startBuild(
-          projectId, substitutionsMap, cloudProvisionJsonConfig);
+          projectId, substitutionsMap, cloudProvisionJsonConfig['cloudbuild']);
 
       return Response.ok(
         jsonResponseEncode(buildOp.metadata),
