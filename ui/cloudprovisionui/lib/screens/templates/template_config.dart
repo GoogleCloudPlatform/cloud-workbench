@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloudprovision/blocs/template/template-bloc.dart';
 import 'package:cloudprovision/models/param_model.dart';
 import 'package:cloudprovision/models/template_model.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloudprovision/data/repositories/build_repository.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TemplateConfigPage extends StatefulWidget {
   final TemplateModel _template;
@@ -33,7 +37,17 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
   Map<String, dynamic> _formFieldValues = {};
   final _key = GlobalKey<FormState>();
 
+  final TemplateBloc _templateBloc = TemplateBloc();
+
+  String _errorMessage = "";
+
   _TemplateConfigPageState(this._template);
+
+  @override
+  void initState() {
+    _templateBloc.add(GetTemplate(template: _template));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +89,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     );
   }
 
-  _deployTemplate(TemplateModel template, BuildContext context) async {
+  _deployTemplate(TemplateModel template) async {
     if (!_key.currentState!.validate()) {
       return;
     }
@@ -90,7 +104,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
       _appName = _formFieldValues["_APP_NAME"];
     });
 
-    String projectId = "andrey-cp-8-9";
+    String projectId = dotenv.get('PROJECT_ID');
 
     String buildDetails = await BuildRepository()
         .deployTemplate(projectId, template, _formFieldValues);
@@ -103,9 +117,14 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         _building = false;
         _cloudBuildStatus = buildConfig['build']['status'];
       });
-    }
 
-    Timer.periodic(Duration(seconds: 10), _checkBuildStatus);
+      Timer.periodic(Duration(seconds: 10), _checkBuildStatus);
+    } else {
+      setState(() {
+        _building = false;
+        _errorMessage = "Request failed";
+      });
+    }
   }
 
   _checkBuildStatus(Timer timer) async {
@@ -148,39 +167,95 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     }
   }
 
-  _dynamicParams(BuildContext context) {
-    return Card(
-      elevation: 0,
-      child: Form(
-        key: _key,
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: _template.params.length,
-          itemBuilder: (context, index) {
-            return _buildDynamicParam(index, _template.params[index]);
+  Widget _dynamicParamsSection() {
+    return Container(
+      margin: const EdgeInsets.all(8.0),
+      child: BlocProvider(
+        create: (_) => _templateBloc,
+        child: BlocListener<TemplateBloc, TemplateState>(
+          listener: (context, state) {
+            if (state is TemplateError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message!),
+                ),
+              );
+            }
           },
+          child: BlocBuilder<TemplateBloc, TemplateState>(
+            builder: (context, state) {
+              if (state is TemplateInitial) {
+                return _buildLoading();
+              } else if (state is TemplateLoading) {
+                return _buildLoading();
+              } else if (state is TemplateLoaded) {
+                return _dynamicParams(state.template);
+              } else if (state is TemplateError) {
+                return Container();
+              } else {
+                return Container();
+              }
+            },
+          ),
         ),
       ),
     );
   }
 
-  _buildDynamicParam(int index, ParamModel param) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+  _dynamicParams(TemplateModel template) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(param.label),
-        SizedBox(width: 30),
+        Card(
+          elevation: 0,
+          color: Colors.grey[50],
+          child: Form(
+            key: _key,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: template.params.length,
+              itemBuilder: (context, index) {
+                return _buildDynamicParam(index, template.params[index]);
+              },
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10.0),
+          child: ElevatedButton(
+            child: const Text('Deploy template'),
+            onPressed: () => _deployTemplate(template),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _buildDynamicParam(int index, ParamModel param) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Text(param.label),
         SizedBox(
           width: 200.0,
-          child: TextFormField(validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter value';
-            }
-            return null;
-          }, onChanged: (val) {
-            _onTextFormUpdate(index, val, param);
-          }),
+          child: TextFormField(
+              decoration: InputDecoration(
+                icon: Icon(Icons.abc_sharp),
+                //hintText: param.description,
+                labelText: param.label,
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter value';
+                }
+                return null;
+              },
+              onChanged: (val) {
+                _onTextFormUpdate(index, val, param);
+              }),
         ),
+        SizedBox(height: 20),
       ],
     );
   }
@@ -196,6 +271,29 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          Row(
+            children: [
+              const Text("Target GCP Project: ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.black,
+                  )),
+              TextButton(
+                onPressed: () async {
+                  final Uri _url = Uri.parse(
+                      "https://console.cloud.google.com/home/dashboard?project=${dotenv.get('PROJECT_ID')}");
+                  if (!await launchUrl(_url)) {
+                    throw 'Could not launch $_url';
+                  }
+                },
+                child: Text(dotenv.get('PROJECT_ID'),
+                    style: TextStyle(
+                      fontSize: 20,
+                    )),
+              ),
+            ],
+          ),
           Row(
             children: [
               const Text("Template: ",
@@ -267,14 +365,16 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
               ),
             ],
           ),
-          _dynamicParams(context),
           Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: ElevatedButton(
-              child: const Text('Deploy template'),
-              onPressed: () => _deployTemplate(_template, context),
-            ),
+            padding: const EdgeInsets.only(top: 8.0),
+            child: const Text("Template Parameters: ",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.black,
+                )),
           ),
+          _dynamicParamsSection(),
         ],
       ),
     );
@@ -284,7 +384,9 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     if (_cloudBuildDetails.isEmpty)
       return _building
           ? Center(child: CircularProgressIndicator())
-          : Container();
+          : Center(
+              child: Text(_errorMessage),
+            );
 
     return Container(
       decoration: BoxDecoration(
@@ -421,5 +523,16 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         }
       }
     }
+  }
+
+  Widget _buildLoading() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: SizedBox(
+        child: CircularProgressIndicator(),
+        height: 10.0,
+        width: 10.0,
+      ),
+    );
   }
 }

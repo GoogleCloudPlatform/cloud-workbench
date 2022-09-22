@@ -18,7 +18,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
   Widget build(BuildContext context) {
     // TODO switch to Stream/FutureBuilder pattern
     if (_templates.isEmpty) {
-      _templateRepository.loadTemplates(context).then((templates) {
+      _templateRepository.loadTemplates().then((templates) {
         setState(() {
           _templates = templates;
         });
