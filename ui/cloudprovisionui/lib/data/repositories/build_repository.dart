@@ -26,6 +26,10 @@ class BuildRepository {
 
       var url = Uri.https(cloudRunUrl, endpointPath);
 
+      if (cloudRunUrl.contains("localhost")) {
+        url = Uri.http(cloudRunUrl, endpointPath);
+      }
+
       var body = json.encode({
         "project_id": projectId,
         "template_id": "${template.id}",
@@ -33,6 +37,10 @@ class BuildRepository {
       });
 
       var response = await http.post(url, headers: requestHeaders, body: body);
+
+      if (response.statusCode == 500) {
+        return result;
+      }
 
       result = response.body;
     } catch (e) {
@@ -61,7 +69,9 @@ class BuildRepository {
       };
 
       var url = Uri.https(cloudRunUrl, endpointPath, queryParameters);
-
+      if (cloudRunUrl.contains("localhost")) {
+        url = Uri.http(cloudRunUrl, endpointPath, queryParameters);
+      }
       var response = await http.get(url, headers: requestHeaders);
 
       result = response.body;
@@ -86,6 +96,9 @@ class BuildRepository {
       var endpointPath = '/v1/triggers';
 
       var url = Uri.https(cloudRunUrl, endpointPath);
+      if (cloudRunUrl.contains("localhost")) {
+        url = Uri.http(cloudRunUrl, endpointPath);
+      }
 
       var body = json.encode({
         "project_id": projectId,
