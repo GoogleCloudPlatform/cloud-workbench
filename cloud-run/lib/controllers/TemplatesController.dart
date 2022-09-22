@@ -14,8 +14,30 @@ class TemplatesController extends BaseController {
 
   Future<Response> _getTemplatesHandler(Request request) async {
     try {
+      final queryParams = request.url.queryParameters;
+      final templateId = queryParams['templateId'];
+
+      if (templateId != null) {
+        return _getTemplateByIdHandler(request);
+      }
+
       return Response.ok(
           jsonResponseEncode(await _templatesService.getTemplates()));
+    } on Exception catch (e, stacktrace) {
+      print("Exception occurred: $e stackTrace: $stacktrace");
+      return Response.internalServerError(
+        body: jsonResponseEncode({"msg": "Internal Server Error"}),
+      );
+    }
+  }
+
+  Future<Response> _getTemplateByIdHandler(Request request) async {
+    try {
+      String? t = request.url.queryParameters['templateId'];
+      int templateId = int.parse(t!);
+
+      return Response.ok(jsonResponseEncode(
+          await _templatesService.getTemplateById(templateId)));
     } on Exception catch (e, stacktrace) {
       print("Exception occurred: $e stackTrace: $stacktrace");
       return Response.internalServerError(
