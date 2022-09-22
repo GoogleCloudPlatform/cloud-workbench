@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: "assets/.env");
+  await dotenv.load(fileName: "assets/env");
 
   WidgetsFlutterBinding.ensureInitialized();
   // FirebaseOptions from Firebase console - web app config
