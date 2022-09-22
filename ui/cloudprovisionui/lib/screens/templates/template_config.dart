@@ -319,7 +319,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
                       fontSize: 14,
                       color: Colors.black,
                     )),
-                Text(_template.name,
+                Text(_template.description,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black,
