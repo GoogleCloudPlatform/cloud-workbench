@@ -1,14 +1,13 @@
-class ParamModel {
+class Param {
   String param;
   String label;
   String description;
   String type;
   bool required;
 
-  ParamModel(
-      this.param, this.label, this.description, this.type, this.required);
+  Param(this.param, this.label, this.description, this.type, this.required);
 
-  ParamModel.fromJson(Map<String, dynamic> parsedJson)
+  Param.fromJson(Map<String, dynamic> parsedJson)
       : param = parsedJson['param'],
         label = parsedJson['label'],
         description = parsedJson['description'],
