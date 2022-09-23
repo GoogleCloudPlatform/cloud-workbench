@@ -12,5 +12,5 @@ class GetTemplatesList extends TemplateEvent {}
 class GetTemplate extends TemplateEvent {
   GetTemplate({required this.template});
 
-  final TemplateModel template;
+  final Template template;
 }

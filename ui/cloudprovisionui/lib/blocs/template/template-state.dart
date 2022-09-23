@@ -9,11 +9,20 @@ abstract class TemplateState extends Equatable {
 
 class TemplateInitial extends TemplateState {}
 
+class TemplatesInitial extends TemplateState {}
+
 class TemplateLoading extends TemplateState {}
 
+class TemplatesLoading extends TemplateState {}
+
 class TemplateLoaded extends TemplateState {
-  final TemplateModel template;
+  final Template template;
   const TemplateLoaded(this.template);
+}
+
+class TemplatesLoaded extends TemplateState {
+  final List<Template> templates;
+  const TemplatesLoaded(this.templates);
 }
 
 class TemplateError extends TemplateState {

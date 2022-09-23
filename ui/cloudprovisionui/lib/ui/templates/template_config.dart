@@ -2,17 +2,20 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloudprovision/blocs/template/template-bloc.dart';
-import 'package:cloudprovision/models/param_model.dart';
-import 'package:cloudprovision/models/template_model.dart';
+import 'package:cloudprovision/repository/service/build_service.dart';
+import 'package:cloudprovision/repository/service/template_service.dart';
+import 'package:cloudprovision/repository/template_repository.dart';
+import 'package:cloudprovision/repository/models/param.dart';
+import 'package:cloudprovision/repository/models/template.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:cloudprovision/data/repositories/build_repository.dart';
+import 'package:cloudprovision/repository/build_repository.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TemplateConfigPage extends StatefulWidget {
-  final TemplateModel _template;
+  final Template _template;
   TemplateConfigPage(this._template, {super.key});
 
   @override
@@ -21,7 +24,7 @@ class TemplateConfigPage extends StatefulWidget {
 }
 
 class _TemplateConfigPageState extends State<TemplateConfigPage> {
-  late TemplateModel _template;
+  late Template _template;
   String _appName = "";
 
   Map<String, dynamic> _cloudBuildDetails = {};
@@ -37,7 +40,8 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
   Map<String, dynamic> _formFieldValues = {};
   final _key = GlobalKey<FormState>();
 
-  final TemplateBloc _templateBloc = TemplateBloc();
+  final TemplateBloc _templateBloc = TemplateBloc(
+      templateRepository: TemplateRepository(service: TemplateService()));
 
   String _errorMessage = "";
 
@@ -51,15 +55,6 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO switch to Stream/FutureBuilder pattern
-    // if (_templates.isEmpty) {
-    //   _templateRepository.loadTemplates(context).then((templates) {
-    //     setState(() {
-    //       _templates = templates;
-    //     });
-    //   });
-    // }
-
     return Material(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -89,7 +84,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     );
   }
 
-  _deployTemplate(TemplateModel template) async {
+  _deployTemplate(Template template) async {
     if (!_key.currentState!.validate()) {
       return;
     }
@@ -106,7 +101,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
 
     String projectId = dotenv.get('PROJECT_ID');
 
-    String buildDetails = await BuildRepository()
+    String buildDetails = await BuildRepository(service: BuildService())
         .deployTemplate(projectId, template, _formFieldValues);
 
     if (buildDetails != "") {
@@ -132,8 +127,8 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
       String buildId = _cloudBuildDetails['build']['id'];
       String projectId = _cloudBuildDetails['build']['projectId'];
 
-      String buildDetails =
-          await BuildRepository().getBuildDetails(projectId, buildId);
+      String buildDetails = await BuildRepository(service: BuildService())
+          .getBuildDetails(projectId, buildId);
 
       if (buildDetails != "") {
         Map<String, dynamic> buildConfig = jsonDecode(buildDetails);
@@ -149,7 +144,8 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
 
         if (buildConfig['status'] == "SUCCESS") {
           String triggerRunOperation =
-              await BuildRepository().runTrigger(projectId, _appName);
+              await BuildRepository(service: BuildService())
+                  .runTrigger(projectId, _appName);
 
           Map<String, dynamic> triggerOperationMap =
               jsonDecode(triggerRunOperation);
@@ -202,7 +198,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     );
   }
 
-  _dynamicParams(TemplateModel template) {
+  _dynamicParams(Template template) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -231,14 +227,14 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     );
   }
 
-  _buildDynamicParam(int index, ParamModel param) {
+  _buildDynamicParam(int index, Param param) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Text(param.label),
         SizedBox(
-          width: 200.0,
+          width: 400.0,
           child: TextFormField(
               decoration: InputDecoration(
                 icon: Icon(Icons.abc_sharp),
@@ -493,7 +489,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     );
   }
 
-  _onTextFormUpdate(int index, String val, ParamModel param) async {
+  _onTextFormUpdate(int index, String val, Param param) async {
     String key = param.param;
     if (_formFieldValues.containsKey(key)) {
       _formFieldValues.remove(key);
@@ -507,8 +503,8 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
       String buildId = _cloudBuildTriggerDetails['build']['id'];
       String projectId = _cloudBuildTriggerDetails['build']['projectId'];
 
-      String buildDetails =
-          await BuildRepository().getBuildDetails(projectId, buildId);
+      String buildDetails = await BuildRepository(service: BuildService())
+          .getBuildDetails(projectId, buildId);
 
       if (buildDetails != "") {
         Map<String, dynamic> buildConfig = jsonDecode(buildDetails);

@@ -1,28 +1,49 @@
-import 'package:cloudprovision/models/template_model.dart';
+import 'package:cloudprovision/blocs/template/template-bloc.dart';
+import 'package:cloudprovision/repository/models/template.dart';
 import 'package:cloudprovision/utils/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'template_config.dart';
 
 class TemplateList extends StatelessWidget {
-  final List<TemplateModel> _templates;
-
-  TemplateList(this._templates);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      itemCount: _templates.length,
-      itemBuilder: (context, int index) {
-        return buildTemplate(_templates[index], context);
-      },
+  Widget _buildLoading() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: SizedBox(
+        child: CircularProgressIndicator(),
+        height: 10.0,
+        width: 10.0,
+      ),
     );
   }
 
-  Widget buildTemplate(TemplateModel template, BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<TemplateBloc, TemplateState>(builder: (context, state) {
+      if (state is TemplatesInitial) {
+        return _buildLoading();
+      } else if (state is TemplatesLoading) {
+        return _buildLoading();
+      } else if (state is TemplatesLoaded) {
+        return ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: state.templates.length,
+          itemBuilder: (context, int index) {
+            return buildTemplate(state.templates[index], context);
+          },
+        );
+      } else if (state is TemplateError) {
+        return Container();
+      } else {
+        return Container();
+      }
+    });
+  }
+
+  Widget buildTemplate(Template template, BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
@@ -83,7 +104,7 @@ class TemplateList extends StatelessWidget {
     );
   }
 
-  _deployTemplate(TemplateModel template, BuildContext context) async {
+  _deployTemplate(Template template, BuildContext context) async {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => TemplateConfigPage(template)));
   }
