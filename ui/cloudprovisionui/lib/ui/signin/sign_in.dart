@@ -1,5 +1,5 @@
 import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
-import 'package:cloudprovision/screens/main/main_screen.dart';
+import 'package:cloudprovision/ui/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
