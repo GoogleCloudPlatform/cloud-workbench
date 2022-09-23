@@ -1,16 +1,15 @@
+import 'package:cloudprovision/repository/service/base_service.dart';
 import 'dart:convert';
 
-import 'package:cloudprovision/models/template_model.dart';
+import 'package:cloudprovision/repository/models/template.dart';
+import 'package:cloudprovision/repository/service/base_service.dart';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-var cloudRunUrl = dotenv.get('CLOUD_PROVISION_API_URL');
-
-class BuildRepository {
-  Future<String> deployTemplate(String projectId, TemplateModel template,
+class BuildService extends BaseService {
+  Future<String> deployTemplate(String projectId, Template template,
       Map<String, dynamic> formFieldValuesMap) async {
     final user = FirebaseAuth.instance.currentUser!;
     var identityToken = await user.getIdToken();
@@ -24,10 +23,10 @@ class BuildRepository {
 
       var endpointPath = '/v1/builds';
 
-      var url = Uri.https(cloudRunUrl, endpointPath);
+      var url = Uri.https(cloudProvisionServerUrl, endpointPath);
 
-      if (cloudRunUrl.contains("localhost")) {
-        url = Uri.http(cloudRunUrl, endpointPath);
+      if (cloudProvisionServerUrl.contains("localhost")) {
+        url = Uri.http(cloudProvisionServerUrl, endpointPath);
       }
 
       var body = json.encode({
@@ -68,9 +67,10 @@ class BuildRepository {
         'buildId': buildId,
       };
 
-      var url = Uri.https(cloudRunUrl, endpointPath, queryParameters);
-      if (cloudRunUrl.contains("localhost")) {
-        url = Uri.http(cloudRunUrl, endpointPath, queryParameters);
+      var url =
+          Uri.https(cloudProvisionServerUrl, endpointPath, queryParameters);
+      if (cloudProvisionServerUrl.contains("localhost")) {
+        url = Uri.http(cloudProvisionServerUrl, endpointPath, queryParameters);
       }
       var response = await http.get(url, headers: requestHeaders);
 
@@ -95,9 +95,9 @@ class BuildRepository {
 
       var endpointPath = '/v1/triggers';
 
-      var url = Uri.https(cloudRunUrl, endpointPath);
-      if (cloudRunUrl.contains("localhost")) {
-        url = Uri.http(cloudRunUrl, endpointPath);
+      var url = Uri.https(cloudProvisionServerUrl, endpointPath);
+      if (cloudProvisionServerUrl.contains("localhost")) {
+        url = Uri.http(cloudProvisionServerUrl, endpointPath);
       }
 
       var body = json.encode({

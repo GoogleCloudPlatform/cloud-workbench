@@ -1,8 +1,9 @@
+import 'package:cloudprovision/repository/service/base_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class AuthRepository {
+class AuthService extends BaseService {
   final _firebaseAuth = FirebaseAuth.instance;
 
   // Set CLIENT_ID value in assets/.env
@@ -12,11 +13,6 @@ class AuthRepository {
     scopes: <String>[],
   );
 
-  // Future<bool> get isSignedIn => _googleSignIn.isSignedIn();
-
-  // Stream<GoogleSignInAccount?> get onCurrentUserChanged =>
-  //     _googleSignIn.onCurrentUserChanged;
-
   Future<void> signInWithGoogle() async {
     try {
       GoogleSignInAccount? googleUser;
@@ -25,8 +21,6 @@ class AuthRepository {
       } else {
         googleUser = await _googleSignIn.signIn();
       }
-
-      // final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
@@ -47,7 +41,7 @@ class AuthRepository {
       await _firebaseAuth.signOut();
       await _googleSignIn.signOut();
     } catch (e) {
-      throw Exception(e);
+      throw Exception(e.toString());
     }
   }
 }
