@@ -14,3 +14,11 @@ class GetTemplate extends TemplateEvent {
 
   final Template template;
 }
+
+class ForkTemplateRepo extends TemplateEvent {
+  final String sourceRepo;
+  final String targetRepoName;
+  final String token;
+
+  ForkTemplateRepo(this.sourceRepo, this.targetRepoName, this.token);
+}
