@@ -1,4 +1,4 @@
-import 'package:cloudprovision/blocs/template/template-bloc.dart';
+import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/repository/service/template_service.dart';
 import 'package:cloudprovision/repository/template_repository.dart';
 import 'package:cloudprovision/ui/templates/template_list.dart';

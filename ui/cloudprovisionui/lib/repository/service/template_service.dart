@@ -54,4 +54,28 @@ class TemplateService extends BaseService {
 
     return template;
   }
+
+  forkRepository(String sourceRepo, String token, String targetRepoName) async {
+    Map<String, String> requestHeaders = {
+      HttpHeaders.authorizationHeader: "Bearer " + token,
+    };
+
+    DateTime dateTime = DateTime.now();
+    String YYYY_MM_DD = dateTime.toIso8601String();
+
+    var body = json.encode({
+      "name": targetRepoName +
+          "-" +
+          YYYY_MM_DD
+              .replaceAll("-", "")
+              .replaceAll(":", "")
+              .replaceAll(".", ""),
+    });
+    var url = Uri.https("api.github.com", "/repos/octocat/Hello-World/forks");
+    // var url = Uri.https("api.github.com",
+    //     "/repos/gcp-solutions/cloud-provision-templates/forks");
+    var response = await http.post(url, headers: requestHeaders, body: body);
+    print(response.statusCode);
+    print(jsonDecode(response.body));
+  }
 }

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloudprovision/blocs/template/template-bloc.dart';
+import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/repository/service/build_service.dart';
 import 'package:cloudprovision/repository/service/template_service.dart';
 import 'package:cloudprovision/repository/template_repository.dart';
@@ -55,6 +55,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
 
   @override
   Widget build(BuildContext context) {
+    //return BlocBuilder<TemplateBloc, TemplateState>(builder: (context, state) {
     return Material(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -82,6 +83,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         ],
       ),
     );
+    //});
   }
 
   _deployTemplate(Template template) async {
@@ -233,27 +235,50 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Text(param.label),
-        SizedBox(
-          width: 400.0,
-          child: TextFormField(
-              decoration: InputDecoration(
-                icon: Icon(Icons.abc_sharp),
-                //hintText: param.description,
-                labelText: param.label,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter value';
-                }
-                return null;
-              },
-              onChanged: (val) {
-                _onTextFormUpdate(index, val, param);
-              }),
+        Row(
+          children: [
+            SizedBox(
+              width: 400.0,
+              child: TextFormField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.abc_sharp),
+                    //hintText: param.description,
+                    labelText: param.label,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter value';
+                    }
+                    return null;
+                  },
+                  onChanged: (val) {
+                    _onTextFormUpdate(index, val, param);
+                  }),
+            ),
+            param.param == "_TARGET_GIT_REPO"
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: ElevatedButton(
+                      child: const Text('Fork Template Repo To Target'),
+                      onPressed: () => _forkRepo(),
+                    ),
+                  )
+                : Container(),
+          ],
         ),
         SizedBox(height: 20),
       ],
     );
+  }
+
+  _forkRepo() async {
+    String sourceRepo =
+        "https://api.github.com/repos/octocat/Hello-World/forks";
+    String token = "github pat";
+    String targetRepoName = "target-repo";
+    context
+        .read<TemplateBloc>()
+        .add(ForkTemplateRepo(sourceRepo, targetRepoName, token));
   }
 
   _templateDetails() {

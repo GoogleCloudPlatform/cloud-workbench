@@ -1,4 +1,4 @@
-import 'package:cloudprovision/blocs/template/template-bloc.dart';
+import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/repository/models/template.dart';
 import 'package:cloudprovision/utils/styles.dart';
 import 'package:flutter/material.dart';
@@ -104,8 +104,17 @@ class TemplateList extends StatelessWidget {
     );
   }
 
-  _deployTemplate(Template template, BuildContext context) async {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => TemplateConfigPage(template)));
+  _deployTemplate(Template template, BuildContext parentContext) async {
+    Navigator.push(
+      parentContext,
+      MaterialPageRoute(
+        builder: (context) {
+          return BlocProvider.value(
+            value: BlocProvider.of<TemplateBloc>(parentContext),
+            child: TemplateConfigPage(template),
+          );
+        },
+      ),
+    );
   }
 }
