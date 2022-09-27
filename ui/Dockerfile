@@ -62,6 +62,7 @@ RUN npm install
 # Bundle app source
 COPY --from=builder /home/flutter/app/server.js .
 COPY --from=builder /home/flutter/app/cloudprovisionui/build/web ./public
+COPY --from=builder /home/flutter/app/cloudprovisionui/assets/images ./public/assests/images
 
 EXPOSE 8080
 CMD [ "node", "server.js" ]
