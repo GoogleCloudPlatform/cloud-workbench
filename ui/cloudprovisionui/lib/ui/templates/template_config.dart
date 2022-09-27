@@ -56,31 +56,33 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
   @override
   Widget build(BuildContext context) {
     //return BlocBuilder<TemplateBloc, TemplateState>(builder: (context, state) {
-    return Material(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: ElevatedButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.grey)),
-              child: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
+    return SingleChildScrollView(
+      child: Material(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.grey)),
+                child: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
             ),
-          ),
-          _templateDetails(),
-          _buildDetails(
-              _cloudBuildDetails, _building, _buildDone, _cloudBuildStatus),
-          _buildDone
-              ? _buildDetails(_cloudBuildTriggerDetails, _buildingTrigger,
-                  _buildTriggerDone, _cloudBuildTriggerStatus)
-              : Container(),
-        ],
+            _templateDetails(),
+            _buildDetails(
+                _cloudBuildDetails, _building, _buildDone, _cloudBuildStatus),
+            _buildDone
+                ? _buildDetails(_cloudBuildTriggerDetails, _buildingTrigger,
+                    _buildTriggerDone, _cloudBuildTriggerStatus)
+                : Container(),
+          ],
+        ),
       ),
     );
     //});
@@ -221,6 +223,9 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
             child: const Text('Deploy template'),
             onPressed: () => _deployTemplate(template),
           ),
@@ -255,15 +260,6 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
                     _onTextFormUpdate(index, val, param);
                   }),
             ),
-            param.param == "_TARGET_GIT_REPO"
-                ? Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: ElevatedButton(
-                      child: const Text('Fork Template Repo To Target'),
-                      onPressed: () => _forkRepo(),
-                    ),
-                  )
-                : Container(),
           ],
         ),
         SizedBox(height: 20),
