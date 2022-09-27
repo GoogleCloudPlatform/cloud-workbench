@@ -1,13 +1,17 @@
 import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
 import 'package:cloudprovision/repository/auth_repository.dart';
 import 'package:cloudprovision/repository/service/auth_service.dart';
+import 'package:cloudprovision/theme.dart';
 import 'package:cloudprovision/ui/main/main_screen.dart';
+import 'package:cloudprovision/ui/settings/settings.dart';
 import 'package:cloudprovision/ui/signin/sign_in.dart';
+import 'package:cloudprovision/ui/templates/templates.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: "assets/env");
@@ -40,7 +44,12 @@ class CloudProvisionApp extends StatelessWidget {
           authRepository: RepositoryProvider.of<AuthRepository>(context),
         ),
         child: MaterialApp(
+          routes: {
+            '/templates': (context) => TemplatesPage(),
+            '/settings': (context) => SettingsPage(),
+          },
           debugShowCheckedModeBanner: false,
+          theme: CloudTheme().themeData,
           home: StreamBuilder<User?>(
               //GoogleSignInAccount
               stream: FirebaseAuth.instance
