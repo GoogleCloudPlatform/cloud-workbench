@@ -93,6 +93,9 @@ class TemplateList extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 10.0),
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
                   child: const Text('Deploy'),
                   onPressed: () => _deployTemplate(template, context),
                 ),
