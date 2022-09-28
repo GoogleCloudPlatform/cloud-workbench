@@ -131,7 +131,7 @@ class SettingsPage extends StatelessWidget {
                                 ))),
                             DataCell(Row(
                               children: [
-                                Text('Cymbal Eats Dev Environment'),
+                                Text('Product Dev Environment'),
                                 SizedBox(width: 5),
                                 IconButton(
                                   icon: new Icon(
@@ -233,8 +233,10 @@ class SettingsPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             TextFormField(
+                                initialValue:
+                                    "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates-v2.json",
                                 decoration: InputDecoration(
-                                  labelText: "GitHub Username",
+                                  labelText: "Template GitHub Repository",
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -246,7 +248,20 @@ class SettingsPage extends StatelessWidget {
                             SizedBox(height: 30),
                             TextFormField(
                                 decoration: InputDecoration(
-                                  labelText: "GitHub Personal Access Token",
+                                  labelText: "Instance GitHub Username",
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter value';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (val) {}),
+                            SizedBox(height: 30),
+                            TextFormField(
+                                decoration: InputDecoration(
+                                  labelText:
+                                      "Instance GitHub Personal Access Token",
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
