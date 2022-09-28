@@ -3,6 +3,7 @@ import 'package:cloudprovision/repository/models/template.dart';
 import 'package:cloudprovision/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'template_config.dart';
@@ -56,16 +57,21 @@ class TemplateList extends StatelessWidget {
         children: <Widget>[
           Row(
             children: [
-              const Text(
+              Text(
                 "Template: ",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Colors.black),
+                style: GoogleFonts.openSans(
+                  fontSize: 24,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               Text(
                 template.name,
-                style: TextStyle(fontSize: 24, color: Colors.black),
+                style: GoogleFonts.openSans(
+                  fontSize: 24,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
