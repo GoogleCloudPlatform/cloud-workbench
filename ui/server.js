@@ -17,10 +17,11 @@ const port = process.env.PORT || 8080;
 
 //Serve website
 app.use(express.static(path.join(__dirname, "public")));
+app.use('/assets/images', express.static(path.join(__dirname, "public/assets/images")));
 
 //Client side routing fix on page refresh or direct browsing to non-root directory
 app.get("/*", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"), err => {
+    res.sendFile(path.join(__dirname, "public"), err => {
         if (err) {
             res.status(500).send(err);
         }
