@@ -44,6 +44,7 @@ class MainScreenState extends State<MainScreen> {
       }),
       NavigationPage.MicroserviceTemplates: TemplatesPage(),
       NavigationPage.SolutionArchitectures: TemplatesPage(),
+      NavigationPage.InfraModules: TemplatesPage(),
       NavigationPage.Settings: SettingsPage(),
     };
   }
