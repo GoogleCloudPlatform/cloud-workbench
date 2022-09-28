@@ -114,25 +114,25 @@ final Section servicesSection = Section(
         title: "Score Card Ratings",
         subTitle: "View Score Card Ratings",
         image: "app_check_discovery_card@2x",
-        page: NavigationPage.MicroserviceTemplates,
+        page: NavigationPage.ScoreCardRating,
       ),
       SectionItem(
         title: "RunBook Docs",
         subTitle: "Review RunBook Docs",
         image: "disovery_card_ml2",
-        page: NavigationPage.SolutionArchitectures,
+        page: NavigationPage.RunBookDocs,
       ),
       SectionItem(
         title: "Developer Docs",
         subTitle: "Review Developer Docs",
         image: "storage",
-        page: NavigationPage.InfraModules,
+        page: NavigationPage.DeveloperDocs,
       ),
       SectionItem(
         title: "Ops Metrics",
         subTitle: "Review Ops Metrics",
         image: "performance",
-        page: NavigationPage.StackComposer,
+        page: NavigationPage.OpsMetrics,
       )
     ]);
 
