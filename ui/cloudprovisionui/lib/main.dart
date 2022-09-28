@@ -43,10 +43,6 @@ class CloudProvisionApp extends StatelessWidget {
           authRepository: RepositoryProvider.of<AuthRepository>(context),
         ),
         child: MaterialApp(
-          routes: {
-            '/templates': (context) => TemplatesPage(),
-            '/settings': (context) => SettingsPage(),
-          },
           debugShowCheckedModeBanner: false,
           theme: CloudTheme().themeData,
           home: StreamBuilder<User?>(
