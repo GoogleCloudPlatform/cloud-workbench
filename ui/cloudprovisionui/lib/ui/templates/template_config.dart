@@ -8,6 +8,7 @@ import 'package:cloudprovision/repository/template_repository.dart';
 import 'package:cloudprovision/repository/models/param.dart';
 import 'package:cloudprovision/repository/models/template.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloudprovision/repository/build_repository.dart';
 
@@ -75,11 +76,15 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
               ),
             ),
             _templateDetails(),
-            _buildDetails(
-                _cloudBuildDetails, _building, _buildDone, _cloudBuildStatus),
+            _buildDetails("Creating Cloud Build Trigger...", _cloudBuildDetails,
+                _building, _buildDone, _cloudBuildStatus),
             _buildDone
-                ? _buildDetails(_cloudBuildTriggerDetails, _buildingTrigger,
-                    _buildTriggerDone, _cloudBuildTriggerStatus)
+                ? _buildDetails(
+                    "Running Cloud Build Trigger...",
+                    _cloudBuildTriggerDetails,
+                    _buildingTrigger,
+                    _buildTriggerDone,
+                    _cloudBuildTriggerStatus)
                 : Container(),
           ],
         ),
@@ -290,11 +295,11 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         children: <Widget>[
           Row(
             children: [
-              const Text("Target GCP Project: ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+              Text("Target GCP Project: ",
+                  style: GoogleFonts.openSans(
                     fontSize: 24,
                     color: Colors.black,
+                    fontWeight: FontWeight.w600,
                   )),
               TextButton(
                 onPressed: () async {
@@ -305,24 +310,26 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
                   }
                 },
                 child: Text(dotenv.get('PROJECT_ID'),
-                    style: TextStyle(
+                    style: GoogleFonts.openSans(
                       fontSize: 20,
+                      fontWeight: FontWeight.w600,
                     )),
               ),
             ],
           ),
           Row(
             children: [
-              const Text("Template: ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+              Text("Template: ",
+                  style: GoogleFonts.openSans(
                     fontSize: 24,
                     color: Colors.black,
+                    fontWeight: FontWeight.w600,
                   )),
               Text(_template.name,
-                  style: TextStyle(
+                  style: GoogleFonts.openSans(
                     fontSize: 24,
                     color: Colors.black,
+                    fontWeight: FontWeight.w600,
                   )),
             ],
           ),
@@ -397,7 +404,8 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     );
   }
 
-  _buildDetails(_cloudBuildDetails, _building, _buildDone, _cloudBuildStatus) {
+  _buildDetails(String title, _cloudBuildDetails, _building, _buildDone,
+      _cloudBuildStatus) {
     if (_cloudBuildDetails.isEmpty)
       return _building
           ? Center(child: CircularProgressIndicator())
@@ -405,108 +413,129 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
               child: Text(_errorMessage),
             );
 
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: const EdgeInsets.all(10.0),
-      margin: const EdgeInsets.all(10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: [
-              const Text("Build ID: ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+    return Column(
+      children: [
+        Container(
+            width: MediaQuery.of(context).size.width,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 10.0, top: 10.0),
+              child: Text(
+                title,
+                style: GoogleFonts.openSans(
                     fontSize: 14,
                     color: Colors.black,
-                  )),
-              Text(_cloudBuildDetails['build']['id'],
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                  )),
-            ],
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.8),
+              ),
+            )),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(10),
           ),
-          Row(
-            children: [
-              const Text("Project ID: ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.black,
-                  )),
-              Text(_cloudBuildDetails['build']['projectId'],
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                  )),
-            ],
-          ),
-          Row(
-            children: [
-              const Text("Create Time: ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.black,
-                  )),
-              Text(_cloudBuildDetails['build']['createTime'],
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                  )),
-            ],
-          ),
-          Row(
-            children: [
-              const Text("Status: ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.black,
-                  )),
-              Text(_cloudBuildStatus,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                  )),
-              !_buildDone
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: SizedBox(
-                        child: CircularProgressIndicator(),
-                        height: 10.0,
-                        width: 10.0,
-                      ),
-                    )
-                  : Container(),
-            ],
-          ),
-          Row(
-            children: [
-              const Text("Log Url: ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.black,
-                  )),
-              TextButton(
-                onPressed: () async {
-                  final Uri _url =
-                      Uri.parse(_cloudBuildDetails['build']['logUrl']);
-                  if (!await launchUrl(_url)) {
-                    throw 'Could not launch $_url';
-                  }
-                },
-                child: Text("Cloud Build"),
+          padding: const EdgeInsets.all(10.0),
+          margin: const EdgeInsets.all(10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: [
+                  const Text("Build ID: ",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.black,
+                      )),
+                  Text(_cloudBuildDetails['build']['id'],
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                      )),
+                ],
+              ),
+              SizedBox(height: 5),
+              Row(
+                children: [
+                  const Text("Project ID: ",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.black,
+                      )),
+                  Text(_cloudBuildDetails['build']['projectId'],
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                      )),
+                ],
+              ),
+              SizedBox(height: 5),
+              Row(
+                children: [
+                  const Text("Create Time: ",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.black,
+                      )),
+                  Text(_cloudBuildDetails['build']['createTime'],
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                      )),
+                ],
+              ),
+              SizedBox(height: 5),
+              Row(
+                children: [
+                  const Text("Status: ",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.black,
+                      )),
+                  Text(_cloudBuildStatus,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                      )),
+                  !_buildDone
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: SizedBox(
+                            child: CircularProgressIndicator(),
+                            height: 10.0,
+                            width: 10.0,
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
+              SizedBox(height: 5),
+              Row(
+                children: [
+                  const Text("Log Url: ",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.black,
+                      )),
+                  TextButton(
+                    onPressed: () async {
+                      final Uri _url =
+                          Uri.parse(_cloudBuildDetails['build']['logUrl']);
+                      if (!await launchUrl(_url)) {
+                        throw 'Could not launch $_url';
+                      }
+                    },
+                    child: Text("Cloud Build"),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
