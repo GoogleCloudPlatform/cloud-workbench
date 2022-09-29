@@ -1,3 +1,4 @@
+import 'package:cloudprovision/blocs/app/app_bloc.dart';
 import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/repository/service/template_service.dart';
 import 'package:cloudprovision/repository/template_repository.dart';
@@ -12,74 +13,83 @@ class SettingsPage extends StatelessWidget {
       fontWeight: FontWeight.w600,
       letterSpacing: 0.8);
 
+  final _key = GlobalKey<FormState>();
+
+  late String _templateGitRepository = "";
+  late String _instanceGitUsername = "";
+  late String _instanceGitToken = "";
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext parentContext) {
     return RepositoryProvider(
-      create: (context) => TemplateRepository(service: TemplateService()),
+      create: (parentContext) => TemplateRepository(service: TemplateService()),
       child: MultiBlocProvider(
         providers: [
           BlocProvider<TemplateBloc>(
-            create: (context) => TemplateBloc(
-              templateRepository: context.read<TemplateRepository>(),
+            create: (parentContext) => TemplateBloc(
+              templateRepository: parentContext.read<TemplateRepository>(),
             )..add(GetTemplatesList()),
           ),
         ],
-        child: Container(
-          padding: EdgeInsets.all(24),
-          child: DefaultTabController(
-            length: 3,
-            child: Scaffold(
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SelectableText(
-                    "Workspace settings",
-                    style: GoogleFonts.openSans(
-                      fontSize: 32,
-                      color: Color(0xFF1b3a57),
-                      fontWeight: FontWeight.w600,
+        child: BlocBuilder<TemplateBloc, TemplateState>(
+            builder: (parentContext, state) {
+          return Container(
+            padding: EdgeInsets.all(24),
+            child: DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                body: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SelectableText(
+                      "Workspace settings",
+                      style: GoogleFonts.openSans(
+                        fontSize: 32,
+                        color: Color(0xFF1b3a57),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  TabBar(
-                    isScrollable: true,
-                    tabs: [
-                      Container(
-                        child: Tab(
-                            child: Text(
-                          "General",
-                          style: textStyle,
-                        )),
-                      ),
-                      Container(
-                        child: Tab(
-                            child: Text(
-                          "GitHub",
-                          style: textStyle,
-                        )),
-                      ),
-                      Container(
-                        child: Tab(
-                            child: Text(
-                          "Integrations",
-                          style: textStyle,
-                        )),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      children: [
-                        _generalTab(context),
-                        _gitHubTab(context),
-                        _integrationsTab(context),
+                    TabBar(
+                      isScrollable: true,
+                      tabs: [
+                        Container(
+                          child: Tab(
+                              child: Text(
+                            "General",
+                            style: textStyle,
+                          )),
+                        ),
+                        Container(
+                          child: Tab(
+                              child: Text(
+                            "GitHub",
+                            style: textStyle,
+                          )),
+                        ),
+                        Container(
+                          child: Tab(
+                              child: Text(
+                            "Integrations",
+                            style: textStyle,
+                          )),
+                        ),
                       ],
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          _generalTab(parentContext),
+                          _gitHubTab(parentContext),
+                          _integrationsTab(parentContext),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
@@ -217,73 +227,92 @@ class SettingsPage extends StatelessWidget {
                   ])),
             ),
             SizedBox(height: 10),
-            Center(
-              child: Card(
-                elevation: 5,
-                child: SizedBox(
-                  width: 800,
-                  height: 500,
-                  child: Container(
-                      child: Form(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
+            Container(
+              child: BlocBuilder<AppBloc, AppState>(
+                builder: (context, state) {
+                  return Center(
+                    child: Card(
+                      elevation: 5,
                       child: SizedBox(
-                        width: 200,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextFormField(
-                                initialValue:
-                                    "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates-v2.json",
-                                decoration: InputDecoration(
-                                  labelText: "Template GitHub Repository",
+                        width: 800,
+                        height: 500,
+                        child: Container(
+                          child: Form(
+                            key: _key,
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: SizedBox(
+                                width: 200,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextFormField(
+                                        initialValue:
+                                            state.templateGitRepository,
+                                        decoration: InputDecoration(
+                                          labelText:
+                                              "Template GitHub Repository",
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter value';
+                                          }
+                                          return null;
+                                        },
+                                        onChanged: (val) {
+                                          _templateGitRepository = val;
+                                        }),
+                                    SizedBox(height: 30),
+                                    TextFormField(
+                                        initialValue: state.instanceGitUsername,
+                                        decoration: InputDecoration(
+                                          labelText: "Instance GitHub Username",
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter value';
+                                          }
+                                          return null;
+                                        },
+                                        onChanged: (val) {
+                                          _instanceGitUsername = val;
+                                        }),
+                                    SizedBox(height: 30),
+                                    TextFormField(
+                                        initialValue: state.instanceGitToken,
+                                        decoration: InputDecoration(
+                                          labelText:
+                                              "Instance GitHub Personal Access Token",
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter value';
+                                          }
+                                          return null;
+                                        },
+                                        onChanged: (val) {
+                                          _instanceGitToken = val;
+                                        }),
+                                    SizedBox(height: 30),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Theme.of(context).primaryColor,
+                                      ),
+                                      child: const Text('Save configuration'),
+                                      onPressed: () =>
+                                          {_saveGitConfiguration(context)},
+                                    ),
+                                  ],
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter value';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (val) {}),
-                            SizedBox(height: 30),
-                            TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: "Instance GitHub Username",
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter value';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (val) {}),
-                            SizedBox(height: 30),
-                            TextFormField(
-                                decoration: InputDecoration(
-                                  labelText:
-                                      "Instance GitHub Personal Access Token",
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter value';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (val) {}),
-                            SizedBox(height: 30),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).primaryColor,
                               ),
-                              child: const Text('Save configuration'),
-                              onPressed: () => {},
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  )),
-                ),
+                  );
+                },
               ),
             ),
             SizedBox(height: 10),
@@ -317,5 +346,16 @@ class SettingsPage extends StatelessWidget {
 
   _integrationsTab(BuildContext context) {
     return Text("");
+  }
+
+  _saveGitConfiguration(BuildContext context) {
+    if (!_key.currentState!.validate()) {
+      return;
+    }
+
+    BlocProvider.of<AppBloc>(context).add(
+      SettingsChangedEvent(
+          _templateGitRepository, _instanceGitUsername, _instanceGitToken),
+    );
   }
 }

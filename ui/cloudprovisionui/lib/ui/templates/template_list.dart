@@ -10,12 +10,14 @@ import 'template_config.dart';
 
 class TemplateList extends StatelessWidget {
   Widget _buildLoading() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: SizedBox(
-        child: CircularProgressIndicator(),
-        height: 10.0,
-        width: 10.0,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: SizedBox(
+          child: CircularProgressIndicator(),
+          height: 10.0,
+          width: 10.0,
+        ),
       ),
     );
   }

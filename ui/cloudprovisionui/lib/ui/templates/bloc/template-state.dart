@@ -25,6 +25,14 @@ class TemplatesLoaded extends TemplateState {
   const TemplatesLoaded(this.templates);
 }
 
+class TemplateGitConfigUpdated extends TemplateState {
+  final String sourceRepo;
+  final String targetRepoName;
+  final String token;
+
+  TemplateGitConfigUpdated(this.sourceRepo, this.targetRepoName, this.token);
+}
+
 class TemplateError extends TemplateState {
   final String? message;
   const TemplateError(this.message);

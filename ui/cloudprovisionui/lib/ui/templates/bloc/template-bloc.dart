@@ -42,8 +42,10 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
   void _mapForkTemplateRepoToState(
       ForkTemplateRepo event, Emitter<TemplateState> emit) async {
     try {
-      await templateRepository.forkRepository(
-          event.sourceRepo, event.token, event.targetRepoName);
+      // await templateRepository.forkRepository(
+      //     event.sourceRepo, event.token, event.targetRepoName);
+      emit(TemplateGitConfigUpdated(
+          event.sourceRepo, event.token, event.targetRepoName));
     } on Exception {
       emit(const TemplateError("Failed to fork template repository"));
     }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloudprovision/blocs/app/app_bloc.dart';
 import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/repository/service/build_service.dart';
 import 'package:cloudprovision/repository/service/template_service.dart';
@@ -247,14 +248,20 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         // Text(param.label),
         Row(
           children: [
+            if (param.param == "_INSTANCE_GIT_REPO") _gitSettings(),
+            if (param.param == "_INSTANCE_GIT_REPO") Text(" / "),
             SizedBox(
               width: 400.0,
               child: TextFormField(
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.abc_sharp),
-                    //hintText: param.description,
-                    labelText: param.label,
-                  ),
+                  decoration: (param.param == "_INSTANCE_GIT_REPO")
+                      ? InputDecoration(
+                          labelText: param.label,
+                        )
+                      : InputDecoration(
+                          icon: Icon(Icons.abc_sharp),
+                          //hintText: param.description,
+                          labelText: param.label,
+                        ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter value';
@@ -579,6 +586,69 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         height: 10.0,
         width: 10.0,
       ),
+    );
+  }
+
+  _gitSettings() {
+    return BlocBuilder<AppBloc, AppState>(
+      builder: (context, state) {
+        return Container(
+            child: Column(
+          children: [
+            GitOwnersDropdownButton(
+              list: [
+                "Select an owner",
+                "https://github.com/" + state.instanceGitUsername
+              ],
+            ),
+          ],
+        ));
+      },
+    );
+  }
+}
+
+class GitOwnersDropdownButton extends StatefulWidget {
+  const GitOwnersDropdownButton({super.key, this.list = const []});
+
+  final List<String> list;
+
+  @override
+  State<GitOwnersDropdownButton> createState() =>
+      _GitOwnersDropdownButtonState(list: list);
+}
+
+class _GitOwnersDropdownButtonState extends State<GitOwnersDropdownButton> {
+  late List<String> list;
+  late String dropdownValue;
+
+  _GitOwnersDropdownButtonState({required this.list}) {
+    dropdownValue = list.first;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<String>(
+      hint: Text("Select an owner"),
+      value: dropdownValue,
+      icon: const Icon(Icons.arrow_drop_down),
+      elevation: 16,
+      style: const TextStyle(color: Colors.black54),
+      underline: Container(
+        height: 2,
+        color: Colors.black54,
+      ),
+      onChanged: (String? value) {
+        setState(() {
+          dropdownValue = value!;
+        });
+      },
+      items: list.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
     );
   }
 }
