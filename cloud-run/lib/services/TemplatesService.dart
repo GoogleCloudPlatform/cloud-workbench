@@ -10,7 +10,7 @@ class TemplatesService {
 
   // TODO: Read/inject URI from configuration
   final String templatesUri =
-      "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates-v2.json";
+      "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates.json";
 
   /// Returns list of solution templates
   Future<List<TemplateModel>> getTemplates() async {
