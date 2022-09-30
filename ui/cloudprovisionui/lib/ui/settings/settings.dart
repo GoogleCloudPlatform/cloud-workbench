@@ -174,7 +174,7 @@ class SettingsPage extends StatelessWidget {
                                   'Resource location',
                                   style: TextStyle(color: Colors.black54),
                                 ))),
-                            DataCell(Text('us-east1')),
+                            DataCell(Text(dotenv.get('DEFAULT_REGION'))),
                           ],
                         ),
                       ],
