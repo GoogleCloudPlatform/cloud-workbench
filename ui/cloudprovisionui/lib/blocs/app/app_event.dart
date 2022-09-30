@@ -19,3 +19,19 @@ class SettingsChangedEvent extends AppEvent {
   List<Object> get props =>
       [templateGitRepository, instanceGitUsername, instanceGitToken];
 }
+
+class ServiceDeployedEvent extends AppEvent {
+  final String name;
+  final String owner;
+  final String instanceRepo;
+  final String templateName;
+  final String region;
+  final String projectId;
+
+  ServiceDeployedEvent(this.name, this.owner, this.instanceRepo,
+      this.templateName, this.region, this.projectId);
+
+  @override
+  List<Object> get props =>
+      [name, owner, instanceRepo, templateName, region, projectId];
+}

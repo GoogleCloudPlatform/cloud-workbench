@@ -1,4 +1,5 @@
 import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
+import 'package:cloudprovision/ui/my_services/my_services.dart';
 import 'package:cloudprovision/ui/pages/page.dart';
 import 'package:cloudprovision/ui/pages/workspace_overview.dart';
 import 'package:cloudprovision/ui/settings/settings.dart';
@@ -46,10 +47,12 @@ class MainScreenState extends State<MainScreen> {
       NavigationPage.SolutionArchitectures: TemplatesPage(),
       NavigationPage.InfraModules: TemplatesPage(),
       NavigationPage.Settings: SettingsPage(),
+      NavigationPage.MyServices: MyServicesPage(),
     };
   }
 
   NavigationPage currentPage = NavigationPage.WorkspaceOverview;
+  // NavigationPage currentPage = NavigationPage.MyServices;
 
   void navigateTo(NavigationPage page) {
     setState(() {

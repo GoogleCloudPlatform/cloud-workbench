@@ -57,47 +57,60 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
 
   @override
   Widget build(BuildContext context) {
-    //return BlocBuilder<TemplateBloc, TemplateState>(builder: (context, state) {
-    return SingleChildScrollView(
-      child: Material(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.grey)),
-                child: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
+    return BlocBuilder<AppBloc, AppState>(builder: (context, state) {
+      return SingleChildScrollView(
+        child: Material(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.grey)),
+                  child: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
               ),
-            ),
-            _templateDetails(),
-            _buildDetails("Creating Cloud Build Trigger...", _cloudBuildDetails,
-                _building, _buildDone, _cloudBuildStatus),
-            _buildDone
-                ? _buildDetails(
-                    "Running Cloud Build Trigger...",
-                    _cloudBuildTriggerDetails,
-                    _buildingTrigger,
-                    _buildTriggerDone,
-                    _cloudBuildTriggerStatus)
-                : Container(),
-          ],
+              _templateDetails(),
+              _buildDetails("Creating Cloud Build Trigger...",
+                  _cloudBuildDetails, _building, _buildDone, _cloudBuildStatus),
+              _buildDone
+                  ? _buildDetails(
+                      "Running Cloud Build Trigger...",
+                      _cloudBuildTriggerDetails,
+                      _buildingTrigger,
+                      _buildTriggerDone,
+                      _cloudBuildTriggerStatus)
+                  : Container(),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
     //});
   }
 
-  _deployTemplate(Template template) async {
+  _deployTemplate(Template template, AppState state) async {
     if (!_key.currentState!.validate()) {
       return;
     }
+
+    ServiceDeployedEvent serviceDeployedEvent = ServiceDeployedEvent(
+      _formFieldValues["_APP_NAME"],
+      state.instanceGitUsername,
+      "https://github.com/${state.instanceGitUsername}/${_formFieldValues['_INSTANCE_GIT_REPO']}",
+      template.name,
+      _formFieldValues["_REGION"],
+      dotenv.get('PROJECT_ID'),
+    );
+
+    BlocProvider.of<AppBloc>(context).add(serviceDeployedEvent);
+    // return;
 
     setState(() {
       _building = true;
@@ -209,35 +222,37 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
   }
 
   _dynamicParams(Template template) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Card(
-          elevation: 0,
-          color: Colors.grey[50],
-          child: Form(
-            key: _key,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: template.params.length,
-              itemBuilder: (context, index) {
-                return _buildDynamicParam(index, template.params[index]);
-              },
+    return BlocBuilder<AppBloc, AppState>(builder: (context, state) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Card(
+            elevation: 0,
+            color: Colors.grey[50],
+            child: Form(
+              key: _key,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: template.params.length,
+                itemBuilder: (context, index) {
+                  return _buildDynamicParam(index, template.params[index]);
+                },
+              ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
+          Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+              child: const Text('Deploy template'),
+              onPressed: () => _deployTemplate(template, state),
             ),
-            child: const Text('Deploy template'),
-            onPressed: () => _deployTemplate(template),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   _buildDynamicParam(int index, Param param) {
@@ -632,12 +647,7 @@ class _GitOwnersDropdownButtonState extends State<GitOwnersDropdownButton> {
       hint: Text("Select an owner"),
       value: dropdownValue,
       icon: const Icon(Icons.arrow_drop_down),
-      elevation: 16,
-      style: const TextStyle(color: Colors.black54),
-      underline: Container(
-        height: 2,
-        color: Colors.black54,
-      ),
+      style: const TextStyle(color: Colors.black),
       onChanged: (String? value) {
         setState(() {
           dropdownValue = value!;

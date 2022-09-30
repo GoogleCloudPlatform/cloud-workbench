@@ -299,9 +299,9 @@ class SettingsPage extends StatelessWidget {
                                         backgroundColor:
                                             Theme.of(context).primaryColor,
                                       ),
-                                      child: const Text('Save configuration'),
+                                      child: const Text('Update configuration'),
                                       onPressed: () =>
-                                          {_saveGitConfiguration(context)},
+                                          {_updateGitConfiguration(context)},
                                     ),
                                   ],
                                 ),
@@ -348,7 +348,7 @@ class SettingsPage extends StatelessWidget {
     return Text("");
   }
 
-  _saveGitConfiguration(BuildContext context) {
+  _updateGitConfiguration(BuildContext context) {
     if (!_key.currentState!.validate()) {
       return;
     }
@@ -357,5 +357,13 @@ class SettingsPage extends StatelessWidget {
       SettingsChangedEvent(
           _templateGitRepository, _instanceGitUsername, _instanceGitToken),
     );
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.all(25.0),
+      backgroundColor: Theme.of(context).primaryColor,
+      content: Text("Configuration was updated."),
+    ));
   }
 }
