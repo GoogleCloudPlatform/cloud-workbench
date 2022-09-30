@@ -18,7 +18,7 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   // FirebaseOptions from Firebase console - web app config
-  // Set values in assets/.env
+  // Set values in assets/env
   // example: PROJECT_ID="your-project-name"
   await Firebase.initializeApp(
     options: FirebaseOptions(
