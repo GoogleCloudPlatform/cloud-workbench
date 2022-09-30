@@ -4,6 +4,7 @@ import 'package:cloudprovision/repository/service/template_service.dart';
 import 'package:cloudprovision/repository/template_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -162,7 +163,7 @@ class SettingsPage extends StatelessWidget {
                                   'Project ID',
                                   style: TextStyle(color: Colors.black54),
                                 ))),
-                            DataCell(Text('andrey-cp-8-9')),
+                            DataCell(Text(dotenv.get('PROJECT_ID'))),
                           ],
                         ),
                         DataRow(
