@@ -1,4 +1,5 @@
 class Service {
+  String? id;
   String name;
   String owner;
   String templateName;
@@ -24,7 +25,7 @@ class Service {
         instanceRepo = parsedJson['instanceRepo'],
         region = parsedJson['region'],
         projectId = parsedJson['projectId'],
-        deploymentDate = DateTime.parse(parsedJson['deploymentDate']);
+        deploymentDate = DateTime.parse(parsedJson['deploymentDate'] as String);
 
   Map<String, dynamic> toJson() {
     return {
@@ -34,7 +35,7 @@ class Service {
       'instanceRepo': instanceRepo,
       'region': region,
       'projectId': projectId,
-      'deploymentDate': deploymentDate,
+      'deploymentDate': deploymentDate.toIso8601String(),
     };
   }
 }

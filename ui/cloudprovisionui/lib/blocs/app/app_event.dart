@@ -7,6 +7,8 @@ abstract class AppEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class GetAppState extends AppEvent {}
+
 class SettingsChangedEvent extends AppEvent {
   final String templateGitRepository;
   final String instanceGitUsername;
@@ -18,6 +20,11 @@ class SettingsChangedEvent extends AppEvent {
   @override
   List<Object> get props =>
       [templateGitRepository, instanceGitUsername, instanceGitToken];
+
+  @override
+  String toString() {
+    return 'SettingsChangedEvent{templateGitRepository: $templateGitRepository, instanceGitUsername: $instanceGitUsername, instanceGitToken: $instanceGitToken}';
+  }
 }
 
 class ServiceDeployedEvent extends AppEvent {
