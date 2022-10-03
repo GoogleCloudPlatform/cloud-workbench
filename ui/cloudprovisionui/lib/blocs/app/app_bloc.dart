@@ -57,8 +57,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
             ]*/
             )) {
     on<GetAppState>(_mapGetAppEventToState);
-    on<SettingsChangedEvent>(_mapSettingsChangedEventToState);
-    on<ServiceDeployedEvent>(_mapServiceDeployedEventToState);
+    on<SettingsChanged>(_mapSettingsChangedEventToState);
+    on<ServiceDeploymentRequest>(_mapServiceDeploymentRequestEventToState);
+    on<GetMyServices>(_mapGetMyServicesEventToState);
   }
 
   void _mapGetAppEventToState(GetAppState event, Emitter<AppState> emit) async {
@@ -71,14 +72,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         instanceGitToken: gitSettings.instanceGitToken,
       ),
     );
-
-    print("_mapGetAppEventToState ${gitSettings}");
   }
 
   void _mapSettingsChangedEventToState(
-      SettingsChangedEvent event, Emitter<AppState> emit) async {
-    print("_mapSettingsChangedEventToState ${event}");
-
+      SettingsChanged event, Emitter<AppState> emit) async {
     GitSettings gitSettings = GitSettings(
       event.instanceGitUsername,
       event.instanceGitToken,
@@ -94,20 +91,21 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         instanceGitToken: event.instanceGitToken,
       ),
     );
-
-    print("_mapSettingsChangedEventToState ${gitSettings}");
   }
 
-  void _mapServiceDeployedEventToState(
-      ServiceDeployedEvent event, Emitter<AppState> emit) async {
+  void _mapServiceDeploymentRequestEventToState(
+      ServiceDeploymentRequest event, Emitter<AppState> emit) async {
     Service deployedService = Service(
-      event.name,
-      event.owner,
-      event.templateName,
-      event.instanceRepo,
-      event.region,
-      event.projectId,
-      DateTime.now(),
+      name: event.name,
+      owner: event.owner,
+      instanceRepo: event.instanceRepo,
+      templateId: event.templateId,
+      templateName: event.templateName,
+      region: event.region,
+      projectId: event.projectId,
+      cloudBuildId: event.cloudBuildId,
+      params: event.params,
+      deploymentDate: DateTime.now(),
     );
 
     List<Service> updatedList = new List<Service>.from(state.myServices)
@@ -118,6 +116,17 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     emit(
       state.copyWith(
         myServices: updatedList,
+      ),
+    );
+  }
+
+  void _mapGetMyServicesEventToState(
+      GetMyServices event, Emitter<AppState> emit) async {
+    List<Service> services = await firebaseRepository.loadServices();
+
+    emit(
+      state.copyWith(
+        myServices: services,
       ),
     );
   }

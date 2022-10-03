@@ -177,7 +177,7 @@ class MyServicesPage extends StatelessWidget {
                                                         ),
                                                         Text(
                                                           DateFormat(
-                                                                  'MM/dd/yy h:mm a')
+                                                                  'MM/d/yy, h:mm a')
                                                               .format(services[
                                                                       index]
                                                                   .deploymentDate),

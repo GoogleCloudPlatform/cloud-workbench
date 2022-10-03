@@ -30,13 +30,19 @@ class TemplateList extends StatelessWidget {
       } else if (state is TemplatesLoading) {
         return _buildLoading();
       } else if (state is TemplatesLoaded) {
-        return ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: state.templates.length,
-          itemBuilder: (context, int index) {
-            return buildTemplate(state.templates[index], context);
-          },
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Container(
+            constraints: BoxConstraints(minWidth: 500, maxWidth: 1100),
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: state.templates.length,
+              itemBuilder: (context, int index) {
+                return buildTemplate(state.templates[index], context);
+              },
+            ),
+          ),
         );
       } else if (state is TemplateError) {
         return Container();

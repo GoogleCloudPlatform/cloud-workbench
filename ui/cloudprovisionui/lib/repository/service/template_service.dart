@@ -72,8 +72,6 @@ class TemplateService extends BaseService {
               .replaceAll(".", ""),
     });
     var url = Uri.https("api.github.com", "/repos/octocat/Hello-World/forks");
-    // var url = Uri.https("api.github.com",
-    //     "/repos/gcp-solutions/cloud-provision-templates/forks");
     var response = await http.post(url, headers: requestHeaders, body: body);
     print(response.statusCode);
     print(jsonDecode(response.body));
