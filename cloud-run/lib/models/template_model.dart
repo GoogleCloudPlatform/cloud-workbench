@@ -1,17 +1,17 @@
 import 'package:cloud_provision_server/models/param_model.dart';
 
-class TemplateModel {
+class Template {
   int id;
   String name;
   String description;
   String sourceUrl;
   String cloudProvisionConfigUrl;
-  List<ParamModel> params;
+  List<Param> params;
 
-  TemplateModel(this.id, this.name, this.description, this.sourceUrl,
+  Template(this.id, this.name, this.description, this.sourceUrl,
       this.cloudProvisionConfigUrl, this.params);
 
-  TemplateModel.fromJson(Map<String, dynamic> parsedJson)
+  Template.fromJson(Map<String, dynamic> parsedJson)
       : id = parsedJson['id'],
         name = parsedJson['name'],
         description = parsedJson['description'],
@@ -20,7 +20,7 @@ class TemplateModel {
         params = parsedJson['params'] == null
             ? []
             : (parsedJson['params'] as List)
-                .map((i) => ParamModel.fromJson(i))
+                .map((i) => Param.fromJson(i))
                 .toList();
 
   Map<String, dynamic> toJson() {
