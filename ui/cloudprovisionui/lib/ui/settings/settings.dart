@@ -39,7 +39,8 @@ class SettingsPage extends StatelessWidget {
                 TabBar(
                   isScrollable: true,
                   onTap: (int index) {
-                    if (index == 1) {
+                    int GIT_HUB_TAB_INDEX = 1;
+                    if (index == GIT_HUB_TAB_INDEX) {
                       BlocProvider.of<AppBloc>(parentContext)
                           .add(GetAppState());
                     }
@@ -207,10 +208,13 @@ class SettingsPage extends StatelessWidget {
     _instanceGitUsername = state.instanceGitUsername;
     _instanceGitToken = state.instanceGitToken;
 
-    print("_gitHubTab");
-    print(_templateGitRepository);
-    print(_instanceGitUsername);
-    print(_instanceGitToken);
+    TextEditingController _urlController = TextEditingController();
+    TextEditingController _usernameController = TextEditingController();
+    TextEditingController _tokenController = TextEditingController();
+
+    _urlController.text = state.templateGitRepository;
+    _usernameController.text = state.instanceGitUsername;
+    _tokenController.text = state.instanceGitToken;
 
     return SingleChildScrollView(
       child: Container(
@@ -245,7 +249,7 @@ class SettingsPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 TextFormField(
-                                    initialValue: state.templateGitRepository,
+                                    controller: _urlController,
                                     decoration: InputDecoration(
                                       labelText: "Template GitHub Repository",
                                     ),
@@ -260,7 +264,7 @@ class SettingsPage extends StatelessWidget {
                                     }),
                                 SizedBox(height: 30),
                                 TextFormField(
-                                    initialValue: state.instanceGitUsername,
+                                    controller: _usernameController,
                                     decoration: InputDecoration(
                                       labelText: "Instance GitHub Username",
                                     ),
@@ -275,7 +279,7 @@ class SettingsPage extends StatelessWidget {
                                     }),
                                 SizedBox(height: 30),
                                 TextFormField(
-                                    initialValue: state.instanceGitToken,
+                                    controller: _tokenController,
                                     decoration: InputDecoration(
                                       labelText:
                                           "Instance GitHub Personal Access Token",
@@ -348,7 +352,7 @@ class SettingsPage extends StatelessWidget {
     }
 
     BlocProvider.of<AppBloc>(context).add(
-      SettingsChangedEvent(
+      SettingsChanged(
           _templateGitRepository, _instanceGitUsername, _instanceGitToken),
     );
 
