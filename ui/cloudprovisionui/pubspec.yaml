@@ -36,6 +36,7 @@ dependencies:
   bloc: ^8.0.1
   firebase_auth: ^3.3.17
   firebase_core: ^1.16.0
+  cloud_firestore: ^3.5.0
   equatable: ^2.0.5
   flutter_bloc: ^8.0.1
   google_sign_in: ^5.3.1

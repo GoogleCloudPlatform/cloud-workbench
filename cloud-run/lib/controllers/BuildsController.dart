@@ -45,12 +45,11 @@ class BuildsController extends BaseController {
       final body = await request.readAsString();
       Map<String, dynamic> requestMap = jsonDecode(body);
 
-      List<TemplateModel> templates = await _templatesService.getTemplates();
+      List<Template> templates = await _templatesService.getTemplates();
       var templatesMap =
           Map.fromIterable(templates, key: (t) => t.id, value: (t) => t);
 
-      TemplateModel? template =
-          templatesMap[int.parse(requestMap['template_id'])];
+      Template? template = templatesMap[int.parse(requestMap['template_id'])];
 
       Map<String, dynamic> cloudProvisionJsonConfig =
           await _configService.getJson(template!.cloudProvisionConfigUrl);

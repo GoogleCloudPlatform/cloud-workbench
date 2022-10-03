@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloudprovision/blocs/app/app_bloc.dart';
 import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
 import 'package:cloudprovision/repository/auth_repository.dart';
+import 'package:cloudprovision/repository/firebase_repository.dart';
 import 'package:cloudprovision/repository/service/auth_service.dart';
+import 'package:cloudprovision/repository/service/firebase_service.dart';
 import 'package:cloudprovision/theme.dart';
 import 'package:cloudprovision/ui/main/main_screen.dart';
 import 'package:cloudprovision/ui/settings/settings.dart';
@@ -37,32 +40,39 @@ class CloudProvisionApp extends StatelessWidget {
   const CloudProvisionApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AppBloc>(
-          create: (BuildContext context) => AppBloc(),
-        ),
-        BlocProvider<AuthBloc>(
-          create: (BuildContext context) => AuthBloc(
-            authRepository: AuthRepository(service: AuthService()),
+    return RepositoryProvider(
+      create: (context) => FirebaseRepository(
+          service: FirebaseService(FirebaseFirestore.instance,
+              FirebaseAuth.instance.currentUser!.uid)),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AppBloc>(
+            create: (BuildContext context) =>
+                AppBloc(firebaseRepository: context.read<FirebaseRepository>())
+                  ..add(GetAppState()),
           ),
+          BlocProvider<AuthBloc>(
+            create: (BuildContext context) => AuthBloc(
+              authRepository: AuthRepository(service: AuthService()),
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: CloudTheme().themeData,
+          home: StreamBuilder<User?>(
+              //GoogleSignInAccount
+              stream: FirebaseAuth.instance
+                  .authStateChanges(), //authRepository.onCurrentUserChanged,
+              builder: (context, snapshot) {
+                // If the snapshot has user data, then they're already signed in. So Navigating to the Main Screen.
+                if (snapshot.hasData) {
+                  return const MainScreen();
+                }
+                // Otherwise, they're not signed in. Show the sign in page.
+                return const SignIn();
+              }),
         ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: CloudTheme().themeData,
-        home: StreamBuilder<User?>(
-            //GoogleSignInAccount
-            stream: FirebaseAuth.instance
-                .authStateChanges(), //authRepository.onCurrentUserChanged,
-            builder: (context, snapshot) {
-              // If the snapshot has user data, then they're already signed in. So Navigating to the Main Screen.
-              if (snapshot.hasData) {
-                return const MainScreen();
-              }
-              // Otherwise, they're not signed in. Show the sign in page.
-              return const SignIn();
-            }),
       ),
     );
   }

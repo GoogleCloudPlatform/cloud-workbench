@@ -9,13 +9,13 @@ class AppState extends Equatable {
     appRegion,
     gitInstanceRepo,
     myServices,
-  })  : templateGitRepository = templateGitRepository,
+  })  : templateGitRepository = templateGitRepository ?? "",
         instanceGitUsername = instanceGitUsername ?? "",
         instanceGitToken = instanceGitToken ?? "",
         appName = appName ?? "",
         appRegion = appRegion ?? "",
         gitInstanceRepo = gitInstanceRepo ?? "",
-        myServices = myServices ?? const [];
+        myServices = myServices ?? const <Service>[];
 
   // GitHub Settings Page
   final String templateGitRepository;

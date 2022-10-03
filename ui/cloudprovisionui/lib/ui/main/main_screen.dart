@@ -1,3 +1,4 @@
+import 'package:cloudprovision/blocs/app/app_bloc.dart';
 import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
 import 'package:cloudprovision/ui/my_services/my_services.dart';
 import 'package:cloudprovision/ui/pages/page.dart';
@@ -56,6 +57,10 @@ class MainScreenState extends State<MainScreen> {
 
   void navigateTo(NavigationPage page) {
     setState(() {
+      if (page == NavigationPage.MyServices) {
+        BlocProvider.of<AppBloc>(context).add(GetMyServices());
+      }
+
       currentPage = page;
     });
   }

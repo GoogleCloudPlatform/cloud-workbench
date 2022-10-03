@@ -57,41 +57,40 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(builder: (context, state) {
-      return SingleChildScrollView(
-        child: Material(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.grey)),
-                  child: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                ),
+    return SingleChildScrollView(
+      child: Material(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.grey)),
+                child: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
               ),
-              _templateDetails(),
-              _buildDetails("Creating Cloud Build Trigger...",
-                  _cloudBuildDetails, _building, _buildDone, _cloudBuildStatus),
-              _buildDone
-                  ? _buildDetails(
-                      "Running Cloud Build Trigger...",
-                      _cloudBuildTriggerDetails,
-                      _buildingTrigger,
-                      _buildTriggerDone,
-                      _cloudBuildTriggerStatus)
-                  : Container(),
-            ],
-          ),
+            ),
+            _templateDetails(),
+            _buildDetails("Creating Cloud Build Trigger...", _cloudBuildDetails,
+                _building, _buildDone, _cloudBuildStatus),
+            _buildDone
+                ? _buildDetails(
+                    "Running Cloud Build Trigger...",
+                    _cloudBuildTriggerDetails,
+                    _buildingTrigger,
+                    _buildTriggerDone,
+                    _cloudBuildTriggerStatus)
+                : Container(),
+          ],
         ),
-      );
-    });
+      ),
+    );
+
     //});
   }
 
@@ -99,18 +98,6 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     if (!_key.currentState!.validate()) {
       return;
     }
-
-    ServiceDeployedEvent serviceDeployedEvent = ServiceDeployedEvent(
-      _formFieldValues["_APP_NAME"],
-      state.instanceGitUsername,
-      "https://github.com/${state.instanceGitUsername}/${_formFieldValues['_INSTANCE_GIT_REPO']}",
-      template.name,
-      _formFieldValues["_REGION"],
-      dotenv.get('PROJECT_ID'),
-    );
-
-    BlocProvider.of<AppBloc>(context).add(serviceDeployedEvent);
-    // return;
 
     setState(() {
       _building = true;
@@ -124,11 +111,28 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
 
     String projectId = dotenv.get('PROJECT_ID');
 
+    _formFieldValues["_INSTANCE_GIT_REPO_TOKEN"] = state.instanceGitToken;
+
     String buildDetails = await BuildRepository(service: BuildService())
         .deployTemplate(projectId, template, _formFieldValues);
 
     if (buildDetails != "") {
       Map<String, dynamic> buildConfig = jsonDecode(buildDetails);
+
+      ServiceDeploymentRequest serviceDeployedEvent = ServiceDeploymentRequest(
+        name: _formFieldValues["_APP_NAME"],
+        owner: state.instanceGitUsername,
+        instanceRepo:
+            "${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_formFieldValues['_INSTANCE_GIT_REPO_NAME']}",
+        templateName: template.name,
+        templateId: template.id,
+        region: _formFieldValues["_REGION"],
+        projectId: dotenv.get('PROJECT_ID'),
+        cloudBuildId: buildConfig['build']['id'],
+        params: _formFieldValues,
+      );
+
+      BlocProvider.of<AppBloc>(context).add(serviceDeployedEvent);
 
       setState(() {
         _cloudBuildDetails = buildConfig;
@@ -235,7 +239,8 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
                 shrinkWrap: true,
                 itemCount: template.params.length,
                 itemBuilder: (context, index) {
-                  return _buildDynamicParam(index, template.params[index]);
+                  return _buildDynamicParam(
+                      index, template.params[index], state);
                 },
               ),
             ),
@@ -255,7 +260,11 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     });
   }
 
-  _buildDynamicParam(int index, Param param) {
+  _buildDynamicParam(int index, Param param, AppState state) {
+    if (param.param == "_REGION") {
+      _formFieldValues["_REGION"] = dotenv.get("DEFAULT_REGION");
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,30 +272,39 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         // Text(param.label),
         Row(
           children: [
-            if (param.param == "_INSTANCE_GIT_REPO") _gitSettings(),
-            if (param.param == "_INSTANCE_GIT_REPO") Text(" / "),
-            SizedBox(
-              width: 400.0,
-              child: TextFormField(
-                  decoration: (param.param == "_INSTANCE_GIT_REPO")
-                      ? InputDecoration(
-                          labelText: param.label,
-                        )
-                      : InputDecoration(
-                          icon: Icon(Icons.abc_sharp),
-                          //hintText: param.description,
-                          labelText: param.label,
-                        ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter value';
-                    }
-                    return null;
-                  },
-                  onChanged: (val) {
-                    _onTextFormUpdate(index, val, param);
-                  }),
-            ),
+            param.display == false
+                ? Container()
+                : param.param == "_INSTANCE_GIT_REPO_OWNER"
+                    ? Row(
+                        children: [
+                          SizedBox(
+                            width: 40,
+                          ),
+                          _gitOwnerDropdown(state),
+                          Text(" / "),
+                        ],
+                      )
+                    : SizedBox(
+                        width: 400.0,
+                        child: TextFormField(
+                            initialValue: (param.param == "_REGION")
+                                ? dotenv.get("DEFAULT_REGION")
+                                : "",
+                            decoration: InputDecoration(
+                              icon: Icon(Icons.abc_sharp),
+                              //hintText: param.description,
+                              labelText: param.label,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter value';
+                              }
+                              return null;
+                            },
+                            onChanged: (val) {
+                              _onTextFormUpdate(index, val, param.param);
+                            }),
+                      ),
           ],
         ),
         SizedBox(height: 20),
@@ -561,8 +579,8 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     );
   }
 
-  _onTextFormUpdate(int index, String val, Param param) async {
-    String key = param.param;
+  _onTextFormUpdate(int index, String val, String param) async {
+    String key = param;
     if (_formFieldValues.containsKey(key)) {
       _formFieldValues.remove(key);
     }
@@ -604,61 +622,57 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     );
   }
 
-  _gitSettings() {
-    return BlocBuilder<AppBloc, AppState>(
-      builder: (context, state) {
-        return Container(
-            child: Column(
-          children: [
-            GitOwnersDropdownButton(
-              list: [
-                "Select an owner",
-                "https://github.com/" + state.instanceGitUsername
-              ],
-            ),
-          ],
-        ));
-      },
-    );
+  _gitOwnerDropdown(AppState state) {
+    return Container(
+        child: Column(
+      children: [
+        GitOwnersDropdownButton(onTextFormUpdate: _onTextFormUpdate),
+      ],
+    ));
   }
 }
 
 class GitOwnersDropdownButton extends StatefulWidget {
-  const GitOwnersDropdownButton({super.key, this.list = const []});
+  const GitOwnersDropdownButton({super.key, required this.onTextFormUpdate});
 
-  final List<String> list;
+  final Function onTextFormUpdate;
 
   @override
   State<GitOwnersDropdownButton> createState() =>
-      _GitOwnersDropdownButtonState(list: list);
+      _GitOwnersDropdownButtonState();
 }
 
 class _GitOwnersDropdownButtonState extends State<GitOwnersDropdownButton> {
-  late List<String> list;
   late String dropdownValue;
 
-  _GitOwnersDropdownButtonState({required this.list}) {
-    dropdownValue = list.first;
+  _GitOwnersDropdownButtonState() {
+    dropdownValue = "Select an owner";
   }
 
   @override
-  Widget build(BuildContext context) {
-    return DropdownButton<String>(
-      hint: Text("Select an owner"),
-      value: dropdownValue,
-      icon: const Icon(Icons.arrow_drop_down),
-      style: const TextStyle(color: Colors.black),
-      onChanged: (String? value) {
-        setState(() {
-          dropdownValue = value!;
-        });
-      },
-      items: list.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-    );
+  Widget build(BuildContext parentContext) {
+    return BlocBuilder<AppBloc, AppState>(builder: (context, state) {
+      return DropdownButton<String>(
+        hint: Text("Select an owner"),
+        value: dropdownValue,
+        icon: const Icon(Icons.arrow_drop_down),
+        style: const TextStyle(color: Colors.black),
+        onChanged: (String? value) {
+          setState(() {
+            dropdownValue = value!;
+            widget.onTextFormUpdate(1000, value!, "_INSTANCE_GIT_REPO_OWNER");
+          });
+        },
+        items: [
+          "Select an owner",
+          "https://github.com/${state.instanceGitUsername}"
+        ].map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+      );
+    });
   }
 }

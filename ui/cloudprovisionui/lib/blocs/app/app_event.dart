@@ -7,31 +7,61 @@ abstract class AppEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class SettingsChangedEvent extends AppEvent {
+class GetAppState extends AppEvent {}
+
+class GetMyServices extends AppEvent {}
+
+class SettingsChanged extends AppEvent {
   final String templateGitRepository;
   final String instanceGitUsername;
   final String instanceGitToken;
 
-  SettingsChangedEvent(this.templateGitRepository, this.instanceGitUsername,
+  SettingsChanged(this.templateGitRepository, this.instanceGitUsername,
       this.instanceGitToken);
 
   @override
   List<Object> get props =>
       [templateGitRepository, instanceGitUsername, instanceGitToken];
+
+  @override
+  String toString() {
+    return 'SettingsChangedEvent{templateGitRepository: $templateGitRepository, instanceGitUsername: $instanceGitUsername, instanceGitToken: $instanceGitToken}';
+  }
 }
 
-class ServiceDeployedEvent extends AppEvent {
+class ServiceDeploymentRequest extends AppEvent {
   final String name;
   final String owner;
   final String instanceRepo;
   final String templateName;
+  final int templateId;
   final String region;
   final String projectId;
+  final String cloudBuildId;
+  final Map<String, dynamic> params;
 
-  ServiceDeployedEvent(this.name, this.owner, this.instanceRepo,
-      this.templateName, this.region, this.projectId);
+  ServiceDeploymentRequest({
+    required this.name,
+    required this.owner,
+    required this.instanceRepo,
+    required this.templateId,
+    required this.templateName,
+    required this.region,
+    required this.projectId,
+    required this.cloudBuildId,
+    required this.params,
+  });
 
   @override
-  List<Object> get props =>
-      [name, owner, instanceRepo, templateName, region, projectId];
+  List<Object> get props => [
+        name,
+        owner,
+        instanceRepo,
+        templateId,
+        templateName,
+        region,
+        projectId,
+        cloudBuildId,
+        params
+      ];
 }
