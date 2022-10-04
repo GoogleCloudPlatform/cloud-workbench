@@ -54,25 +54,27 @@ final Section cloudProvisionCatalogSection = Section(
     items: [
       SectionItem(
         title: "Microservice Templates",
-        subTitle: "Create a new service from the Cloud Provision Catalog",
+        subTitle:
+            "Onboard new applications using existing templates (Java application on Cloud Run, etc)",
         image: "appdistro@2x",
         page: NavigationPage.MicroserviceTemplates,
       ),
       SectionItem(
         title: "Solution Architectures",
-        subTitle: "Create a new service from the Cloud Provision Catalog",
+        subTitle: "End to end Solution Architectures",
         image: "functions",
         page: NavigationPage.SolutionArchitectures,
       ),
       SectionItem(
         title: "Infra Modules",
-        subTitle: "Create a new service from the Cloud Provision Catalog",
+        subTitle: "Individual infra modules (PubSub, CloudSQL, Storage, etc)",
         image: "realtime_database2x",
         page: NavigationPage.InfraModules,
       ),
       SectionItem(
         title: "Stack Composer",
-        subTitle: "Create a new service from the Cloud Provision Catalog",
+        subTitle:
+            "Create a new service by composing existing templates and modules",
         image: "dynamiclinks",
         page: NavigationPage.StackComposer,
       )
