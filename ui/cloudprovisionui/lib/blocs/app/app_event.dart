@@ -29,6 +29,26 @@ class SettingsChanged extends AppEvent {
   }
 }
 
+class CastSettingsChanged extends AppEvent {
+  final String castAPI;
+  final String castAccessToken;
+
+  CastSettingsChanged(this.castAPI, this.castAccessToken);
+
+  @override
+  List<Object> get props => [castAPI, castAccessToken];
+}
+
+class LoadCastAssessment extends AppEvent {
+  final int campaignId;
+  final String castAccessToken;
+
+  LoadCastAssessment(this.campaignId, this.castAccessToken);
+
+  @override
+  List<Object> get props => [campaignId, castAccessToken];
+}
+
 class ServiceDeploymentRequest extends AppEvent {
   final String name;
   final String owner;
