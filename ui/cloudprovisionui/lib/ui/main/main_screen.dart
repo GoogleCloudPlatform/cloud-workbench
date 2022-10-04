@@ -1,5 +1,6 @@
 import 'package:cloudprovision/blocs/app/app_bloc.dart';
 import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
+import 'package:cloudprovision/ui/integrations/cast_highlight.dart';
 import 'package:cloudprovision/ui/my_services/my_services.dart';
 import 'package:cloudprovision/ui/pages/page.dart';
 import 'package:cloudprovision/ui/pages/workspace_overview.dart';
@@ -33,7 +34,8 @@ enum NavigationPage {
   ScoreCardRating,
   RunBookDocs,
   DeveloperDocs,
-  OpsMetrics
+  OpsMetrics,
+  CastHighlight,
 }
 
 class MainScreenState extends State<MainScreen> {
@@ -49,11 +51,12 @@ class MainScreenState extends State<MainScreen> {
       NavigationPage.InfraModules: TemplatesPage(),
       NavigationPage.Settings: SettingsPage(),
       NavigationPage.MyServices: MyServicesPage(),
+      NavigationPage.CastHighlight: CastHighlightPage(),
     };
   }
 
   NavigationPage currentPage = NavigationPage.WorkspaceOverview;
-  // NavigationPage currentPage = NavigationPage.MyServices;
+  // NavigationPage currentPage = NavigationPage.CastHighlight;
 
   void navigateTo(NavigationPage page) {
     setState(() {
@@ -136,6 +139,10 @@ class MainScreenState extends State<MainScreen> {
                   _menuItem(
                       'Developer Docs', NavigationPage.DeveloperDocs, context),
                   _menuItem('Ops Metrics', NavigationPage.OpsMetrics, context),
+                  Divider(),
+                  _subTitle("Integrations"),
+                  _menuItem(
+                      'CAST Highlight', NavigationPage.CastHighlight, context),
                 ],
               ),
             ),
@@ -274,6 +281,10 @@ class MainScreenState extends State<MainScreen> {
       dense: true,
       onTap: () {
         setState(() {
+          if (page == NavigationPage.MyServices) {
+            BlocProvider.of<AppBloc>(context).add(GetMyServices());
+          }
+
           currentPage = page;
           Navigator.pop(context);
         });
