@@ -8,6 +8,7 @@ class Service {
   String region;
   String projectId;
   String cloudBuildId;
+  String cloudBuildLogUrl;
   DateTime deploymentDate;
   Map<String, dynamic> params;
 
@@ -20,6 +21,7 @@ class Service {
     required this.region,
     required this.projectId,
     required this.cloudBuildId,
+    required this.cloudBuildLogUrl,
     required this.params,
     required this.deploymentDate,
   });
@@ -33,6 +35,9 @@ class Service {
         region = parsedJson['region'],
         projectId = parsedJson['projectId'],
         cloudBuildId = parsedJson['cloudBuildId'],
+        cloudBuildLogUrl = parsedJson.containsKey('cloudBuildLogUrl')
+            ? parsedJson['cloudBuildLogUrl']
+            : "",
         params = parsedJson['params'],
         deploymentDate = DateTime.parse(parsedJson['deploymentDate'] as String);
 
@@ -46,6 +51,7 @@ class Service {
       'region': region,
       'projectId': projectId,
       'cloudBuildId': cloudBuildId,
+      'cloudBuildLogUrl': cloudBuildLogUrl,
       'params': params,
       'deploymentDate': deploymentDate.toIso8601String(),
     };

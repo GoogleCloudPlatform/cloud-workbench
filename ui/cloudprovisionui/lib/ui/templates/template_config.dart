@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloudprovision/blocs/app/app_bloc.dart';
+import 'package:cloudprovision/ui/main/main_screen.dart';
 import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/repository/service/build_service.dart';
 import 'package:cloudprovision/repository/service/template_service.dart';
@@ -17,8 +18,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TemplateConfigPage extends StatefulWidget {
+  final void Function(NavigationPage page) navigateTo;
+
   final Template _template;
-  TemplateConfigPage(this._template, {super.key});
+  TemplateConfigPage(this._template, this.navigateTo, {super.key});
 
   @override
   State<TemplateConfigPage> createState() =>
@@ -65,14 +68,31 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.grey)),
-                child: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                    child: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                    child: const Icon(Icons.home),
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                      widget.navigateTo(NavigationPage.WorkspaceOverview);
+                    },
+                  ),
+                ],
               ),
             ),
             _templateDetails(),
@@ -129,6 +149,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         region: _formFieldValues["_REGION"],
         projectId: dotenv.get('PROJECT_ID'),
         cloudBuildId: buildConfig['build']['id'],
+        cloudBuildLogUrl: buildConfig['build']['logUrl'],
         params: _formFieldValues,
       );
 

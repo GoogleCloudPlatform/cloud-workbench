@@ -121,10 +121,41 @@ class MyServicesPage extends StatelessWidget {
                                                                 .bodyMedium,
                                                           ),
                                                         ),
-                                                        Text(
-                                                          '${services[index].name}',
-                                                          style: textTheme
-                                                              .bodyMedium,
+                                                        TextButton(
+                                                          onPressed: () async {
+                                                            final Uri _url =
+                                                                Uri.parse(
+                                                                    "https://console.cloud.google.com/run/detail/${services[index].region}/${services[index].name}/metrics?project=${services[index].projectId}");
+                                                            if (!await launchUrl(
+                                                                _url)) {
+                                                              throw 'Could not launch $_url';
+                                                            }
+                                                          },
+                                                          child: Row(
+                                                            children: [
+                                                              SizedBox(
+                                                                width: 30,
+                                                                height: 30,
+                                                                child: Image(
+                                                                  image: AssetImage(
+                                                                      'images/cloud_run.png'),
+                                                                  fit: BoxFit
+                                                                      .fill,
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: 4,
+                                                              ),
+                                                              Text(
+                                                                services[index]
+                                                                    .name,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                maxLines: 1,
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
                                                       ],
                                                     ),
@@ -260,7 +291,17 @@ class MyServicesPage extends StatelessWidget {
                                                       ),
                                                       child: Row(
                                                         children: [
-                                                          Icon(Icons.monitor),
+                                                          SizedBox(
+                                                            width: 20,
+                                                            height: 20,
+                                                            child: Image(
+                                                              color:
+                                                                  Colors.white,
+                                                              image: AssetImage(
+                                                                  'images/cloud_shell.png'),
+                                                              fit: BoxFit.fill,
+                                                            ),
+                                                          ),
                                                           const SizedBox(
                                                               width: 5),
                                                           Padding(
@@ -305,6 +346,37 @@ class MyServicesPage extends StatelessWidget {
                                               maxLines: 1,
                                               style: textTheme.bodyMedium,
                                             ),
+                                          ),
+                                          Divider(),
+                                          Text("Cloud Build:"),
+                                          const SizedBox(height: 4),
+                                          Padding(
+                                            padding: const EdgeInsetsDirectional
+                                                .only(
+                                              end: 20,
+                                            ),
+                                            child: services[index]
+                                                        .cloudBuildLogUrl !=
+                                                    ""
+                                                ? TextButton(
+                                                    onPressed: () async {
+                                                      final Uri _url = Uri
+                                                          .parse(services[index]
+                                                              .cloudBuildLogUrl);
+                                                      if (!await launchUrl(
+                                                          _url)) {
+                                                        throw 'Could not launch $_url';
+                                                      }
+                                                    },
+                                                    child: Text(
+                                                      "Build Log",
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 1,
+                                                    ),
+                                                  )
+                                                : Text(
+                                                    "Build log is not available."),
                                           ),
                                         ],
                                       ),

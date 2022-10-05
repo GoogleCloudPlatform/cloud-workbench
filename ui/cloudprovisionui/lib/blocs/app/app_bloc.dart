@@ -89,6 +89,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       region: event.region,
       projectId: event.projectId,
       cloudBuildId: event.cloudBuildId,
+      cloudBuildLogUrl: event.cloudBuildLogUrl,
       params: event.params,
       deploymentDate: DateTime.now(),
     );

@@ -46,12 +46,20 @@ class MainScreenState extends State<MainScreen> {
           WorkspaceOverviewPage(navigateTo: (page) {
         navigateTo(page);
       }),
-      NavigationPage.MicroserviceTemplates: TemplatesPage(),
-      NavigationPage.SolutionArchitectures: TemplatesPage(),
-      NavigationPage.InfraModules: TemplatesPage(),
+      NavigationPage.MicroserviceTemplates: TemplatesPage(navigateTo: (page) {
+        navigateTo(page);
+      }),
+      NavigationPage.SolutionArchitectures: TemplatesPage(navigateTo: (page) {
+        navigateTo(page);
+      }),
+      NavigationPage.InfraModules: TemplatesPage(navigateTo: (page) {
+        navigateTo(page);
+      }),
       NavigationPage.Settings: SettingsPage(),
       NavigationPage.MyServices: MyServicesPage(),
-      NavigationPage.CastHighlight: CastHighlightPage(),
+      NavigationPage.CastHighlight: CastHighlightPage(navigateTo: (page) {
+        navigateTo(page);
+      }),
     };
   }
 
