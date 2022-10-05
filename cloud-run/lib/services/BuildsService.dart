@@ -23,16 +23,20 @@ class BuildsService {
   /// [cloudProvisionJsonConfig]
   Future<cb.Operation> startBuild(
       projectId, substitutionsMap, cloudProvisionJsonConfig) async {
-    AuthClient client = await clientViaMetadataServer();
-    var cloudBuildApi = cb.CloudBuildApi(client);
-
     String parent = "projects/${projectId}/locations/global";
 
-    var buildStep = cb.BuildStep.fromJson(cloudProvisionJsonConfig);
+    List<cb.BuildStep> buildSteps = [];
+
+    for (Map<dynamic, dynamic> jsonStep in cloudProvisionJsonConfig) {
+      var buildStep = cb.BuildStep.fromJson(jsonStep);
+      buildSteps.add(buildStep);
+    }
 
     var buildRequest =
-        cb.Build(substitutions: substitutionsMap, steps: [buildStep]);
+        cb.Build(substitutions: substitutionsMap, steps: buildSteps);
 
+    AuthClient client = await clientViaMetadataServer();
+    var cloudBuildApi = cb.CloudBuildApi(client);
     cb.Operation buildOp = await cloudBuildApi.projects.builds
         .create(buildRequest, projectId, parent: parent);
 
