@@ -54,13 +54,16 @@ class BuildsController extends BaseController {
       Map<String, dynamic> cloudProvisionJsonConfig =
           await _configService.getJson(template!.cloudProvisionConfigUrl);
 
+      var cloudProvisionJsonConfigList =
+          cloudProvisionJsonConfig['cloudbuild']['steps'];
+
       var projectId = requestMap['project_id'];
 
       Map<String, String> substitutionsMap =
           Map<String, String>.from(requestMap['params']);
 
       cb.Operation buildOp = await _buildsService.startBuild(
-          projectId, substitutionsMap, cloudProvisionJsonConfig['cloudbuild']);
+          projectId, substitutionsMap, cloudProvisionJsonConfigList);
 
       return Response.ok(
         jsonResponseEncode(buildOp.metadata),
