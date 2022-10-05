@@ -1,6 +1,7 @@
 import 'package:cloudprovision/blocs/app/app_bloc.dart';
 import 'package:cloudprovision/repository/models/cast_application.dart';
 import 'package:cloudprovision/repository/models/template.dart';
+import 'package:cloudprovision/ui/main/main_screen.dart';
 import 'package:cloudprovision/ui/templates/template_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +9,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CastHighlightPage extends StatelessWidget {
+  final void Function(NavigationPage page) navigateTo;
+
+  const CastHighlightPage({super.key, required this.navigateTo});
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
@@ -282,8 +287,16 @@ class CastHighlightPage extends StatelessWidget {
                                                     ),
                                                     child: Row(
                                                       children: [
-                                                        Icon(Icons
-                                                            .wind_power_outlined),
+                                                        SizedBox(
+                                                          width: 20,
+                                                          height: 20,
+                                                          child: Image(
+                                                            color: Colors.white,
+                                                            image: AssetImage(
+                                                                'images/cloud_run.png'),
+                                                            fit: BoxFit.fill,
+                                                          ),
+                                                        ),
                                                         const SizedBox(
                                                             width: 5),
                                                         Padding(
@@ -320,7 +333,8 @@ class CastHighlightPage extends StatelessWidget {
                                                         MaterialPageRoute(
                                                           builder: (context) {
                                                             return TemplateConfigPage(
-                                                                template);
+                                                                template,
+                                                                navigateTo);
                                                           },
                                                         ),
                                                       );
@@ -367,8 +381,16 @@ class CastHighlightPage extends StatelessWidget {
                                                     ),
                                                     child: Row(
                                                       children: [
-                                                        Icon(Icons
-                                                            .account_tree_outlined),
+                                                        SizedBox(
+                                                          width: 20,
+                                                          height: 20,
+                                                          child: Image(
+                                                            color: Colors.white,
+                                                            image: AssetImage(
+                                                                'images/google_kubernetes_engine.png'),
+                                                            fit: BoxFit.fill,
+                                                          ),
+                                                        ),
                                                         const SizedBox(
                                                             width: 5),
                                                         Padding(
