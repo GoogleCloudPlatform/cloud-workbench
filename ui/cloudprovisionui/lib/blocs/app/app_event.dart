@@ -58,6 +58,7 @@ class ServiceDeploymentRequest extends AppEvent {
   final String region;
   final String projectId;
   final String cloudBuildId;
+  final String cloudBuildLogUrl;
   final Map<String, dynamic> params;
 
   ServiceDeploymentRequest({
@@ -69,6 +70,7 @@ class ServiceDeploymentRequest extends AppEvent {
     required this.region,
     required this.projectId,
     required this.cloudBuildId,
+    required this.cloudBuildLogUrl,
     required this.params,
   });
 
@@ -82,6 +84,7 @@ class ServiceDeploymentRequest extends AppEvent {
         region,
         projectId,
         cloudBuildId,
+        cloudBuildLogUrl,
         params
       ];
 }
