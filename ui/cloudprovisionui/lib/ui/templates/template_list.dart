@@ -1,3 +1,4 @@
+import 'package:cloudprovision/ui/main/main_screen.dart';
 import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/repository/models/template.dart';
 import 'package:cloudprovision/utils/styles.dart';
@@ -9,6 +10,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'template_config.dart';
 
 class TemplateList extends StatelessWidget {
+  final void Function(NavigationPage page) navigateTo;
+
+  TemplateList(this.navigateTo);
+
   Widget _buildLoading() {
     return Center(
       child: Padding(
@@ -128,7 +133,7 @@ class TemplateList extends StatelessWidget {
         builder: (context) {
           return BlocProvider.value(
             value: BlocProvider.of<TemplateBloc>(parentContext),
-            child: TemplateConfigPage(template),
+            child: TemplateConfigPage(template, navigateTo),
           );
         },
       ),
