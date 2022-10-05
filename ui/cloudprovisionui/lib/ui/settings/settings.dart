@@ -11,11 +11,15 @@ class SettingsPage extends StatelessWidget {
       fontWeight: FontWeight.w600,
       letterSpacing: 0.8);
 
-  final _key = GlobalKey<FormState>();
+  final _keyGitForm = GlobalKey<FormState>();
+  final _keyCASTForm = GlobalKey<FormState>();
 
   late String _templateGitRepository = "";
   late String _instanceGitUsername = "";
   late String _instanceGitToken = "";
+
+  late String _castRESTAPI = "";
+  late String _castUserToken = "";
 
   @override
   Widget build(BuildContext parentContext) {
@@ -74,7 +78,7 @@ class SettingsPage extends StatelessWidget {
                     children: [
                       _generalTab(parentContext),
                       _gitHubTab(parentContext, state),
-                      _integrationsTab(parentContext),
+                      _integrationsTab(parentContext, state),
                     ],
                   ),
                 ),
@@ -240,7 +244,7 @@ class SettingsPage extends StatelessWidget {
                     height: 500,
                     child: Container(
                       child: Form(
-                        key: _key,
+                        key: _keyGitForm,
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: SizedBox(
@@ -342,12 +346,103 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  _integrationsTab(BuildContext context) {
-    return Text("");
+  _integrationsTab(BuildContext context, AppState state) {
+    _castRESTAPI = state.castAPI;
+    _castUserToken = state.castAccessToken;
+
+    TextEditingController _urlController = TextEditingController();
+    TextEditingController _tokenController = TextEditingController();
+
+    _urlController.text = state.castAPI;
+    _tokenController.text = state.castAccessToken;
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 35.0, top: 30.0),
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 10),
+              Container(
+                child: Card(
+                  elevation: 5,
+                  child: SizedBox(
+                    width: 350,
+                    height: 350,
+                    child: Container(
+                      child: Form(
+                        key: _keyCASTForm,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: SizedBox(
+                            width: 200,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Image(
+                                  image: AssetImage(
+                                      'images/website-cast-highlight-logo.png'),
+                                  fit: BoxFit.cover,
+                                ),
+                                TextFormField(
+                                    controller: _urlController,
+                                    decoration: InputDecoration(
+                                      labelText: "CAST Highlight REST API",
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter value';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (val) {
+                                      _castRESTAPI = val;
+                                    }),
+                                SizedBox(height: 30),
+                                TextFormField(
+                                    controller: _tokenController,
+                                    decoration: InputDecoration(
+                                      labelText: "User Access Token",
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter value';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (val) {
+                                      _castUserToken = val;
+                                    }),
+                                SizedBox(height: 30),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                  ),
+                                  child: const Text('Enable Integration'),
+                                  onPressed: () =>
+                                      {_updateCASTConfiguration(context)},
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   _updateGitConfiguration(BuildContext context) {
-    if (!_key.currentState!.validate()) {
+    if (!_keyGitForm.currentState!.validate()) {
       return;
     }
 
@@ -362,6 +457,24 @@ class SettingsPage extends StatelessWidget {
       margin: EdgeInsets.all(25.0),
       backgroundColor: Theme.of(context).primaryColor,
       content: Text("Configuration was updated."),
+    ));
+  }
+
+  _updateCASTConfiguration(BuildContext context) {
+    if (!_keyCASTForm.currentState!.validate()) {
+      return;
+    }
+
+    BlocProvider.of<AppBloc>(context).add(
+      CastSettingsChanged(_castRESTAPI, _castUserToken),
+    );
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.all(25.0),
+      backgroundColor: Theme.of(context).primaryColor,
+      content: Text("Integration was enabled."),
     ));
   }
 }
