@@ -15,6 +15,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   AppBloc({required this.firebaseRepository})
       : super(AppState(
           castAPI: "https://demo.casthighlight.com/WS2",
+          gcpTemplateGitRepository:
+              "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates.json",
+          communityTemplateGitRepository:
+              "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates.json",
         )) {
     on<GetAppState>(_mapGetAppEventToState);
     on<SettingsChanged>(_mapSettingsChangedEventToState);
@@ -29,9 +33,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
     emit(
       state.copyWith(
-        templateGitRepository: gitSettings.templateGitRepository,
+        customerTemplateGitRepository:
+            gitSettings.customerTemplateGitRepository,
         instanceGitUsername: gitSettings.instanceGitUsername,
         instanceGitToken: gitSettings.instanceGitToken,
+        gcpApiKey: gitSettings.gcpApiKey,
       ),
     );
   }
@@ -41,16 +47,18 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     GitSettings gitSettings = GitSettings(
       event.instanceGitUsername,
       event.instanceGitToken,
-      event.templateGitRepository,
+      event.customerTemplateGitRepository,
+      event.gcpApiKey,
     );
 
     firebaseRepository.updateGitSettings(gitSettings);
 
     emit(
       state.copyWith(
-        templateGitRepository: event.templateGitRepository,
+        customerTemplateGitRepository: event.customerTemplateGitRepository,
         instanceGitUsername: event.instanceGitUsername,
         instanceGitToken: event.instanceGitToken,
+        gcpApiKey: event.gcpApiKey,
       ),
     );
   }
