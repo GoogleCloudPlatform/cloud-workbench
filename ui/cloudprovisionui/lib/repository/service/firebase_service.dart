@@ -42,7 +42,8 @@ class FirebaseService extends BaseService {
       await document.set({
         'instanceGitUsername': "",
         'instanceGitToken': "",
-        'templateGitRepository': "",
+        'customerTemplateGitRepository': "",
+        'gcpApiKey': "",
         'updatedDate': FieldValue.serverTimestamp(),
         'createdDate': FieldValue.serverTimestamp(),
       });
@@ -61,7 +62,9 @@ class FirebaseService extends BaseService {
     await document.set({
       'instanceGitUsername': gitSettings.instanceGitUsername,
       'instanceGitToken': gitSettings.instanceGitToken,
-      'templateGitRepository': gitSettings.templateGitRepository,
+      'customerTemplateGitRepository':
+          gitSettings.customerTemplateGitRepository,
+      'gcpApiKey': gitSettings.gcpApiKey,
       'updatedDate': FieldValue.serverTimestamp(),
       'createdDate': snapshot.exists
           ? snapshot.get("createdDate")
