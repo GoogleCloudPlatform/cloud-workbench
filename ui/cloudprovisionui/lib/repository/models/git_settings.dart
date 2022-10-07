@@ -4,29 +4,29 @@ class GitSettings {
   String? id;
   String instanceGitUsername;
   String instanceGitToken;
-  String templateGitRepository;
+  String customerTemplateGitRepository;
+  String gcpApiKey;
 
   GitSettings(
     this.instanceGitUsername,
     this.instanceGitToken,
-    this.templateGitRepository,
+    this.customerTemplateGitRepository,
+    this.gcpApiKey,
   );
 
   GitSettings.fromJson(Map<String, dynamic> parsedJson)
       : instanceGitUsername = parsedJson['instanceGitUsername'],
         instanceGitToken = parsedJson['instanceGitToken'],
-        templateGitRepository = parsedJson['templateGitRepository'];
+        customerTemplateGitRepository =
+            parsedJson['customerTemplateGitRepository'],
+        gcpApiKey = parsedJson['gcpApiKey'];
 
   Map<String, dynamic> toJson() {
     return {
       'instanceGitUsername': instanceGitUsername,
       'instanceGitToken': instanceGitToken,
-      'templateGitRepository': templateGitRepository,
+      'customerTemplateGitRepository': customerTemplateGitRepository,
+      'gcpApiKey': gcpApiKey,
     };
-  }
-
-  @override
-  String toString() {
-    return 'GitSettings{id: $id, instanceGitUsername: $instanceGitUsername, instanceGitToken: $instanceGitToken, templateGitRepository: $templateGitRepository}';
   }
 }
