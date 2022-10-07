@@ -8,8 +8,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TemplatesPage extends StatelessWidget {
   final void Function(NavigationPage page) navigateTo;
+  final String category;
 
-  const TemplatesPage({super.key, required this.navigateTo});
+  const TemplatesPage(
+      {super.key, required this.navigateTo, required this.category});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class TemplatesPage extends StatelessWidget {
             )..add(GetTemplatesList()),
           ),
         ],
-        child: TemplateList(navigateTo),
+        child: TemplateList(category, navigateTo),
       ),
     );
   }

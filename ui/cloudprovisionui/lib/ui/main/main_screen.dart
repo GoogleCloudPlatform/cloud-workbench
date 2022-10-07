@@ -38,6 +38,8 @@ enum NavigationPage {
   CastHighlight,
 }
 
+enum SolutionCatalogCategory { application, solution, infra }
+
 class MainScreenState extends State<MainScreen> {
   late Map<NavigationPage, Widget> pages;
   MainScreenState() {
@@ -46,15 +48,21 @@ class MainScreenState extends State<MainScreen> {
           WorkspaceOverviewPage(navigateTo: (page) {
         navigateTo(page);
       }),
-      NavigationPage.MicroserviceTemplates: TemplatesPage(navigateTo: (page) {
-        navigateTo(page);
-      }),
-      NavigationPage.SolutionArchitectures: TemplatesPage(navigateTo: (page) {
-        navigateTo(page);
-      }),
-      NavigationPage.InfraModules: TemplatesPage(navigateTo: (page) {
-        navigateTo(page);
-      }),
+      NavigationPage.MicroserviceTemplates: TemplatesPage(
+          category: SolutionCatalogCategory.application.name,
+          navigateTo: (page) {
+            navigateTo(page);
+          }),
+      NavigationPage.SolutionArchitectures: TemplatesPage(
+          category: SolutionCatalogCategory.solution.name,
+          navigateTo: (page) {
+            navigateTo(page);
+          }),
+      NavigationPage.InfraModules: TemplatesPage(
+          category: SolutionCatalogCategory.infra.name,
+          navigateTo: (page) {
+            navigateTo(page);
+          }),
       NavigationPage.Settings: SettingsPage(),
       NavigationPage.MyServices: MyServicesPage(),
       NavigationPage.CastHighlight: CastHighlightPage(navigateTo: (page) {

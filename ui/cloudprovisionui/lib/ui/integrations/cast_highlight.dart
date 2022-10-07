@@ -319,15 +319,19 @@ class CastHighlightPage extends StatelessWidget {
                                                       ],
                                                     ),
                                                     onPressed: () async {
-                                                      Template template =
-                                                          Template(
-                                                        1,
-                                                        "Onboard Go application - Cloud Run",
-                                                        "Onboard Go application - Cloud Run",
-                                                        "https://github.com/gitrey/cp-templates/tree/main/go-app",
-                                                        "https://raw.githubusercontent.com/gitrey/cp-templates/main/go-app/cloudprovision.json",
-                                                        [],
-                                                      );
+                                                      Template template = Template(
+                                                          1,
+                                                          "Onboard Go application - Cloud Run",
+                                                          "Onboard Go application - Cloud Run",
+                                                          "https://github.com/gitrey/cp-templates/tree/main/go-app",
+                                                          "https://raw.githubusercontent.com/gitrey/cp-templates/main/go-app/cloudprovision.json",
+                                                          [],
+                                                          "1.0.0",
+                                                          "application",
+                                                          ["cloudrun", "go"],
+                                                          DateTime.now(),
+                                                          "Google Cloud Solutions Architecture Team",
+                                                          "sa-cloud-provision-templates@google.com");
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(

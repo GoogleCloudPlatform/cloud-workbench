@@ -12,21 +12,21 @@ class GetAppState extends AppEvent {}
 class GetMyServices extends AppEvent {}
 
 class SettingsChanged extends AppEvent {
-  final String templateGitRepository;
+  final String customerTemplateGitRepository;
   final String instanceGitUsername;
   final String instanceGitToken;
+  final String gcpApiKey;
 
-  SettingsChanged(this.templateGitRepository, this.instanceGitUsername,
-      this.instanceGitToken);
-
-  @override
-  List<Object> get props =>
-      [templateGitRepository, instanceGitUsername, instanceGitToken];
+  SettingsChanged(this.customerTemplateGitRepository, this.instanceGitUsername,
+      this.instanceGitToken, this.gcpApiKey);
 
   @override
-  String toString() {
-    return 'SettingsChangedEvent{templateGitRepository: $templateGitRepository, instanceGitUsername: $instanceGitUsername, instanceGitToken: $instanceGitToken}';
-  }
+  List<Object> get props => [
+        customerTemplateGitRepository,
+        instanceGitUsername,
+        instanceGitToken,
+        gcpApiKey
+      ];
 }
 
 class CastSettingsChanged extends AppEvent {

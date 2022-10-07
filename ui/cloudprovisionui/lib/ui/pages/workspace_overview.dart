@@ -54,27 +54,38 @@ final Section cloudProvisionCatalogSection = Section(
     items: [
       SectionItem(
         title: "Microservice Templates",
-        subTitle:
-            "Onboard new applications using existing templates (Java application on Cloud Run, etc)",
+        subTitle: "Create a new application from a template",
         image: "appdistro@2x",
         page: NavigationPage.MicroserviceTemplates,
       ),
       SectionItem(
         title: "Solution Architectures",
-        subTitle: "End to end Solution Architectures",
+        subTitle: "Create a full architecture from template",
         image: "functions",
         page: NavigationPage.SolutionArchitectures,
       ),
       SectionItem(
         title: "Infra Modules",
-        subTitle: "Individual infra modules (PubSub, CloudSQL, Storage, etc)",
+        subTitle: "Add single component to existing application",
         image: "realtime_database2x",
+        page: NavigationPage.InfraModules,
+      ),
+      SectionItem(
+        title: "Community Templates",
+        subTitle: "Community maintained templates",
+        image: "discovery-cards-crashlytics",
+        page: NavigationPage.SolutionArchitectures,
+      ),
+      SectionItem(
+        title: "Customer Templates",
+        subTitle: "Customer maintained templates",
+        image: "disovery_card_ml2",
         page: NavigationPage.InfraModules,
       ),
       SectionItem(
         title: "Stack Composer",
         subTitle:
-            "Create a new service by composing existing templates and modules",
+            "Create new stack from infra modules and application templates",
         image: "dynamiclinks",
         page: NavigationPage.StackComposer,
       )

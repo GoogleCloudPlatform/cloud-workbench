@@ -2,9 +2,12 @@ part of 'app_bloc.dart';
 
 class AppState extends Equatable {
   const AppState({
-    templateGitRepository,
+    gcpTemplateGitRepository,
+    customerTemplateGitRepository,
+    communityTemplateGitRepository,
     instanceGitUsername,
     instanceGitToken,
+    gcpApiKey,
     appName,
     appRegion,
     gitInstanceRepo,
@@ -12,9 +15,12 @@ class AppState extends Equatable {
     castAccessToken,
     myServices,
     castApplications,
-  })  : templateGitRepository = templateGitRepository ?? "",
+  })  : gcpTemplateGitRepository = gcpTemplateGitRepository ?? "",
+        customerTemplateGitRepository = customerTemplateGitRepository ?? "",
+        communityTemplateGitRepository = communityTemplateGitRepository ?? "",
         instanceGitUsername = instanceGitUsername ?? "",
         instanceGitToken = instanceGitToken ?? "",
+        gcpApiKey = gcpApiKey ?? "",
         appName = appName ?? "",
         appRegion = appRegion ?? "",
         gitInstanceRepo = gitInstanceRepo ?? "",
@@ -24,9 +30,12 @@ class AppState extends Equatable {
         castApplications = castApplications ?? const <CastApplication>[];
 
   // GitHub Settings Page
-  final String templateGitRepository;
+  final String customerTemplateGitRepository;
+  final String communityTemplateGitRepository;
+  final String gcpTemplateGitRepository;
   final String instanceGitUsername;
   final String instanceGitToken;
+  final String gcpApiKey;
   // CAST Settings Page
   final String castAPI;
   final String castAccessToken;
@@ -40,9 +49,12 @@ class AppState extends Equatable {
 
   @override
   List<Object> get props => [
-        templateGitRepository,
+        gcpTemplateGitRepository,
+        customerTemplateGitRepository,
+        communityTemplateGitRepository,
         instanceGitUsername,
         instanceGitToken,
+        gcpApiKey,
         appName,
         appRegion,
         gitInstanceRepo,
@@ -53,9 +65,12 @@ class AppState extends Equatable {
       ];
 
   AppState copyWith({
-    String? templateGitRepository,
+    String? gcpTemplateGitRepository,
+    String? customerTemplateGitRepository,
+    String? communityTemplateGitRepository,
     String? instanceGitUsername,
     String? instanceGitToken,
+    String? gcpApiKey,
     String? appName,
     String? appRegion,
     String? gitInstanceRepo,
@@ -65,10 +80,15 @@ class AppState extends Equatable {
     List<CastApplication>? castApplications,
   }) {
     return AppState(
-      templateGitRepository:
-          templateGitRepository ?? this.templateGitRepository,
+      gcpTemplateGitRepository:
+          gcpTemplateGitRepository ?? this.gcpTemplateGitRepository,
+      customerTemplateGitRepository:
+          customerTemplateGitRepository ?? this.customerTemplateGitRepository,
+      communityTemplateGitRepository:
+          communityTemplateGitRepository ?? this.communityTemplateGitRepository,
       instanceGitUsername: instanceGitUsername ?? this.instanceGitUsername,
       instanceGitToken: instanceGitToken ?? this.instanceGitToken,
+      gcpApiKey: gcpApiKey ?? this.gcpApiKey,
       appName: appName ?? this.appName,
       appRegion: appRegion ?? this.appRegion,
       gitInstanceRepo: gitInstanceRepo ?? this.gitInstanceRepo,

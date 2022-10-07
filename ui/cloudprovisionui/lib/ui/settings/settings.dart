@@ -1,4 +1,5 @@
 import 'package:cloudprovision/blocs/app/app_bloc.dart';
+import 'package:cloudprovision/ui/settings/switch_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -14,9 +15,12 @@ class SettingsPage extends StatelessWidget {
   final _keyGitForm = GlobalKey<FormState>();
   final _keyCASTForm = GlobalKey<FormState>();
 
-  late String _templateGitRepository = "";
+  late String _gcpTemplateGitRepository = "";
+  late String _communityTemplateGitRepository = "";
+  late String _customerTemplateGitRepository = "";
   late String _instanceGitUsername = "";
   late String _instanceGitToken = "";
+  late String _gcpApiKey = "";
 
   late String _castRESTAPI = "";
   late String _castUserToken = "";
@@ -60,7 +64,7 @@ class SettingsPage extends StatelessWidget {
                     Container(
                       child: Tab(
                           child: Text(
-                        "GitHub",
+                        "APIs",
                         style: textStyle,
                       )),
                     ),
@@ -77,7 +81,7 @@ class SettingsPage extends StatelessWidget {
                   child: TabBarView(
                     children: [
                       _generalTab(parentContext),
-                      _gitHubTab(parentContext, state),
+                      _apisTab(parentContext, state),
                       _integrationsTab(parentContext, state),
                     ],
                   ),
@@ -207,18 +211,26 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  _gitHubTab(BuildContext context, AppState state) {
-    _templateGitRepository = state.templateGitRepository;
+  _apisTab(BuildContext context, AppState state) {
+    _gcpTemplateGitRepository = state.gcpTemplateGitRepository;
     _instanceGitUsername = state.instanceGitUsername;
     _instanceGitToken = state.instanceGitToken;
+    _gcpApiKey = state.gcpApiKey;
+    _customerTemplateGitRepository = state.customerTemplateGitRepository;
 
-    TextEditingController _urlController = TextEditingController();
+    TextEditingController _gcpApiKeyController = TextEditingController();
+    TextEditingController _urlCustomerRepoController = TextEditingController();
+    TextEditingController _urlCommunityRepoController = TextEditingController();
+    TextEditingController _urlGcpRepoController = TextEditingController();
     TextEditingController _usernameController = TextEditingController();
     TextEditingController _tokenController = TextEditingController();
 
-    _urlController.text = state.templateGitRepository;
+    _urlCustomerRepoController.text = state.customerTemplateGitRepository;
+    _urlCommunityRepoController.text = state.communityTemplateGitRepository;
+    _urlGcpRepoController.text = state.gcpTemplateGitRepository;
     _usernameController.text = state.instanceGitUsername;
     _tokenController.text = state.instanceGitToken;
+    _gcpApiKeyController.text = state.gcpApiKey;
 
     return SingleChildScrollView(
       child: Container(
@@ -231,7 +243,7 @@ class SettingsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                     SizedBox(height: 20),
-                    Container(width: 800, child: Text("GitHub Configuration"))
+                    Container(width: 800, child: Text("APIs Configuration"))
                   ])),
             ),
             SizedBox(height: 10),
@@ -241,7 +253,7 @@ class SettingsPage extends StatelessWidget {
                   elevation: 5,
                   child: SizedBox(
                     width: 800,
-                    height: 500,
+                    height: 650,
                     child: Container(
                       child: Form(
                         key: _keyGitForm,
@@ -252,25 +264,87 @@ class SettingsPage extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Row(
+                                  children: [
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 700,
+                                      ),
+                                      child: TextFormField(
+                                          readOnly: true,
+                                          initialValue:
+                                              state.gcpTemplateGitRepository,
+                                          //controller: _urlController,
+                                          decoration: InputDecoration(
+                                            labelText:
+                                                "Google Templates Repository (Read-only)",
+                                          ),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please enter value';
+                                            }
+                                            return null;
+                                          },
+                                          onChanged: (val) {
+                                            _gcpTemplateGitRepository = val;
+                                          }),
+                                    ),
+                                    TemplateRepoSwitch(),
+                                  ],
+                                ),
+                                SizedBox(height: 30),
+                                Row(
+                                  children: [
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 700,
+                                      ),
+                                      child: TextFormField(
+                                          readOnly: true,
+                                          initialValue: state
+                                              .communityTemplateGitRepository,
+                                          //controller: _urlController,
+                                          decoration: InputDecoration(
+                                            labelText:
+                                                "Community Templates Repository (Read-only)",
+                                          ),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please enter value';
+                                            }
+                                            return null;
+                                          },
+                                          onChanged: (val) {
+                                            _communityTemplateGitRepository =
+                                                val;
+                                          }),
+                                    ),
+                                    TemplateRepoSwitch(),
+                                  ],
+                                ),
+                                SizedBox(height: 30),
                                 TextFormField(
-                                    controller: _urlController,
+                                    controller: _urlCustomerRepoController,
                                     decoration: InputDecoration(
-                                      labelText: "Template GitHub Repository",
+                                      labelText:
+                                          "Customer Templates Repository",
                                     ),
                                     validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter value';
-                                      }
+                                      // if (value == null || value.isEmpty) {
+                                      //   return 'Please enter value';
+                                      // }
                                       return null;
                                     },
                                     onChanged: (val) {
-                                      _templateGitRepository = val;
+                                      _customerTemplateGitRepository = val;
                                     }),
                                 SizedBox(height: 30),
                                 TextFormField(
                                     controller: _usernameController,
                                     decoration: InputDecoration(
-                                      labelText: "Instance GitHub Username",
+                                      labelText: "Git Username",
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -285,8 +359,7 @@ class SettingsPage extends StatelessWidget {
                                 TextFormField(
                                     controller: _tokenController,
                                     decoration: InputDecoration(
-                                      labelText:
-                                          "Instance GitHub Personal Access Token",
+                                      labelText: "Git Personal Access Token",
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -296,6 +369,22 @@ class SettingsPage extends StatelessWidget {
                                     },
                                     onChanged: (val) {
                                       _instanceGitToken = val;
+                                    }),
+                                SizedBox(height: 30),
+                                TextFormField(
+                                    controller: _gcpApiKeyController,
+                                    decoration: InputDecoration(
+                                      labelText:
+                                          "GCP API Key (Restrictions: Cloud Build API)",
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter value';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (val) {
+                                      _gcpApiKey = val;
                                     }),
                                 SizedBox(height: 30),
                                 ElevatedButton(
@@ -447,8 +536,8 @@ class SettingsPage extends StatelessWidget {
     }
 
     BlocProvider.of<AppBloc>(context).add(
-      SettingsChanged(
-          _templateGitRepository, _instanceGitUsername, _instanceGitToken),
+      SettingsChanged(_customerTemplateGitRepository, _instanceGitUsername,
+          _instanceGitToken, _gcpApiKey),
     );
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();

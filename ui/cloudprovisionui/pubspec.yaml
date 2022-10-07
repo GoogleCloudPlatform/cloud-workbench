@@ -48,6 +48,7 @@ dependencies:
   flutter_layout_grid: ^2.0.1
   intl: ^0.17.0
   flutter_svg: ^1.1.5
+  textfield_tags: ^2.0.2
 
 dev_dependencies:
   flutter_test:

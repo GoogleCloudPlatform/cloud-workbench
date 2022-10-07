@@ -1,18 +1,27 @@
 import 'package:cloudprovision/ui/main/main_screen.dart';
 import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/repository/models/template.dart';
+import 'package:cloudprovision/ui/templates/tags_filter.dart';
 import 'package:cloudprovision/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'template_config.dart';
 
-class TemplateList extends StatelessWidget {
+class TemplateList extends StatefulWidget {
   final void Function(NavigationPage page) navigateTo;
+  final String category;
+  TemplateList(this.category, this.navigateTo);
 
-  TemplateList(this.navigateTo);
+  @override
+  State<TemplateList> createState() => _TemplateListState();
+}
+
+class _TemplateListState extends State<TemplateList> {
+  List<Template> filteredList = [];
 
   Widget _buildLoading() {
     return Center(
@@ -27,34 +36,116 @@ class TemplateList extends StatelessWidget {
     );
   }
 
+  _addedTag(String tag) {
+    print('added ${tag}');
+
+    List<Template> list =
+        filteredList.where((template) => template.tags.contains(tag)).toList();
+
+    setState(() {
+      filteredList = list;
+    });
+
+    BlocProvider.of<TemplateBloc>(context).add(TemplatesListTagAdded(tag));
+  }
+
+  _removedTag(String tag) {
+    print('removed ${tag}');
+    BlocProvider.of<TemplateBloc>(context).add(TemplatesListTagRemoved(tag));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TemplateBloc, TemplateState>(builder: (context, state) {
-      if (state is TemplatesInitial) {
-        return _buildLoading();
-      } else if (state is TemplatesLoading) {
-        return _buildLoading();
-      } else if (state is TemplatesLoaded) {
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Container(
-            constraints: BoxConstraints(minWidth: 500, maxWidth: 1100),
-            child: ListView.builder(
+    return SingleChildScrollView(
+      child:
+          BlocBuilder<TemplateBloc, TemplateState>(builder: (context, state) {
+        if (state is TemplatesInitial) {
+          return _buildLoading();
+        } else if (state is TemplatesLoading) {
+          return _buildLoading();
+        } else if (state is TemplatesListFiltered) {
+          if (state.selectedTags.isEmpty) {
+            filteredList = state.templates
+                .where((template) => template.category == widget.category)
+                .toList();
+          } else {
+            filteredList = state.templates
+                .where((template) =>
+                    template.category == widget.category &&
+                    template.tags
+                            .toSet()
+                            .intersection(state.selectedTags.toSet())
+                            .length >
+                        0)
+                .toList();
+          }
+
+          Map<String, dynamic> tags = {};
+
+          for (Template template in filteredList) {
+            template.tags.forEach((tag) {
+              tags[tag] = null;
+            });
+          }
+
+          return _buildList(tags.keys.toList());
+        } else if (state is TemplatesLoaded) {
+          filteredList = state.templates
+              .where((template) => template.category == widget.category)
+              .toList();
+
+          Map<String, dynamic> tags = {};
+
+          for (Template template in filteredList) {
+            template.tags.forEach((tag) {
+              tags[tag] = null;
+            });
+          }
+
+          return _buildList(tags.keys.toList());
+        } else if (state is TemplateError) {
+          return Container();
+        } else {
+          return Container();
+        }
+      }),
+    );
+  }
+
+  _buildList(List<String> tags) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        constraints: BoxConstraints(
+          minWidth: 500,
+          maxWidth: MediaQuery.of(context).size.width,
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  Text("Filter:"),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  TagsFilterWidget(tags, _addedTag, _removedTag),
+                ],
+              ),
+            ),
+            ListView.builder(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
-              itemCount: state.templates.length,
+              itemCount: filteredList.length,
               itemBuilder: (context, int index) {
-                return buildTemplate(state.templates[index], context);
+                return buildTemplate(filteredList[index], context);
               },
             ),
-          ),
-        );
-      } else if (state is TemplateError) {
-        return Container();
-      } else {
-        return Container();
-      }
-    });
+          ],
+        ),
+      ),
+    );
   }
 
   Widget buildTemplate(Template template, BuildContext context) {
@@ -98,6 +189,62 @@ class TemplateList extends StatelessWidget {
           const SizedBox(height: 10),
           Row(
             children: [
+              const Text("Owner: ", style: AppText.fontWeightBold),
+              TextButton(
+                onPressed: () async {
+                  final Uri _url = Uri.parse(
+                      "http://mail.google.com/mail/?view=cm&fs=1&tf=1&to=${template.email}&su=Feedback: ${template.name}&body=Hello ${template.owner},\nI would like to provide feedback for template: ${template.name}\nVersion: ${template.version}\nGit: ${template.sourceUrl}\n\n\n");
+                  if (!await launchUrl(_url)) {
+                    throw 'Could not launch $_url';
+                  }
+                },
+                child: Text(
+                  template.owner,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const Text("Version: ", style: AppText.fontWeightBold),
+              Text(template.version),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const Text("Last Modified: ", style: AppText.fontWeightBold),
+              Text(DateFormat('MM/d/yy, h:mm a').format(template.lastModified)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const Text("Tags: ", style: AppText.fontWeightBold),
+              for (String tag in template.tags)
+                Row(
+                  children: [
+                    Chip(
+                      elevation: 5,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      label: Text(
+                        tag,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
               TextButton(
                 onPressed: () async {
                   final Uri _url = Uri.parse(template.sourceUrl);
@@ -133,7 +280,7 @@ class TemplateList extends StatelessWidget {
         builder: (context) {
           return BlocProvider.value(
             value: BlocProvider.of<TemplateBloc>(parentContext),
-            child: TemplateConfigPage(template, navigateTo),
+            child: TemplateConfigPage(template, widget.navigateTo),
           );
         },
       ),

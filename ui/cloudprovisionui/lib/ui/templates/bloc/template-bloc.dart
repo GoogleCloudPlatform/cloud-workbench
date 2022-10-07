@@ -14,6 +14,29 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
     on<GetTemplate>(_mapGetTemplateToState);
     on<GetTemplatesList>(_mapGetTemplatesListToState);
     on<ForkTemplateRepo>(_mapForkTemplateRepoToState);
+    on<TemplatesListTagAdded>(_mapTemplatesListTagAddedToState);
+    on<TemplatesListTagRemoved>(_mapTemplatesListTagRemovedToState);
+  }
+
+  void _mapTemplatesListTagAddedToState(
+      TemplatesListTagAdded event, Emitter<TemplateState> emit) async {
+    List<String> updatedList = new List<String>.from(state.selectedTags)
+      ..add(event.tag);
+
+    emit(TemplatesListFiltered(state.templates, updatedList));
+  }
+
+  void _mapTemplatesListTagRemovedToState(
+      TemplatesListTagRemoved event, Emitter<TemplateState> emit) async {
+    List<String> updatedList = [];
+
+    if (event.tag == "*") {
+      // clear all tags
+    } else {
+      updatedList = new List<String>.from(state.selectedTags)
+        ..remove(event.tag);
+    }
+    emit(TemplatesListFiltered(state.templates, updatedList));
   }
 
   void _mapGetTemplateToState(
@@ -32,8 +55,8 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
       GetTemplatesList event, Emitter<TemplateState> emit) async {
     try {
       emit(TemplatesLoading());
-      final template = await templateRepository.loadTemplates();
-      emit(TemplatesLoaded(template));
+      final templates = await templateRepository.loadTemplates();
+      emit(TemplatesLoaded(templates));
     } on Exception {
       emit(const TemplateError("Failed to fetch list of templates."));
     }
