@@ -132,6 +132,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     String projectId = dotenv.get('PROJECT_ID');
 
     _formFieldValues["_INSTANCE_GIT_REPO_TOKEN"] = state.instanceGitToken;
+    _formFieldValues["_API_KEY"] = state.gcpApiKey;
 
     String buildDetails = await BuildRepository(service: BuildService())
         .deployTemplate(projectId, template, _formFieldValues);
