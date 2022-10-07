@@ -145,7 +145,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         name: _formFieldValues["_APP_NAME"],
         owner: state.instanceGitUsername,
         instanceRepo:
-            "${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_formFieldValues['_INSTANCE_GIT_REPO_NAME']}",
+            "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_formFieldValues['_INSTANCE_GIT_REPO_NAME']}",
         templateName: template.name,
         templateId: template.id,
         region: _formFieldValues["_REGION"],
