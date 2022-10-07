@@ -1,10 +1,24 @@
 part of 'template-bloc.dart';
 
-abstract class TemplateState extends Equatable {
-  const TemplateState();
+class TemplateState extends Equatable {
+  const TemplateState({templates, selectedTags})
+      : templates = templates ?? const <Template>[],
+        selectedTags = selectedTags ?? const <String>[];
+
+  final List<Template> templates;
+  final List<String> selectedTags;
+
+  TemplateState copyWith({
+    List<Template>? templates,
+    List<String>? selectedTags,
+  }) {
+    return TemplateState(
+        templates: templates ?? this.templates,
+        selectedTags: selectedTags ?? this.selectedTags);
+  }
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [templates, selectedTags];
 }
 
 class TemplateInitial extends TemplateState {}
@@ -14,6 +28,12 @@ class TemplatesInitial extends TemplateState {}
 class TemplateLoading extends TemplateState {}
 
 class TemplatesLoading extends TemplateState {}
+
+class TemplatesListFiltered extends TemplateState {
+  final List<String> selectedTags;
+  final List<Template> templates;
+  const TemplatesListFiltered(this.templates, this.selectedTags);
+}
 
 class TemplateLoaded extends TemplateState {
   final Template template;

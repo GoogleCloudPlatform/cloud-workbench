@@ -15,6 +15,18 @@ class GetTemplate extends TemplateEvent {
   final Template template;
 }
 
+class TemplatesListTagAdded extends TemplateEvent {
+  TemplatesListTagAdded(this.tag);
+
+  final String tag;
+}
+
+class TemplatesListTagRemoved extends TemplateEvent {
+  TemplatesListTagRemoved(this.tag);
+
+  final String tag;
+}
+
 class ForkTemplateRepo extends TemplateEvent {
   final String sourceRepo;
   final String targetRepoName;
