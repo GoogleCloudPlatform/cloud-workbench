@@ -357,6 +357,9 @@ class SettingsPage extends StatelessWidget {
                                     }),
                                 SizedBox(height: 30),
                                 TextFormField(
+                                    obscureText: true,
+                                    enableSuggestions: false,
+                                    autocorrect: false,
                                     controller: _tokenController,
                                     decoration: InputDecoration(
                                       labelText: "Git Personal Access Token",
@@ -372,6 +375,9 @@ class SettingsPage extends StatelessWidget {
                                     }),
                                 SizedBox(height: 30),
                                 TextFormField(
+                                    obscureText: true,
+                                    enableSuggestions: false,
+                                    autocorrect: false,
                                     controller: _gcpApiKeyController,
                                     decoration: InputDecoration(
                                       labelText:
@@ -491,6 +497,9 @@ class SettingsPage extends StatelessWidget {
                                     }),
                                 SizedBox(height: 30),
                                 TextFormField(
+                                    obscureText: true,
+                                    enableSuggestions: false,
+                                    autocorrect: false,
                                     controller: _tokenController,
                                     decoration: InputDecoration(
                                       labelText: "User Access Token",
