@@ -69,15 +69,10 @@ class _TemplateListState extends State<TemplateList> {
                 .where((template) => template.category == widget.category)
                 .toList();
           } else {
-            filteredList = state.templates
-                .where((template) =>
-                    template.category == widget.category &&
-                    template.tags
-                            .toSet()
-                            .intersection(state.selectedTags.toSet())
-                            .length >
-                        0)
-                .toList();
+            filteredList = state.templates.where((template) {
+              return template.category == widget.category &&
+                  template.tags.toSet().containsAll(state.selectedTags.toSet());
+            }).toList();
           }
 
           Map<String, dynamic> tags = {};
