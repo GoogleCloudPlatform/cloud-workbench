@@ -1,4 +1,4 @@
-# Cloud Provision
+![Cloud Provision](diagrams/cloud-provision-logo.png)
 
 ----
 
