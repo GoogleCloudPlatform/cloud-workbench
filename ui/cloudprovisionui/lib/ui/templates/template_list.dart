@@ -14,7 +14,8 @@ import 'template_config.dart';
 class TemplateList extends StatefulWidget {
   final void Function(NavigationPage page) navigateTo;
   final String category;
-  TemplateList(this.category, this.navigateTo);
+  final String catalogSource;
+  TemplateList(this.category, this.navigateTo, this.catalogSource);
 
   @override
   State<TemplateList> createState() => _TemplateListState();
@@ -37,8 +38,6 @@ class _TemplateListState extends State<TemplateList> {
   }
 
   _addedTag(String tag) {
-    print('added ${tag}');
-
     List<Template> list =
         filteredList.where((template) => template.tags.contains(tag)).toList();
 
@@ -50,7 +49,6 @@ class _TemplateListState extends State<TemplateList> {
   }
 
   _removedTag(String tag) {
-    print('removed ${tag}');
     BlocProvider.of<TemplateBloc>(context).add(TemplatesListTagRemoved(tag));
   }
 
@@ -65,14 +63,28 @@ class _TemplateListState extends State<TemplateList> {
           return _buildLoading();
         } else if (state is TemplatesListFiltered) {
           if (state.selectedTags.isEmpty) {
-            filteredList = state.templates
-                .where((template) => template.category == widget.category)
-                .toList();
+            if (widget.category == "all") {
+              filteredList = state.templates;
+            } else {
+              filteredList = state.templates
+                  .where((template) => template.category == widget.category)
+                  .toList();
+            }
           } else {
-            filteredList = state.templates.where((template) {
-              return template.category == widget.category &&
-                  template.tags.toSet().containsAll(state.selectedTags.toSet());
-            }).toList();
+            if (widget.category == "all") {
+              filteredList = state.templates.where((template) {
+                return template.tags
+                    .toSet()
+                    .containsAll(state.selectedTags.toSet());
+              }).toList();
+            } else {
+              filteredList = state.templates.where((template) {
+                return template.category == widget.category &&
+                    template.tags
+                        .toSet()
+                        .containsAll(state.selectedTags.toSet());
+              }).toList();
+            }
           }
 
           Map<String, dynamic> tags = {};
@@ -85,9 +97,13 @@ class _TemplateListState extends State<TemplateList> {
 
           return _buildList(tags.keys.toList());
         } else if (state is TemplatesLoaded) {
-          filteredList = state.templates
-              .where((template) => template.category == widget.category)
-              .toList();
+          if (widget.category == "all") {
+            filteredList = state.templates;
+          } else {
+            filteredList = state.templates
+                .where((template) => template.category == widget.category)
+                .toList();
+          }
 
           Map<String, dynamic> tags = {};
 
@@ -275,7 +291,8 @@ class _TemplateListState extends State<TemplateList> {
         builder: (context) {
           return BlocProvider.value(
             value: BlocProvider.of<TemplateBloc>(parentContext),
-            child: TemplateConfigPage(template, widget.navigateTo),
+            child: TemplateConfigPage(
+                template, widget.navigateTo, widget.catalogSource),
           );
         },
       ),

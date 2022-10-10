@@ -18,7 +18,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           gcpTemplateGitRepository:
               "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates.json",
           communityTemplateGitRepository:
-              "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates.json",
+              "https://raw.githubusercontent.com/gitrey/community-templates/main/templates.json",
         )) {
     on<GetAppState>(_mapGetAppEventToState);
     on<SettingsChanged>(_mapSettingsChangedEventToState);

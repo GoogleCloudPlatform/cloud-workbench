@@ -7,11 +7,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 class TemplateService extends BaseService {
-  Future<List<Template>> loadTemplates() async {
+  Future<List<Template>> loadTemplates(
+      String catalogSource, String catalogUrl) async {
     var endpointPath = '/v1/templates';
-    var url = Uri.https(cloudProvisionServerUrl, endpointPath);
+
+    final queryParameters = {
+      'catalogSource': catalogSource,
+      'catalogUrl': catalogUrl,
+    };
+
+    var url = Uri.https(cloudProvisionServerUrl, endpointPath, queryParameters);
+
     if (cloudProvisionServerUrl.contains("localhost")) {
-      url = Uri.http(cloudProvisionServerUrl, endpointPath);
+      url = Uri.http(cloudProvisionServerUrl, endpointPath, queryParameters);
     }
 
     final user = FirebaseAuth.instance.currentUser!;
@@ -30,10 +38,12 @@ class TemplateService extends BaseService {
     return templates;
   }
 
-  Future<Template> loadTemplateById(int templateId) async {
+  Future<Template> loadTemplateById(
+      int templateId, String catalogSource) async {
     var endpointPath = '/v1/templates';
     final queryParameters = {
       'templateId': templateId.toString(),
+      'catalogSource': catalogSource,
     };
 
     var url = Uri.https(cloudProvisionServerUrl, endpointPath, queryParameters);

@@ -320,15 +320,19 @@ class CastHighlightPage extends StatelessWidget {
                                                     ),
                                                     onPressed: () async {
                                                       Template template = Template(
-                                                          1,
+                                                          8,
                                                           "Onboard Go application - Cloud Run",
                                                           "Onboard Go application - Cloud Run",
-                                                          "https://github.com/gitrey/cp-templates/tree/main/go-app",
-                                                          "https://raw.githubusercontent.com/gitrey/cp-templates/main/go-app/cloudprovision.json",
+                                                          "https://github.com/gitrey/cp-templates/tree/main/application/go-app-v2",
+                                                          "https://raw.githubusercontent.com/gitrey/cp-templates/main/application/go-app-v2/cloudprovision.json",
                                                           [],
                                                           "1.0.0",
                                                           "application",
-                                                          ["cloudrun", "go"],
+                                                          [
+                                                            "cloudrun",
+                                                            "go",
+                                                            "cicd"
+                                                          ],
                                                           DateTime.now(),
                                                           "Google Cloud Solutions Architecture Team",
                                                           "sa-cloud-provision-templates@google.com");
@@ -338,7 +342,9 @@ class CastHighlightPage extends StatelessWidget {
                                                           builder: (context) {
                                                             return TemplateConfigPage(
                                                                 template,
-                                                                navigateTo);
+                                                                navigateTo,
+                                                                SolutionCatalogSource
+                                                                    .gcp.name);
                                                           },
                                                         ),
                                                       );
@@ -419,7 +425,38 @@ class CastHighlightPage extends StatelessWidget {
                                                         ),
                                                       ],
                                                     ),
-                                                    onPressed: () async {},
+                                                    onPressed: () async {
+                                                      Template template = Template(
+                                                          100,
+                                                          "GKE Autopilot Cluster",
+                                                          "Autopilot is a new mode of operation in Google Kubernetes Engine (GKE).",
+                                                          "https://github.com/gitrey/community-templates/tree/main/solution/gke-autopilot-cluster",
+                                                          "https://raw.githubusercontent.com/gitrey/community-templates/main/solution/gke-autopilot-cluster/cloudprovision.json",
+                                                          [],
+                                                          "1.0.0",
+                                                          "solution",
+                                                          [
+                                                            "gke",
+                                                            "autopilot",
+                                                            "vpc"
+                                                          ],
+                                                          DateTime.now(),
+                                                          "Community",
+                                                          "community-template-feedback@community777.com");
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) {
+                                                            return TemplateConfigPage(
+                                                                template,
+                                                                navigateTo,
+                                                                SolutionCatalogSource
+                                                                    .community
+                                                                    .name);
+                                                          },
+                                                        ),
+                                                      );
+                                                    },
                                                   ),
                                                 ],
                                               )

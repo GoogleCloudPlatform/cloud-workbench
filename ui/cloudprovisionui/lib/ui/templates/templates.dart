@@ -9,9 +9,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class TemplatesPage extends StatelessWidget {
   final void Function(NavigationPage page) navigateTo;
   final String category;
+  final String catalogSource;
 
-  const TemplatesPage(
-      {super.key, required this.navigateTo, required this.category});
+  const TemplatesPage({
+    super.key,
+    required this.navigateTo,
+    required this.category,
+    this.catalogSource = "gcp",
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +27,11 @@ class TemplatesPage extends StatelessWidget {
           BlocProvider<TemplateBloc>(
             create: (context) => TemplateBloc(
               templateRepository: context.read<TemplateRepository>(),
-            )..add(GetTemplatesList()),
+            )..add(GetTemplatesList(
+                catalogSource: this.catalogSource, catalogUrl: "")),
           ),
         ],
-        child: TemplateList(category, navigateTo),
+        child: TemplateList(category, navigateTo, this.catalogSource),
       ),
     );
   }

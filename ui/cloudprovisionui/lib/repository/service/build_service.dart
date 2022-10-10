@@ -28,10 +28,18 @@ class BuildService extends BaseService {
         url = Uri.http(cloudProvisionServerUrl, endpointPath);
       }
 
+      var catalogSource = "gcp";
+
+      if (template.sourceUrl.contains("community")) {
+        catalogSource = "community";
+      }
+
       var body = json.encode({
         "project_id": projectId,
         "template_id": "${template.id}",
-        "params": formFieldValuesMap
+        "params": formFieldValuesMap,
+        "catalogSource": catalogSource,
+        "catalogUrl": ""
       });
 
       var response = await http.post(url, headers: requestHeaders, body: body);
