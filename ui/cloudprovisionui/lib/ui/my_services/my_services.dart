@@ -285,7 +285,7 @@ class MyServicesPage extends StatelessWidget {
                                                       ),
                                                       onPressed: () async {
                                                         final Uri _url = Uri.parse(
-                                                            "https://console.cloud.google.com/cloudshell/editor?cloudshell_git_repo=${services[index].instanceRepo}");
+                                                            "https://console.cloud.google.com/cloudshell/editor?cloudshell_git_repo=${services[index].instanceRepo}&cloudshell_workspace=.");
                                                         if (!await launchUrl(
                                                             _url)) {
                                                           throw 'Could not launch $_url';
