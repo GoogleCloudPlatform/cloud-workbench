@@ -19,9 +19,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TemplateConfigPage extends StatefulWidget {
   final void Function(NavigationPage page) navigateTo;
-
+  final String catalogSource;
   final Template _template;
-  TemplateConfigPage(this._template, this.navigateTo, {super.key});
+  TemplateConfigPage(this._template, this.navigateTo, this.catalogSource,
+      {super.key});
 
   @override
   State<TemplateConfigPage> createState() =>
@@ -140,6 +141,8 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
 
     if (buildDetails != "") {
       Map<String, dynamic> buildConfig = jsonDecode(buildDetails);
+
+      _formFieldValues["tags"] = template.tags;
 
       ServiceDeploymentRequest serviceDeployedEvent = ServiceDeploymentRequest(
         name: _formFieldValues["_APP_NAME"],
@@ -270,13 +273,19 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 10.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-              ),
-              child: const Text('Deploy template'),
-              onPressed: () => _deployTemplate(template, state),
-            ),
+            child: state.instanceGitToken != ""
+                ? ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                    child: const Text('Deploy template'),
+                    onPressed: () => _deployTemplate(template, state),
+                  )
+                : Text(
+                    "Please configure APIs integrations in the Settings section.",
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
           ),
         ],
       );

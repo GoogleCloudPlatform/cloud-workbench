@@ -74,13 +74,13 @@ final Section cloudProvisionCatalogSection = Section(
         title: "Community Templates",
         subTitle: "Community maintained templates",
         image: "discovery-cards-crashlytics",
-        page: NavigationPage.SolutionArchitectures,
+        page: NavigationPage.CommunityTemplates,
       ),
       SectionItem(
         title: "Customer Templates",
         subTitle: "Customer maintained templates",
         image: "disovery_card_ml2",
-        page: NavigationPage.InfraModules,
+        page: NavigationPage.CustomerTemplates,
       ),
       SectionItem(
         title: "Stack Composer",

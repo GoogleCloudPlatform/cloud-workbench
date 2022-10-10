@@ -7,13 +7,16 @@ class TemplateRepository {
   final TemplateService service;
 
   /// Returns list of templates
-  Future<List<Template>> loadTemplates() async => service.loadTemplates();
+  Future<List<Template>> loadTemplates(
+          String catalogSource, String catalogUrl) async =>
+      service.loadTemplates(catalogSource, catalogUrl);
 
   /// Returns template by id
   ///
   /// [templateId]
-  Future<Template> loadTemplateById(int templateId) async =>
-      service.loadTemplateById(templateId);
+  Future<Template> loadTemplateById(
+          int templateId, String catalogSource) async =>
+      service.loadTemplateById(templateId, catalogSource);
 
   Future<void> forkRepository(
           String sourceRepo, String token, String targetRepoName) async =>

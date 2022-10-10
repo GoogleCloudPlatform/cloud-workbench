@@ -45,7 +45,11 @@ class BuildsController extends BaseController {
       final body = await request.readAsString();
       Map<String, dynamic> requestMap = jsonDecode(body);
 
-      List<Template> templates = await _templatesService.getTemplates();
+      var catalogSource = requestMap['catalogSource'];
+      var catalogUrl = requestMap['catalogUrl'];
+
+      List<Template> templates =
+          await _templatesService.getTemplates(catalogSource, catalogUrl);
       var templatesMap =
           Map.fromIterable(templates, key: (t) => t.id, value: (t) => t);
 

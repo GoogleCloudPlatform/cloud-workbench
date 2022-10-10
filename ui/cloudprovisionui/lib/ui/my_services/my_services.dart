@@ -121,42 +121,8 @@ class MyServicesPage extends StatelessWidget {
                                                                 .bodyMedium,
                                                           ),
                                                         ),
-                                                        TextButton(
-                                                          onPressed: () async {
-                                                            final Uri _url =
-                                                                Uri.parse(
-                                                                    "https://console.cloud.google.com/run/detail/${services[index].region}/${services[index].name}/metrics?project=${services[index].projectId}");
-                                                            if (!await launchUrl(
-                                                                _url)) {
-                                                              throw 'Could not launch $_url';
-                                                            }
-                                                          },
-                                                          child: Row(
-                                                            children: [
-                                                              SizedBox(
-                                                                width: 30,
-                                                                height: 30,
-                                                                child: Image(
-                                                                  image: AssetImage(
-                                                                      'images/cloud_run.png'),
-                                                                  fit: BoxFit
-                                                                      .fill,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                width: 4,
-                                                              ),
-                                                              Text(
-                                                                services[index]
-                                                                    .name,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                maxLines: 1,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
+                                                        _service(
+                                                            services[index]),
                                                       ],
                                                     ),
                                                     const SizedBox(height: 4),
@@ -395,6 +361,80 @@ class MyServicesPage extends StatelessWidget {
               ),
             ),
           )
+        ],
+      ),
+    );
+  }
+
+  _service(Service service) {
+    String serviceUrl =
+        "https://pantheon.corp.google.com/home/dashboard?project=${service.projectId}";
+    String serviceIcon = "unknown";
+
+    String tags = service.params['tags'].toString();
+
+    if (tags.contains("cloudrun") ||
+        service.templateName.toLowerCase().contains("cloudrun")) {
+      serviceUrl =
+          "https://console.cloud.google.com/run/detail/${service.region}/${service.name}/metrics?project=${service.projectId}";
+      serviceIcon = "cloud_run";
+    }
+
+    if (tags.contains("gke") ||
+        service.templateName.toLowerCase().contains("gke")) {
+      serviceUrl =
+          "https://console.cloud.google.com/kubernetes/clusters/details/${service.region}/${service.name}-dev/details?project=${service.projectId}";
+      serviceIcon = "google_kubernetes_engine";
+    }
+
+    if (tags.contains("pubsub") ||
+        service.templateName.toLowerCase().contains("pubsub")) {
+      serviceUrl =
+          "https://console.cloud.google.com/cloudpubsub/topic/list?referrer=search&project=${service.projectId}";
+      serviceIcon = "pubsub";
+    }
+
+    if (tags.contains("storage") ||
+        service.templateName.toLowerCase().contains("storage")) {
+      serviceUrl =
+          "https://pantheon.corp.google.com/storage/browser?project=${service.projectId}&prefix=";
+      serviceIcon = "cloud_storage";
+    }
+
+    if (tags.contains("cloudsql") ||
+        service.templateName.toLowerCase().contains("cloudsql")) {
+      serviceUrl =
+          "https://console.cloud.google.com/sql/instances?referrer=search&project=${service.projectId}";
+      serviceIcon = "cloud_sql";
+    }
+
+    return TextButton(
+      onPressed: () async {
+        final Uri _url = Uri.parse(serviceUrl);
+        if (!await launchUrl(_url)) {
+          throw 'Could not launch $_url';
+        }
+      },
+      child: Row(
+        children: [
+          SizedBox(
+            width: 30,
+            height: 30,
+            child: Image(
+              image: AssetImage('images/${serviceIcon}.png'),
+              fit: BoxFit.fill,
+            ),
+          ),
+          SizedBox(
+            width: 4,
+          ),
+          SelectableText(
+            service.name,
+            // overflow:
+            //     TextOverflow
+            //         .ellipsis,
+            // maxLines: 1,
+          ),
         ],
       ),
     );

@@ -7,7 +7,12 @@ abstract class TemplateEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetTemplatesList extends TemplateEvent {}
+class GetTemplatesList extends TemplateEvent {
+  final String catalogSource;
+  final String catalogUrl;
+
+  GetTemplatesList({required this.catalogSource, required this.catalogUrl});
+}
 
 class GetTemplate extends TemplateEvent {
   GetTemplate({required this.template});

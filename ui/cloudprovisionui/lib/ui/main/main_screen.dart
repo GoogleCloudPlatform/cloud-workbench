@@ -27,6 +27,8 @@ enum NavigationPage {
   MicroserviceTemplates,
   SolutionArchitectures,
   InfraModules,
+  CommunityTemplates,
+  CustomerTemplates,
   StackComposer,
   TeamSetup,
   TeamUsers,
@@ -38,7 +40,9 @@ enum NavigationPage {
   CastHighlight,
 }
 
-enum SolutionCatalogCategory { application, solution, infra }
+enum SolutionCatalogCategory { application, solution, infra, all }
+
+enum SolutionCatalogSource { gcp, community, customer }
 
 class MainScreenState extends State<MainScreen> {
   late Map<NavigationPage, Widget> pages;
@@ -49,17 +53,32 @@ class MainScreenState extends State<MainScreen> {
         navigateTo(page);
       }),
       NavigationPage.MicroserviceTemplates: TemplatesPage(
+          catalogSource: SolutionCatalogSource.gcp.name,
           category: SolutionCatalogCategory.application.name,
           navigateTo: (page) {
             navigateTo(page);
           }),
       NavigationPage.SolutionArchitectures: TemplatesPage(
+          catalogSource: SolutionCatalogSource.gcp.name,
           category: SolutionCatalogCategory.solution.name,
           navigateTo: (page) {
             navigateTo(page);
           }),
       NavigationPage.InfraModules: TemplatesPage(
+          catalogSource: SolutionCatalogSource.gcp.name,
           category: SolutionCatalogCategory.infra.name,
+          navigateTo: (page) {
+            navigateTo(page);
+          }),
+      NavigationPage.CommunityTemplates: TemplatesPage(
+          category: SolutionCatalogCategory.all.name,
+          catalogSource: SolutionCatalogSource.community.name,
+          navigateTo: (page) {
+            navigateTo(page);
+          }),
+      NavigationPage.CustomerTemplates: TemplatesPage(
+          category: SolutionCatalogCategory.all.name,
+          catalogSource: SolutionCatalogSource.customer.name,
           navigateTo: (page) {
             navigateTo(page);
           }),
@@ -141,6 +160,11 @@ class MainScreenState extends State<MainScreen> {
                       'Infra Modules', NavigationPage.InfraModules, context),
                   _menuItem(
                       'Stack Composer', NavigationPage.StackComposer, context),
+                  // Divider(),
+                  // _menuItem('Community Templates',
+                  //     NavigationPage.CommunityTemplates, context),
+                  // _menuItem('Customer Templates',
+                  //     NavigationPage.CustomerTemplates, context),
                   Divider(),
                   _subTitle("Teams"),
                   _menuItem('Setup Team', NavigationPage.TeamSetup, context),

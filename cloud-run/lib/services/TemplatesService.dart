@@ -9,13 +9,26 @@ class TemplatesService {
   ConfigService _configService = ConfigService();
 
   // TODO: Read/inject URI from configuration
-  final String templatesUri =
+  String templatesUri =
       "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates.json";
 
+  String communityCatalogUrl =
+      "https://raw.githubusercontent.com/gitrey/community-templates/main/templates.json";
+
   /// Returns list of solution templates
-  Future<List<Template>> getTemplates() async {
+  Future<List<Template>> getTemplates(
+      String catalogSource, String catalogUrl) async {
     final http.Client client = new http.Client();
-    var response = await client.get(Uri.parse(templatesUri));
+
+    var catalogUrl = templatesUri;
+    if (catalogSource == "community") {
+      catalogUrl = communityCatalogUrl;
+    } else if (catalogSource == "customer") {
+      catalogUrl = "";
+      return [];
+    }
+
+    var response = await client.get(Uri.parse(catalogUrl));
 
     Iterable templateList = json.decode(response.body);
     List<Template> templates = List<Template>.from(
@@ -24,9 +37,19 @@ class TemplatesService {
     return templates;
   }
 
-  Future<Template?> getTemplateById(int templateId) async {
+  Future<Template?> getTemplateById(
+      int templateId, String catalogSource) async {
     final http.Client client = new http.Client();
-    var response = await client.get(Uri.parse(templatesUri));
+
+    var catalogUrl = templatesUri;
+    if (catalogSource == "community") {
+      catalogUrl = communityCatalogUrl;
+    } else if (catalogSource == "customer") {
+      catalogUrl = "";
+      return null;
+    }
+
+    var response = await client.get(Uri.parse(catalogUrl));
 
     Iterable templateList = json.decode(response.body);
     List<Template> templates = List<Template>.from(

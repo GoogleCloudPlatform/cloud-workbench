@@ -43,8 +43,15 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
       GetTemplate event, Emitter<TemplateState> emit) async {
     try {
       emit(TemplateLoading());
-      final template =
-          await templateRepository.loadTemplateById(event.template.id);
+
+      String catalogSource = "gcp";
+
+      if (event.template.sourceUrl.contains("community")) {
+        catalogSource = "community";
+      }
+
+      final template = await templateRepository.loadTemplateById(
+          event.template.id, catalogSource);
       emit(TemplateLoaded(template));
     } on Exception {
       emit(const TemplateError("Failed to fetch template details."));
@@ -55,7 +62,8 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
       GetTemplatesList event, Emitter<TemplateState> emit) async {
     try {
       emit(TemplatesLoading());
-      final templates = await templateRepository.loadTemplates();
+      final templates = await templateRepository.loadTemplates(
+          event.catalogSource, event.catalogUrl);
       emit(TemplatesLoaded(templates));
     } on Exception {
       emit(const TemplateError("Failed to fetch list of templates."));

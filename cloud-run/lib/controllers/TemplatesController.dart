@@ -21,8 +21,9 @@ class TemplatesController extends BaseController {
         return _getTemplateByIdHandler(request);
       }
 
-      return Response.ok(
-          jsonResponseEncode(await _templatesService.getTemplates()));
+      return Response.ok(jsonResponseEncode(
+          await _templatesService.getTemplates(
+              queryParams['catalogSource']!, queryParams['catalogUrl']!)));
     } on Exception catch (e, stacktrace) {
       print("Exception occurred: $e stackTrace: $stacktrace");
       return Response.internalServerError(
@@ -36,8 +37,10 @@ class TemplatesController extends BaseController {
       String? t = request.url.queryParameters['templateId'];
       int templateId = int.parse(t!);
 
+      String? catalogSource = request.url.queryParameters['catalogSource'];
+
       return Response.ok(jsonResponseEncode(
-          await _templatesService.getTemplateById(templateId)));
+          await _templatesService.getTemplateById(templateId, catalogSource!)));
     } on Exception catch (e, stacktrace) {
       print("Exception occurred: $e stackTrace: $stacktrace");
       return Response.internalServerError(
