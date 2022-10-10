@@ -188,17 +188,17 @@ class MyServicesPage extends StatelessWidget {
                                               ),
                                               Row(
                                                 children: [
-                                                  IconButton(
-                                                    icon: Icon(Icons.delete),
-                                                    onPressed: () {},
-                                                  ),
-                                                  IconButton(
-                                                    icon: Icon(
-                                                      Icons.more_vert,
-                                                    ),
-                                                    onPressed: () {},
-                                                  ),
-                                                  const SizedBox(width: 12),
+                                                  // IconButton(
+                                                  //   icon: Icon(Icons.delete),
+                                                  //   onPressed: () {},
+                                                  // ),
+                                                  // IconButton(
+                                                  //   icon: Icon(
+                                                  //     Icons.more_vert,
+                                                  //   ),
+                                                  //   onPressed: () {},
+                                                  // ),
+                                                  // const SizedBox(width: 12),
                                                 ],
                                               ),
                                             ],
