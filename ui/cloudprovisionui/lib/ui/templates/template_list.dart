@@ -1,3 +1,4 @@
+import 'package:cloudprovision/repository/models/metadata_model.dart';
 import 'package:cloudprovision/ui/main/main_screen.dart';
 import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/repository/models/template.dart';
@@ -253,6 +254,31 @@ class _TemplateListState extends State<TemplateList> {
                 ),
             ],
           ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const Text("Metadata: ", style: AppText.fontWeightBold),
+            ],
+          ),
+          const SizedBox(height: 5),
+          for (TemplateMetadata tm in template.metadata)
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () async {
+                    final Uri _url = Uri.parse(tm.value);
+                    if (!await launchUrl(_url)) {
+                      throw 'Could not launch $_url';
+                    }
+                  },
+                  child: Text(
+                    tm.name,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+              ],
+            ),
           const SizedBox(height: 10),
           Row(
             children: [

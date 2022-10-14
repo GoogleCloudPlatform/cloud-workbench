@@ -42,7 +42,9 @@ class BuildService extends BaseService {
         "catalogUrl": ""
       });
 
-      var response = await http.post(url, headers: requestHeaders, body: body);
+      var response = await http
+          .post(url, headers: requestHeaders, body: body)
+          .timeout(Duration(seconds: 10));
 
       if (response.statusCode == 500) {
         return result;
@@ -79,7 +81,9 @@ class BuildService extends BaseService {
       if (cloudProvisionServerUrl.contains("localhost")) {
         url = Uri.http(cloudProvisionServerUrl, endpointPath, queryParameters);
       }
-      var response = await http.get(url, headers: requestHeaders);
+      var response = await http
+          .get(url, headers: requestHeaders)
+          .timeout(Duration(seconds: 10));
 
       result = response.body;
     } catch (e) {
@@ -112,7 +116,9 @@ class BuildService extends BaseService {
         "app_name": appName,
       });
 
-      var response = await http.post(url, headers: requestHeaders, body: body);
+      var response = await http
+          .post(url, headers: requestHeaders, body: body)
+          .timeout(Duration(seconds: 10));
 
       result = response.body;
     } catch (e) {

@@ -32,6 +32,7 @@ class TemplateConfigPage extends StatefulWidget {
 class _TemplateConfigPageState extends State<TemplateConfigPage> {
   late Template _template;
   String _appName = "";
+  String _appId = "";
 
   Map<String, dynamic> _cloudBuildDetails = {};
   bool _building = false;
@@ -135,6 +136,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     _formFieldValues["_INSTANCE_GIT_REPO_OWNER"] = state.instanceGitUsername;
     _formFieldValues["_INSTANCE_GIT_REPO_TOKEN"] = state.instanceGitToken;
     _formFieldValues["_API_KEY"] = state.gcpApiKey;
+    _formFieldValues["_API_ID"] = _appId;
 
     String buildDetails = await BuildRepository(service: BuildService())
         .deployTemplate(projectId, template, _formFieldValues);
@@ -148,7 +150,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         name: _formFieldValues["_APP_NAME"],
         owner: state.instanceGitUsername,
         instanceRepo:
-            "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_formFieldValues['_INSTANCE_GIT_REPO_NAME']}",
+            "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_appId}",
         templateName: template.name,
         templateId: template.id,
         region: _formFieldValues["_REGION"],
@@ -263,10 +265,10 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
               key: _key,
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: template.params.length,
+                itemCount: template.inputs.length,
                 itemBuilder: (context, index) {
                   return _buildDynamicParam(
-                      index, template.params[index], state);
+                      index, template.inputs[index], state);
                 },
               ),
             ),
@@ -297,6 +299,15 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
       _formFieldValues["_REGION"] = dotenv.get("DEFAULT_REGION");
     }
 
+    Widget appId = Container();
+    if (param.param == "_APP_NAME") {
+      appId = Container(
+        child: Row(
+          children: [Text("App ID: ${_appId}")],
+        ),
+      );
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,42 +327,97 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
                           Text(" / "),
                         ],
                       )
-                    : SizedBox(
-                        width: 400.0,
-                        child: TextFormField(
-                            initialValue: (param.param == "_REGION")
-                                ? dotenv.get("DEFAULT_REGION")
-                                : "",
-                            decoration: InputDecoration(
-                              icon: Icon(Icons.abc_sharp),
-                              //hintText: param.description,
-                              labelText: param.label,
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter value';
-                              }
-                              return null;
-                            },
-                            onChanged: (val) {
-                              _onTextFormUpdate(index, val, param.param);
-                            }),
+                    : Column(
+                        children: [
+                          SizedBox(
+                            width: 400.0,
+                            child: TextFormField(
+                                maxLength: 30,
+                                initialValue: (param.param == "_REGION")
+                                    ? dotenv.get("DEFAULT_REGION")
+                                    : "",
+                                decoration: InputDecoration(
+                                  icon: Icon(Icons.abc_sharp),
+                                  //hintText: param.description,
+                                  labelText: param.label,
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'This field is required';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (val) {
+                                  String tmpValue = val;
+
+                                  if (param.param == "_APP_NAME") {
+                                    tmpValue = tmpValue
+                                        .replaceAll(" ", "")
+                                        .replaceAll("!", "")
+                                        .replaceAll("@", "")
+                                        .replaceAll("#", "")
+                                        .replaceAll("\$", "")
+                                        .replaceAll("%", "")
+                                        .replaceAll("^", "")
+                                        .replaceAll("&", "")
+                                        .replaceAll("*", "")
+                                        .replaceAll("(", "")
+                                        .replaceAll(")", "")
+                                        .replaceAll("_", "")
+                                        .replaceAll("_", "")
+                                        .replaceAll(".", "")
+                                        .replaceAll(",", "")
+                                        .replaceAll(";", "")
+                                        .replaceAll(":", "")
+                                        .replaceAll("[", "")
+                                        .replaceAll("]", "")
+                                        .replaceAll("\\", "")
+                                        .replaceAll("//", "")
+                                        .replaceAll("~", "")
+                                        .replaceAll(">", "")
+                                        .replaceAll("<", "")
+                                        .replaceAll("{", "")
+                                        .replaceAll("}", "")
+                                        .replaceAll("|", "")
+                                        .replaceAll("=", "")
+                                        .replaceAll("+", "")
+                                        .replaceAll("+", "")
+                                        .replaceAll("`", "")
+                                        .replaceAll("\"", "")
+                                        // .replaceAll(
+                                        //     RegExp(r'\!\@\#\$\%\^\&\*\(\)'),
+                                        //     "-")
+                                        .toLowerCase();
+
+                                    final validCharacters =
+                                        RegExp(r'^[a-z0-9\-]+$');
+
+                                    if (tmpValue == "" ||
+                                        validCharacters.hasMatch(tmpValue)) {
+                                      setState(() {
+                                        _appId = tmpValue;
+                                      });
+                                    }
+                                  }
+
+                                  _onTextFormUpdate(
+                                      index, tmpValue, param.param);
+                                }),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          SizedBox(
+                            width: 400.0,
+                            child: appId,
+                          ),
+                        ],
                       ),
           ],
         ),
         SizedBox(height: 20),
       ],
     );
-  }
-
-  _forkRepo() async {
-    String sourceRepo =
-        "https://api.github.com/repos/octocat/Hello-World/forks";
-    String token = "github pat";
-    String targetRepoName = "target-repo";
-    context
-        .read<TemplateBloc>()
-        .add(ForkTemplateRepo(sourceRepo, targetRepoName, token));
   }
 
   _templateDetails() {

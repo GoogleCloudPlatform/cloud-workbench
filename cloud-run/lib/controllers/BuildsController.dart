@@ -59,7 +59,7 @@ class BuildsController extends BaseController {
           await _configService.getJson(template!.cloudProvisionConfigUrl);
 
       var cloudProvisionJsonConfigList =
-          cloudProvisionJsonConfig['cloudbuild']['steps'];
+          cloudProvisionJsonConfig['create']['steps'];
 
       var projectId = requestMap['project_id'];
 
