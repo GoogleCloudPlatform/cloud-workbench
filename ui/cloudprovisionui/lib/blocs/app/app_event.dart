@@ -50,11 +50,15 @@ class LoadCastAssessment extends AppEvent {
 }
 
 class ServiceDeploymentRequest extends AppEvent {
+  final String serviceId;
   final String name;
+  final String user;
+  final String userEmail;
   final String owner;
   final String instanceRepo;
   final String templateName;
   final int templateId;
+  final Template template;
   final String region;
   final String projectId;
   final String cloudBuildId;
@@ -62,11 +66,15 @@ class ServiceDeploymentRequest extends AppEvent {
   final Map<String, dynamic> params;
 
   ServiceDeploymentRequest({
+    required this.serviceId,
     required this.name,
+    required this.user,
+    required this.userEmail,
     required this.owner,
     required this.instanceRepo,
     required this.templateId,
     required this.templateName,
+    required this.template,
     required this.region,
     required this.projectId,
     required this.cloudBuildId,
@@ -76,11 +84,15 @@ class ServiceDeploymentRequest extends AppEvent {
 
   @override
   List<Object> get props => [
+        serviceId,
         name,
+        user,
+        userEmail,
         owner,
         instanceRepo,
         templateId,
         templateName,
+        template,
         region,
         projectId,
         cloudBuildId,

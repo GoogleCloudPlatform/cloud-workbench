@@ -1,5 +1,6 @@
 import 'package:cloudprovision/repository/models/metadata_model.dart';
 import 'package:cloudprovision/repository/models/param.dart';
+import 'dart:convert';
 
 class Template {
   int id;
@@ -55,6 +56,14 @@ class Template {
                 .toList();
 
   Map<String, dynamic> toJson() {
+    List<Map>? tmpInputs = this.inputs != null
+        ? this.inputs.map((i) => i.toJson()).toList()
+        : null;
+
+    List<Map>? tmpMetadata = this.metadata != null
+        ? this.metadata.map((i) => i.toJson()).toList()
+        : null;
+
     return {
       'id': id,
       'name': name,
@@ -67,8 +76,8 @@ class Template {
       'owner': owner,
       'email': email,
       'tags': tags,
-      'inputs': inputs,
-      'metadata': metadata,
+      'inputs': tmpInputs,
+      'metadata': tmpMetadata,
     };
   }
 }

@@ -51,6 +51,7 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
 
       final template = await templateRepository.loadTemplateById(
           event.template.id, catalogSource);
+
       emit(TemplateLoaded(template));
     } on Exception {
       emit(const TemplateError("Failed to fetch template details."));

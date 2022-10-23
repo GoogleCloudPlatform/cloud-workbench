@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import 'package:cloudprovision/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
@@ -233,7 +234,10 @@ class _TagsFilterWidgetState extends State<TagsFilterWidget> {
             widget.removedTag("*");
             _controller.clearTags();
           },
-          child: const Text('Clear Tags'),
+          child: Text(
+            'Clear Tags',
+            style: AppText.buttonFontStyle,
+          ),
         ),
       ],
     );
