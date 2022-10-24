@@ -1,16 +1,17 @@
-import 'package:cloudprovision/blocs/app/app_bloc.dart';
 import 'package:cloudprovision/repository/build_repository.dart';
 import 'package:cloudprovision/repository/models/build.dart';
 import 'package:cloudprovision/repository/models/metadata_model.dart';
+import 'package:cloudprovision/repository/models/recommendation_insight.dart';
 import 'package:cloudprovision/repository/models/service.dart';
-import 'package:cloudprovision/repository/models/template.dart';
+import 'package:cloudprovision/repository/models/vulnerability.dart';
+import 'package:cloudprovision/repository/security_repository.dart';
 import 'package:cloudprovision/repository/service/build_service.dart';
+import 'package:cloudprovision/repository/service/security_service.dart';
 import 'package:cloudprovision/repository/service/template_service.dart';
 import 'package:cloudprovision/repository/template_repository.dart';
 import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/utils/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -33,35 +34,50 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
   _MyServiceDialogState(this.service);
 
   List<Build> _triggerBuilds = [];
+  List<Vulnerability> _vulnerabilities = [];
+  List<RecommendationInsight> _recommendations = [];
   bool _loadingTriggerBuilds = false;
+  bool _loadingVulnerabilities = false;
+  bool _loadingRecommendationsInsights = false;
   late String _triggerId;
 
   @override
   void initState() {
     _loadingTriggerBuilds = true;
+    _loadingVulnerabilities = true;
+    _loadingRecommendationsInsights = true;
+
     loadTriggerBuilds();
+    loadVulnerabilities();
+    loadRecommendationsInsights();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(100),
-      padding: EdgeInsets.all(25),
-      color: Colors.white,
-      child: Column(
-        children: [
-          _serviceDetails(service, context),
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-            ),
-            child: const Text('Close'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          )
-        ],
+    return SingleChildScrollView(
+      child: Container(
+        margin: EdgeInsets.all(100),
+        padding: EdgeInsets.all(25),
+        color: Colors.white,
+        child: Column(
+          children: [
+            _serviceDetails(service, context),
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: Text(
+                'Close',
+                style: AppText.linkFontStyle,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        ),
       ),
     );
   }
@@ -354,6 +370,32 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
         Row(
           children: [
             Text(
+              "Vulnerabilities: ",
+              style: AppText.fontStyleBold,
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        _loadingVulnerabilities
+            ? LinearProgressIndicator()
+            : buildVulnerabilitiesSection(service.serviceId),
+        Divider(),
+        Row(
+          children: [
+            Text(
+              "Recommendations and Insights: ",
+              style: AppText.fontStyleBold,
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        _loadingRecommendationsInsights
+            ? LinearProgressIndicator()
+            : buildRecommendationsSection(),
+        Divider(),
+        Row(
+          children: [
+            Text(
               "Build History: ",
               style: AppText.fontStyleBold,
             ),
@@ -451,6 +493,45 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
                       ),
                     ],
                   ),
+                  Row(
+                    children: [
+                      Text(
+                        "${service.template?.version}",
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: AppText.fontStyle,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "${service.template?.owner}",
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: AppText.fontStyle,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        DateFormat('MM/d/yy, h:mm a').format(DateTime.parse(
+                            "${service.template?.lastModified}")),
+                        style: AppText.fontStyle,
+                      ),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        "(${timeago.format(DateTime.parse("${service.template?.lastModified}"))})",
+                        style: AppText.fontStyle,
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ],
@@ -473,6 +554,28 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
     });
   }
 
+  void loadVulnerabilities() async {
+    List<Vulnerability> vulnerabilities =
+        await SecurityRepository(service: SecurityService())
+            .getContainerVulnerabilities(service.projectId, service.serviceId);
+
+    setState(() {
+      _vulnerabilities = vulnerabilities;
+      _loadingVulnerabilities = false;
+    });
+  }
+
+  void loadRecommendationsInsights() async {
+    List<RecommendationInsight> recommendations =
+        await SecurityRepository(service: SecurityService())
+            .getSecurityRecommendations(service.projectId, service.serviceId);
+
+    setState(() {
+      _recommendations = recommendations;
+      _loadingRecommendationsInsights = false;
+    });
+  }
+
   buildCloudBuildsSection() {
     List<Widget> rows = [];
     for (Build build in _triggerBuilds) {
@@ -491,8 +594,12 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
             width: 4,
           ),
           SizedBox(
-              width: 80,
-              child: Text(build.status == "SUCCESS" ? "Successful" : "Failed")),
+            width: 80,
+            child: Text(
+              build.status == "SUCCESS" ? "Successful" : "Failed",
+              style: AppText.fontStyle,
+            ),
+          ),
           SizedBox(
             width: 4,
           ),
@@ -507,6 +614,7 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
               build.buildId.substring(0, 8),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
+              style: AppText.linkFontStyle,
             ),
           ),
           SizedBox(
@@ -515,12 +623,202 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
           Text(
             DateFormat('MM/d/yy, h:mm a')
                 .format(DateTime.parse(build.createTime)),
+            style: AppText.fontStyle,
           ),
           SizedBox(
             width: 4,
           ),
           Text(
             "(${timeago.format(service.deploymentDate)})",
+            style: AppText.fontStyle,
+          ),
+        ],
+      ));
+    }
+    return Column(
+      children: rows,
+    );
+  }
+
+  buildVulnerabilitiesSection(String serviceId) {
+    var vulnerabilitiesMap = {};
+
+    _vulnerabilities.forEach((vuln) {
+      if (vulnerabilitiesMap.containsKey(vuln.resourceUri)) {
+        List<Map<String, String>> vulnList =
+            vulnerabilitiesMap[vuln.resourceUri];
+
+        Map<String, String> tmpVulnMap = {};
+        tmpVulnMap['fixableCount'] = vuln.fixableCount;
+        tmpVulnMap['totalCount'] = vuln.totalCount;
+        tmpVulnMap['severity'] = vuln.severity;
+        vulnList.add(tmpVulnMap);
+      } else {
+        List<Map<String, String>> tmpVulnList = [];
+        vulnerabilitiesMap[vuln.resourceUri] = tmpVulnList;
+
+        Map<String, String> tmpVulnMap = {};
+        tmpVulnMap['fixableCount'] = vuln.fixableCount;
+        tmpVulnMap['totalCount'] = vuln.totalCount;
+        tmpVulnMap['severity'] = vuln.severity;
+
+        tmpVulnList.add(tmpVulnMap);
+      }
+    });
+
+    List<Widget> rows = [];
+
+    vulnerabilitiesMap.entries.forEach((element) {
+      String name = element.key as String;
+      name = name.substring(
+          name.indexOf("sha256:") + 7, name.indexOf("sha256:") + 7 + 12);
+      rows.add(Row(
+        children: [
+          Text(
+            "Container: ",
+            style: AppText.fontStyle,
+          ),
+          SizedBox(
+            width: 4,
+          ),
+          TextButton(
+            onPressed: () async {
+              final Uri _url = Uri.parse(element.key as String);
+              if (!await launchUrl(_url)) {
+                throw 'Could not launch $_url';
+              }
+            },
+            child: Text(
+              "${serviceId}@${name}",
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: AppText.linkFontStyle,
+            ),
+          ),
+        ],
+      ));
+
+      rows.add(Row(
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              "Severity",
+              style: AppText.fontStyleBold,
+            ),
+          ),
+          SizedBox(
+            width: 4,
+          ),
+          SizedBox(
+            width: 100,
+            child: Text(
+              "Total",
+              style: AppText.fontStyleBold,
+            ),
+          ),
+          SizedBox(
+            width: 4,
+          ),
+          SizedBox(
+            child: Text(
+              "Fixable",
+              style: AppText.fontStyleBold,
+            ),
+          ),
+        ],
+      ));
+
+      List<Map<String, String>> mv = element.value;
+      mv.forEach((el) {
+        rows.add(Row(
+          children: [
+            SizedBox(
+              width: 130,
+              child: Text(
+                "${el['severity']}",
+                style: AppText.fontStyle,
+              ),
+            ),
+            SizedBox(
+              width: 4,
+            ),
+            SizedBox(
+              width: 110,
+              child: Text(
+                "${el['totalCount']}",
+                style: AppText.fontStyle,
+              ),
+            ),
+            SizedBox(
+              width: 4,
+            ),
+            SizedBox(
+              child: Text(
+                "${el['fixableCount']}",
+                style: AppText.fontStyle,
+              ),
+            ),
+          ],
+        ));
+      });
+    });
+
+    return Column(
+      children: rows,
+    );
+  }
+
+  buildRecommendationsSection() {
+    List<Widget> rows = [];
+    for (RecommendationInsight rec in _recommendations) {
+      rows.add(Row(
+        children: [
+          Text(
+            "Insight:",
+            style: AppText.fontStyleBold,
+          ),
+          SizedBox(
+            width: 4,
+          ),
+          Text(
+            rec.insightDescription,
+            style: AppText.fontStyle,
+          ),
+        ],
+      ));
+
+      rows.add(Row(
+        children: [
+          Text(
+            "Recommendation:",
+            style: AppText.fontStyleBold,
+          ),
+          SizedBox(
+            width: 4,
+          ),
+          SizedBox(
+            child: Text(
+              rec.recommendationDescription,
+              style: AppText.fontStyle,
+            ),
+          ),
+          SizedBox(
+            width: 4,
+          ),
+          TextButton(
+            onPressed: () async {
+              final Uri _url = Uri.parse(rec.recommendationActionValue);
+              if (!await launchUrl(_url)) {
+                throw 'Could not launch $_url';
+              }
+            },
+            child: Text(
+              "Fix it",
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: AppText.linkFontStyle,
+            ),
           ),
         ],
       ));
