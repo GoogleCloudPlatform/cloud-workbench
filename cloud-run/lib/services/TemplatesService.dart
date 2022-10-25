@@ -10,7 +10,7 @@ class TemplatesService {
 
   // TODO: Read/inject URI from configuration
   String templatesUri =
-      "https://raw.githubusercontent.com/gitrey/cp-templates/feature/new-app-metadata/templates.json";
+      "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates.json";
 
   String communityCatalogUrl =
       "https://raw.githubusercontent.com/gitrey/community-templates/main/templates.json";
