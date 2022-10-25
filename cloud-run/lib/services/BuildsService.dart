@@ -32,12 +32,13 @@ class BuildsService {
       buildSteps.add(buildStep);
     }
 
-    // cb.BuildOptions buildOptions = cb.BuildOptions();
-    // buildOptions.substitutionOption = 'ALLOW_LOOSE';
+    cb.BuildOptions buildOptions = cb.BuildOptions();
+    buildOptions.substitutionOption = 'ALLOW_LOOSE';
 
-    var buildRequest =
-        cb.Build(substitutions: substitutionsMap, steps: buildSteps);
-    // options: buildOptions);
+    var buildRequest = cb.Build(
+        substitutions: substitutionsMap,
+        steps: buildSteps,
+        options: buildOptions);
 
     AuthClient client = await clientViaMetadataServer();
     var cloudBuildApi = cb.CloudBuildApi(client);
