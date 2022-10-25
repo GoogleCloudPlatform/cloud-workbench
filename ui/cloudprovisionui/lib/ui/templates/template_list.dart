@@ -1,3 +1,4 @@
+import 'package:cloudprovision/repository/models/metadata_model.dart';
 import 'package:cloudprovision/ui/main/main_screen.dart';
 import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/repository/models/template.dart';
@@ -137,7 +138,10 @@ class _TemplateListState extends State<TemplateList> {
               padding: const EdgeInsets.all(10.0),
               child: Row(
                 children: [
-                  Text("Filter:"),
+                  Text(
+                    "Filter:",
+                    style: AppText.fontStyleBold,
+                  ),
                   SizedBox(
                     width: 5,
                   ),
@@ -193,14 +197,17 @@ class _TemplateListState extends State<TemplateList> {
           const SizedBox(height: 10),
           Row(
             children: [
-              const Text("Description: ", style: AppText.fontWeightBold),
-              Text(template.description),
+              Text("Description: ", style: AppText.fontStyleBold),
+              Text(
+                template.description,
+                style: AppText.fontStyle,
+              ),
             ],
           ),
           const SizedBox(height: 10),
           Row(
             children: [
-              const Text("Owner: ", style: AppText.fontWeightBold),
+              Text("Owner: ", style: AppText.fontStyleBold),
               TextButton(
                 onPressed: () async {
                   final Uri _url = Uri.parse(
@@ -213,6 +220,7 @@ class _TemplateListState extends State<TemplateList> {
                   template.owner,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
+                  style: AppText.linkFontStyle,
                 ),
               ),
             ],
@@ -220,21 +228,47 @@ class _TemplateListState extends State<TemplateList> {
           const SizedBox(height: 10),
           Row(
             children: [
-              const Text("Version: ", style: AppText.fontWeightBold),
-              Text(template.version),
+              Text("Template Repo: ", style: AppText.fontStyleBold),
+              TextButton(
+                onPressed: () async {
+                  final Uri _url = Uri.parse(template.sourceUrl);
+                  if (!await launchUrl(_url)) {
+                    throw 'Could not launch $_url';
+                  }
+                },
+                child: Text(
+                  template.sourceUrl,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: AppText.linkFontStyle,
+                ),
+              )
             ],
           ),
           const SizedBox(height: 10),
           Row(
             children: [
-              const Text("Last Modified: ", style: AppText.fontWeightBold),
-              Text(DateFormat('MM/d/yy, h:mm a').format(template.lastModified)),
+              Text("Version: ", style: AppText.fontStyleBold),
+              Text(
+                template.version,
+                style: AppText.fontStyle,
+              ),
             ],
           ),
           const SizedBox(height: 10),
           Row(
             children: [
-              const Text("Tags: ", style: AppText.fontWeightBold),
+              Text("Last Modified: ", style: AppText.fontStyleBold),
+              Text(
+                DateFormat('MM/d/yy, h:mm a').format(template.lastModified),
+                style: AppText.fontStyle,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Text("Tags: ", style: AppText.fontStyleBold),
               for (String tag in template.tags)
                 Row(
                   children: [
@@ -243,7 +277,7 @@ class _TemplateListState extends State<TemplateList> {
                       backgroundColor: Theme.of(context).primaryColor,
                       label: Text(
                         tag,
-                        style: TextStyle(color: Colors.white),
+                        style: AppText.buttonFontStyle,
                       ),
                     ),
                     SizedBox(
@@ -256,24 +290,43 @@ class _TemplateListState extends State<TemplateList> {
           const SizedBox(height: 10),
           Row(
             children: [
-              TextButton(
-                onPressed: () async {
-                  final Uri _url = Uri.parse(template.sourceUrl);
-                  if (!await launchUrl(_url)) {
-                    throw 'Could not launch $_url';
-                  }
-                },
-                child: Image.network(
-                    width: 50,
-                    'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'),
-              ),
+              Text("Resources (ref guides, codelabs, etc): ",
+                  style: AppText.fontStyleBold),
+            ],
+          ),
+          const SizedBox(height: 5),
+          for (TemplateMetadata tm in template.metadata)
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () async {
+                    final Uri _url = Uri.parse(tm.value);
+                    if (!await launchUrl(_url)) {
+                      throw 'Could not launch $_url';
+                    }
+                  },
+                  child: Text(
+                    tm.name,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: AppText.linkFontStyle,
+                  ),
+                ),
+              ],
+            ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
               Padding(
                 padding: const EdgeInsets.only(left: 10.0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  child: const Text('Deploy'),
+                  child: Text(
+                    'Deploy',
+                    style: AppText.buttonFontStyle,
+                  ),
                   onPressed: () => _deployTemplate(template, context),
                 ),
               )

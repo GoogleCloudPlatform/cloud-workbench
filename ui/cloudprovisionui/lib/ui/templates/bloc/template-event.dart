@@ -31,11 +31,3 @@ class TemplatesListTagRemoved extends TemplateEvent {
 
   final String tag;
 }
-
-class ForkTemplateRepo extends TemplateEvent {
-  final String sourceRepo;
-  final String targetRepoName;
-  final String token;
-
-  ForkTemplateRepo(this.sourceRepo, this.targetRepoName, this.token);
-}

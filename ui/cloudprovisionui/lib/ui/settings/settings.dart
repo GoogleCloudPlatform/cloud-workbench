@@ -25,6 +25,8 @@ class SettingsPage extends StatelessWidget {
   late String _castRESTAPI = "";
   late String _castUserToken = "";
 
+  final String fieldIsRequired = "This field is required";
+
   @override
   Widget build(BuildContext parentContext) {
     return BlocBuilder<AppBloc, AppState>(builder: (parentContext, state) {
@@ -282,7 +284,7 @@ class SettingsPage extends StatelessWidget {
                                           validator: (value) {
                                             if (value == null ||
                                                 value.isEmpty) {
-                                              return 'Please enter value';
+                                              return fieldIsRequired;
                                             }
                                             return null;
                                           },
@@ -312,7 +314,7 @@ class SettingsPage extends StatelessWidget {
                                           validator: (value) {
                                             if (value == null ||
                                                 value.isEmpty) {
-                                              return 'Please enter value';
+                                              return fieldIsRequired;
                                             }
                                             return null;
                                           },
@@ -333,7 +335,7 @@ class SettingsPage extends StatelessWidget {
                                     ),
                                     validator: (value) {
                                       // if (value == null || value.isEmpty) {
-                                      //   return 'Please enter value';
+                                      //   return fieldIsRequired;
                                       // }
                                       return null;
                                     },
@@ -348,7 +350,7 @@ class SettingsPage extends StatelessWidget {
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please enter value';
+                                        return fieldIsRequired;
                                       }
                                       return null;
                                     },
@@ -366,7 +368,7 @@ class SettingsPage extends StatelessWidget {
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please enter value';
+                                        return fieldIsRequired;
                                       }
                                       return null;
                                     },
@@ -385,7 +387,7 @@ class SettingsPage extends StatelessWidget {
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please enter value';
+                                        return fieldIsRequired;
                                       }
                                       return null;
                                     },
@@ -488,7 +490,7 @@ class SettingsPage extends StatelessWidget {
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please enter value';
+                                        return fieldIsRequired;
                                       }
                                       return null;
                                     },
@@ -506,7 +508,7 @@ class SettingsPage extends StatelessWidget {
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please enter value';
+                                        return fieldIsRequired;
                                       }
                                       return null;
                                     },

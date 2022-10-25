@@ -335,7 +335,8 @@ class CastHighlightPage extends StatelessWidget {
                                                           ],
                                                           DateTime.now(),
                                                           "Google Cloud Solutions Architecture Team",
-                                                          "sa-cloud-provision-templates@google.com");
+                                                          "sa-cloud-provision-templates@google.com",
+                                                          []);
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
@@ -442,7 +443,8 @@ class CastHighlightPage extends StatelessWidget {
                                                           ],
                                                           DateTime.now(),
                                                           "Community",
-                                                          "community-template-feedback@community777.com");
+                                                          "community-template-feedback@community777.com",
+                                                          []);
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(

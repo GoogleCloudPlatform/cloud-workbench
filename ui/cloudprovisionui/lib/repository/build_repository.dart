@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloudprovision/repository/models/build.dart';
 import 'package:cloudprovision/repository/models/template.dart';
 import 'package:cloudprovision/repository/service/build_service.dart';
 
@@ -30,4 +31,11 @@ class BuildRepository {
   /// [appName]
   Future<String> runTrigger(String projectId, String appName) async =>
       service.runTrigger(projectId, appName);
+
+  /// Returns list of Cloud Build records for specified serviceId
+  /// [projectId]
+  /// [serviceId]
+  Future<List<Build>> getTriggerBuilds(
+          String projectId, String serviceId) async =>
+      service.getTriggerBuilds(projectId, serviceId);
 }

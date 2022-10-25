@@ -9,6 +9,8 @@ import 'package:cloudprovision/repository/service/template_service.dart';
 import 'package:cloudprovision/repository/template_repository.dart';
 import 'package:cloudprovision/repository/models/param.dart';
 import 'package:cloudprovision/repository/models/template.dart';
+import 'package:cloudprovision/utils/styles.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,6 +34,7 @@ class TemplateConfigPage extends StatefulWidget {
 class _TemplateConfigPageState extends State<TemplateConfigPage> {
   late Template _template;
   String _appName = "";
+  String _appId = "";
 
   Map<String, dynamic> _cloudBuildDetails = {};
   bool _building = false;
@@ -135,6 +138,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     _formFieldValues["_INSTANCE_GIT_REPO_OWNER"] = state.instanceGitUsername;
     _formFieldValues["_INSTANCE_GIT_REPO_TOKEN"] = state.instanceGitToken;
     _formFieldValues["_API_KEY"] = state.gcpApiKey;
+    _formFieldValues["_APP_ID"] = _appId;
 
     String buildDetails = await BuildRepository(service: BuildService())
         .deployTemplate(projectId, template, _formFieldValues);
@@ -144,13 +148,19 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
 
       _formFieldValues["tags"] = template.tags;
 
+      final user = FirebaseAuth.instance.currentUser!;
+
       ServiceDeploymentRequest serviceDeployedEvent = ServiceDeploymentRequest(
+        user: user.displayName!,
+        userEmail: user.email!,
+        serviceId: _appId,
         name: _formFieldValues["_APP_NAME"],
         owner: state.instanceGitUsername,
         instanceRepo:
-            "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_formFieldValues['_INSTANCE_GIT_REPO_NAME']}",
+            "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_appId}",
         templateName: template.name,
         templateId: template.id,
+        template: template,
         region: _formFieldValues["_REGION"],
         projectId: dotenv.get('PROJECT_ID'),
         cloudBuildId: buildConfig['build']['id'],
@@ -195,7 +205,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
           });
         }
 
-        if (buildConfig['status'] == "SUCCESS") {
+        /*if (buildConfig['status'] == "SUCCESS") {
           String triggerRunOperation =
               await BuildRepository(service: BuildService())
                   .runTrigger(projectId, _appName);
@@ -211,7 +221,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
           });
 
           Timer.periodic(Duration(seconds: 10), _checkBuildTriggerOpStatus);
-        }
+        }*/
       }
     }
   }
@@ -253,41 +263,47 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
 
   _dynamicParams(Template template) {
     return BlocBuilder<AppBloc, AppState>(builder: (context, state) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Card(
-            elevation: 0,
-            color: Colors.grey[50],
-            child: Form(
-              key: _key,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: template.params.length,
-                itemBuilder: (context, index) {
-                  return _buildDynamicParam(
-                      index, template.params[index], state);
-                },
+      return Container(
+        width: MediaQuery.of(context).size.width * 0.85,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Card(
+              elevation: 0,
+              color: Colors.grey[50],
+              child: Form(
+                key: _key,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: template.inputs.length,
+                  itemBuilder: (context, index) {
+                    return _buildDynamicParam(
+                        index, template.inputs[index], state);
+                  },
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: state.instanceGitToken != ""
-                ? ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: state.instanceGitToken != ""
+                  ? ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                      ),
+                      child: Text(
+                        'Deploy template',
+                        style: AppText.buttonFontStyle,
+                      ),
+                      onPressed: () => _deployTemplate(template, state),
+                    )
+                  : Text(
+                      "Please configure APIs integrations in the Settings section.",
+                      style: TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold),
                     ),
-                    child: const Text('Deploy template'),
-                    onPressed: () => _deployTemplate(template, state),
-                  )
-                : Text(
-                    "Please configure APIs integrations in the Settings section.",
-                    style: TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.bold),
-                  ),
-          ),
-        ],
+            ),
+          ],
+        ),
       );
     });
   }
@@ -295,6 +311,20 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
   _buildDynamicParam(int index, Param param, AppState state) {
     if (param.param == "_REGION") {
       _formFieldValues["_REGION"] = dotenv.get("DEFAULT_REGION");
+    }
+
+    Widget appId = Container();
+    if (param.param == "_APP_NAME") {
+      appId = Container(
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 40.0),
+              child: Text("App ID: ${_appId}"),
+            )
+          ],
+        ),
+      );
     }
 
     return Column(
@@ -307,35 +337,110 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
             param.display == false
                 ? Container()
                 : param.param == "_INSTANCE_GIT_REPO_OWNER"
-                    ? Row(
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: 40,
+                          Padding(
+                            padding: const EdgeInsets.only(left: 40.0),
+                            child: Text("Git Repository:"),
                           ),
-                          _gitOwnerDropdown(state),
-                          Text(" / "),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 40,
+                              ),
+                              _gitOwnerDropdown(state),
+                              Text(" / "),
+                              Text("${_appId}")
+                            ],
+                          ),
                         ],
                       )
-                    : SizedBox(
-                        width: 400.0,
-                        child: TextFormField(
-                            initialValue: (param.param == "_REGION")
-                                ? dotenv.get("DEFAULT_REGION")
-                                : "",
-                            decoration: InputDecoration(
-                              icon: Icon(Icons.abc_sharp),
-                              //hintText: param.description,
-                              labelText: param.label,
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter value';
-                              }
-                              return null;
-                            },
-                            onChanged: (val) {
-                              _onTextFormUpdate(index, val, param.param);
-                            }),
+                    : Column(
+                        children: [
+                          SizedBox(
+                            width: 400.0,
+                            child: TextFormField(
+                                maxLength: 30,
+                                initialValue: (param.param == "_REGION")
+                                    ? dotenv.get("DEFAULT_REGION")
+                                    : "",
+                                decoration: InputDecoration(
+                                  icon: Icon(Icons.abc_sharp),
+                                  //hintText: param.description,
+                                  labelText: param.label,
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'This field is required';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (val) {
+                                  String tmpValue = val;
+
+                                  if (param.param == "_APP_NAME") {
+                                    tmpValue = tmpValue
+                                        .replaceAll(" ", "")
+                                        .replaceAll("!", "")
+                                        .replaceAll("@", "")
+                                        .replaceAll("#", "")
+                                        .replaceAll("\$", "")
+                                        .replaceAll("%", "")
+                                        .replaceAll("^", "")
+                                        .replaceAll("&", "")
+                                        .replaceAll("*", "")
+                                        .replaceAll("(", "")
+                                        .replaceAll(")", "")
+                                        .replaceAll("_", "")
+                                        .replaceAll("_", "")
+                                        .replaceAll(".", "")
+                                        .replaceAll(",", "")
+                                        .replaceAll(";", "")
+                                        .replaceAll(":", "")
+                                        .replaceAll("[", "")
+                                        .replaceAll("]", "")
+                                        .replaceAll("\\", "")
+                                        .replaceAll("//", "")
+                                        .replaceAll("~", "")
+                                        .replaceAll(">", "")
+                                        .replaceAll("<", "")
+                                        .replaceAll("{", "")
+                                        .replaceAll("}", "")
+                                        .replaceAll("|", "")
+                                        .replaceAll("=", "")
+                                        .replaceAll("+", "")
+                                        .replaceAll("+", "")
+                                        .replaceAll("`", "")
+                                        .replaceAll("\"", "")
+                                        // .replaceAll(
+                                        //     RegExp(r'\!\@\#\$\%\^\&\*\(\)'),
+                                        //     "-")
+                                        .toLowerCase();
+
+                                    final validCharacters =
+                                        RegExp(r'^[a-z0-9\-]+$');
+
+                                    if (tmpValue == "" ||
+                                        validCharacters.hasMatch(tmpValue)) {
+                                      setState(() {
+                                        _appId = tmpValue;
+                                      });
+                                    }
+                                  }
+
+                                  _onTextFormUpdate(index, val, param.param);
+                                }),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          SizedBox(
+                            width: 400.0,
+                            child: appId,
+                          ),
+                        ],
                       ),
           ],
         ),
@@ -344,134 +449,125 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
     );
   }
 
-  _forkRepo() async {
-    String sourceRepo =
-        "https://api.github.com/repos/octocat/Hello-World/forks";
-    String token = "github pat";
-    String targetRepoName = "target-repo";
-    context
-        .read<TemplateBloc>()
-        .add(ForkTemplateRepo(sourceRepo, targetRepoName, token));
-  }
-
   _templateDetails() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: const EdgeInsets.all(10.0),
-      margin: const EdgeInsets.all(10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: [
-              Text("Target GCP Project: ",
-                  style: GoogleFonts.openSans(
-                    fontSize: 24,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                  )),
-              TextButton(
-                onPressed: () async {
-                  final Uri _url = Uri.parse(
-                      "https://console.cloud.google.com/home/dashboard?project=${dotenv.get('PROJECT_ID')}");
-                  if (!await launchUrl(_url)) {
-                    throw 'Could not launch $_url';
-                  }
-                },
-                child: Text(dotenv.get('PROJECT_ID'),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.all(10.0),
+        margin: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: [
+                Text("Target GCP Project: ",
                     style: GoogleFonts.openSans(
-                      fontSize: 20,
+                      fontSize: 24,
+                      color: Colors.black,
                       fontWeight: FontWeight.w600,
                     )),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Text("Template: ",
-                  style: GoogleFonts.openSans(
-                    fontSize: 24,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                  )),
-              Text(_template.name,
-                  style: GoogleFonts.openSans(
-                    fontSize: 24,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                  )),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-            child: Row(
+                TextButton(
+                  onPressed: () async {
+                    final Uri _url = Uri.parse(
+                        "https://console.cloud.google.com/home/dashboard?project=${dotenv.get('PROJECT_ID')}");
+                    if (!await launchUrl(_url)) {
+                      throw 'Could not launch $_url';
+                    }
+                  },
+                  child: Text(dotenv.get('PROJECT_ID'),
+                      style: GoogleFonts.openSans(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      )),
+                ),
+              ],
+            ),
+            Row(
               children: [
-                const Text("Description: ",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                Text("Template: ",
+                    style: GoogleFonts.openSans(
+                      fontSize: 24,
                       color: Colors.black,
+                      fontWeight: FontWeight.w600,
                     )),
-                Text(_template.description,
-                    style: TextStyle(
-                      fontSize: 14,
+                Text(_template.name,
+                    style: GoogleFonts.openSans(
+                      fontSize: 24,
                       color: Colors.black,
+                      fontWeight: FontWeight.w600,
                     )),
               ],
             ),
-          ),
-          Row(
-            children: [
-              const Text("Template Source: ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.black,
-                  )),
-              TextButton(
-                onPressed: () async {
-                  final Uri _url = Uri.parse(_template.sourceUrl);
-                  if (!await launchUrl(_url)) {
-                    throw 'Could not launch $_url';
-                  }
-                },
-                child: Text("GitHub repo"),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+              child: Row(
+                children: [
+                  Text(
+                    "Description: ",
+                    style: AppText.fontStyleBold,
+                  ),
+                  Text(
+                    _template.description,
+                    style: AppText.fontStyle,
+                  ),
+                ],
               ),
-            ],
-          ),
-          Row(
-            children: [
-              const Text("CloudBuild config: ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.black,
-                  )),
-              TextButton(
-                onPressed: () async {
-                  final Uri _url = Uri.parse(_template.cloudProvisionConfigUrl);
-                  if (!await launchUrl(_url)) {
-                    throw 'Could not launch $_url';
-                  }
-                },
-                child: Text("GitHub repo"),
+            ),
+            Row(
+              children: [
+                Text(
+                  "Template Repo: ",
+                  style: AppText.fontStyleBold,
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final Uri _url = Uri.parse(_template.sourceUrl);
+                    if (!await launchUrl(_url)) {
+                      throw 'Could not launch $_url';
+                    }
+                  },
+                  child: Text(
+                    "GitHub repo",
+                    style: AppText.linkFontStyle,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text(
+                  "CloudBuild config: ",
+                  style: AppText.fontStyleBold,
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final Uri _url =
+                        Uri.parse(_template.cloudProvisionConfigUrl);
+                    if (!await launchUrl(_url)) {
+                      throw 'Could not launch $_url';
+                    }
+                  },
+                  child: Text(
+                    "GitHub repo",
+                    style: AppText.linkFontStyle,
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                "Template Parameters: ",
+                style: AppText.fontStyleBold,
               ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: const Text("Template Parameters: ",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black,
-                )),
-          ),
-          _dynamicParamsSection(),
-        ],
+            ),
+            _dynamicParamsSection(),
+          ],
+        ),
       ),
     );
   }
@@ -684,26 +780,35 @@ class _GitOwnersDropdownButtonState extends State<GitOwnersDropdownButton> {
   @override
   Widget build(BuildContext parentContext) {
     return BlocBuilder<AppBloc, AppState>(builder: (context, state) {
-      return DropdownButton<String>(
-        hint: Text("Select an owner"),
-        value: dropdownValue,
-        icon: const Icon(Icons.arrow_drop_down),
-        style: const TextStyle(color: Colors.black),
-        onChanged: (String? value) {
-          setState(() {
-            dropdownValue = value!;
-            widget.onTextFormUpdate(1000, value!, "_INSTANCE_GIT_REPO_OWNER");
-          });
-        },
-        items: [
-          "Select an owner",
-          "https://github.com/${state.instanceGitUsername}"
-        ].map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
+      return SizedBox(
+        width: 300,
+        child: DropdownButtonFormField<String>(
+          validator: (value) {
+            if (value == null || value.isEmpty || value == "Select an owner") {
+              return 'This field is required';
+            }
+            return null;
+          },
+          hint: Text("Select an owner"),
+          value: dropdownValue,
+          icon: const Icon(Icons.arrow_drop_down),
+          style: const TextStyle(color: Colors.black),
+          onChanged: (String? value) {
+            setState(() {
+              dropdownValue = value!;
+              widget.onTextFormUpdate(1000, value!, "_INSTANCE_GIT_REPO_OWNER");
+            });
+          },
+          items: [
+            "Select an owner",
+            "https://github.com/${state.instanceGitUsername}"
+          ].map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+        ),
       );
     });
   }

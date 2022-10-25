@@ -1,4 +1,6 @@
+import 'package:cloudprovision/repository/models/metadata_model.dart';
 import 'package:cloudprovision/repository/models/param.dart';
+import 'dart:convert';
 
 class Template {
   int id;
@@ -12,7 +14,8 @@ class Template {
   String owner;
   String email;
   List<String> tags;
-  List<Param> params;
+  List<Param> inputs;
+  List<TemplateMetadata> metadata;
 
   Template(
       this.id,
@@ -20,13 +23,14 @@ class Template {
       this.description,
       this.sourceUrl,
       this.cloudProvisionConfigUrl,
-      this.params,
+      this.inputs,
       this.version,
       this.category,
       this.tags,
       this.lastModified,
       this.owner,
-      this.email);
+      this.email,
+      this.metadata);
 
   Template.fromJson(Map<String, dynamic> parsedJson)
       : id = parsedJson['id'],
@@ -40,13 +44,26 @@ class Template {
         owner = parsedJson['owner'],
         email = parsedJson['email'],
         tags = (parsedJson['tags'] as List<dynamic>).cast<String>(),
-        params = parsedJson['params'] == null
+        inputs = parsedJson['inputs'] == null
             ? []
-            : (parsedJson['params'] as List)
+            : (parsedJson['inputs'] as List)
                 .map((i) => Param.fromJson(i))
+                .toList(),
+        metadata = parsedJson['metadata'] == null
+            ? []
+            : (parsedJson['metadata'] as List)
+                .map((i) => TemplateMetadata.fromJson(i))
                 .toList();
 
   Map<String, dynamic> toJson() {
+    List<Map>? tmpInputs = this.inputs != null
+        ? this.inputs.map((i) => i.toJson()).toList()
+        : null;
+
+    List<Map>? tmpMetadata = this.metadata != null
+        ? this.metadata.map((i) => i.toJson()).toList()
+        : null;
+
     return {
       'id': id,
       'name': name,
@@ -59,7 +76,8 @@ class Template {
       'owner': owner,
       'email': email,
       'tags': tags,
-      'params': params,
+      'inputs': tmpInputs,
+      'metadata': tmpMetadata,
     };
   }
 }

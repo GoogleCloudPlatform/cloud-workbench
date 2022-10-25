@@ -1,10 +1,16 @@
+import 'package:cloudprovision/repository/models/template.dart';
+
 class Service {
   String? id;
+  String serviceId;
   String name;
+  String user;
+  String userEmail;
   String owner;
   String instanceRepo;
   int templateId;
   String templateName;
+  Template? template;
   String region;
   String projectId;
   String cloudBuildId;
@@ -13,11 +19,15 @@ class Service {
   Map<String, dynamic> params;
 
   Service({
+    required this.serviceId,
     required this.name,
+    required this.user,
+    required this.userEmail,
     required this.owner,
     required this.instanceRepo,
     required this.templateId,
     required this.templateName,
+    required this.template,
     required this.region,
     required this.projectId,
     required this.cloudBuildId,
@@ -27,11 +37,19 @@ class Service {
   });
 
   Service.fromJson(Map<String, dynamic> parsedJson)
-      : name = parsedJson['name'],
+      : serviceId =
+            parsedJson['serviceId'] == null ? "" : parsedJson['serviceId'],
+        name = parsedJson['name'],
+        user = parsedJson['user'] == null ? "" : parsedJson['user'],
+        userEmail =
+            parsedJson['userEmail'] == null ? "" : parsedJson['userEmail'],
         owner = parsedJson['owner'],
         instanceRepo = parsedJson['instanceRepo'],
         templateId = parsedJson['templateId'],
         templateName = parsedJson['templateName'],
+        template = parsedJson['template'] == null
+            ? null
+            : Template.fromJson(parsedJson['template']),
         region = parsedJson['region'],
         projectId = parsedJson['projectId'],
         cloudBuildId = parsedJson['cloudBuildId'],
@@ -43,11 +61,15 @@ class Service {
 
   Map<String, dynamic> toJson() {
     return {
+      'serviceId': serviceId,
       'name': name,
+      'user': user,
+      'userEmail': userEmail,
       'owner': owner,
       'instanceRepo': instanceRepo,
       'templateId': templateId,
       'templateName': templateName,
+      'template': template!.toJson(),
       'region': region,
       'projectId': projectId,
       'cloudBuildId': cloudBuildId,

@@ -10,7 +10,7 @@ class TemplatesService {
 
   // TODO: Read/inject URI from configuration
   String templatesUri =
-      "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates.json";
+      "https://raw.githubusercontent.com/gitrey/cp-templates/feature/new-app-metadata/templates.json";
 
   String communityCatalogUrl =
       "https://raw.githubusercontent.com/gitrey/community-templates/main/templates.json";
@@ -67,11 +67,11 @@ class TemplatesService {
     Map<String, dynamic> cloudProvisionJsonConfig =
         await _configService.getJson(template.cloudProvisionConfigUrl);
 
-    Iterable paramsList = cloudProvisionJsonConfig['params'];
+    Iterable paramsList = cloudProvisionJsonConfig['inputs'];
     List<Param> params =
         List<Param>.from(paramsList.map((model) => Param.fromJson(model)));
 
-    template.params = params;
+    template.inputs = params;
 
     return template;
   }

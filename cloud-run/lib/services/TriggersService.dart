@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:googleapis/cloudbuild/v1.dart' as cb;
 
@@ -38,5 +40,52 @@ class TriggersService {
     }
 
     return null;
+  }
+
+  getTriggerBuilds(String? projectId, String triggerName) async {
+    AuthClient client;
+    if (Platform.isMacOS) {
+      client = await clientViaApplicationDefaultCredentials(
+          scopes: ["https://www.googleapis.com/auth/cloud-platform"]);
+    } else {
+      client = await clientViaMetadataServer();
+    }
+
+    var cloudBuildApi = cb.CloudBuildApi(client);
+    var list = await cloudBuildApi.projects.triggers.list(projectId!);
+    late cb.BuildTrigger buildTrigger;
+    bool foundTrigger = false;
+
+    list.triggers!.forEach((trigger) {
+      if (trigger.name == triggerName) {
+        buildTrigger = trigger;
+        foundTrigger = true;
+      }
+    });
+    List<Map<String, String>> response = [];
+    if (foundTrigger) {
+      String? triggerId = buildTrigger.id;
+
+      String parent = "projects/${projectId}/locations/global";
+
+      cb.ListBuildsResponse buildsList = await cloudBuildApi.projects.builds
+          .list(projectId!, parent: parent, filter: "trigger_id=${triggerId}");
+
+      List<cb.Build>? builds = buildsList.builds;
+
+      for (cb.Build build in builds!) {
+        response.add(Map.from({
+          'buildId': build.id,
+          'status': build.status,
+          'createTime': build.createTime,
+          'finishTime': build.finishTime,
+          'buildTriggerId': build.buildTriggerId,
+          'projectId': build.projectId,
+          'buildLogUrl': build.logUrl,
+        }));
+      }
+    }
+
+    return response;
   }
 }

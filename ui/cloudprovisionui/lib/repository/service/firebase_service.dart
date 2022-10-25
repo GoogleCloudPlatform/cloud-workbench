@@ -14,7 +14,8 @@ class FirebaseService extends BaseService {
         _gitSettingsRef = firestore.collection('users/$userId/settings');
 
   Future<List<Service>> loadServices() async {
-    var querySnapshot = await _servicesRef.get();
+    var querySnapshot =
+        await _servicesRef.orderBy('deploymentDate', descending: true).get();
     var entries = querySnapshot.docs
         .map((doc) => Service.fromJson(doc.data())..id = doc.id)
         .toList();

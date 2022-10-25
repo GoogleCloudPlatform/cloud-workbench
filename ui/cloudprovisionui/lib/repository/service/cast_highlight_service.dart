@@ -26,7 +26,9 @@ class CastHighlightService {
 
       var url = Uri.https("demo.casthighlight.com", endpointPath);
 
-      var response = await http.get(url, headers: requestHeaders);
+      var response = await http
+          .get(url, headers: requestHeaders)
+          .timeout(Duration(seconds: 30));
       Map<String, dynamic> app = json.decode(response.body);
 
       endpointPath =

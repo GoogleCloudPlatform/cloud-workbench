@@ -17,8 +17,4 @@ class TemplateRepository {
   Future<Template> loadTemplateById(
           int templateId, String catalogSource) async =>
       service.loadTemplateById(templateId, catalogSource);
-
-  Future<void> forkRepository(
-          String sourceRepo, String token, String targetRepoName) async =>
-      service.forkRepository(sourceRepo, token, targetRepoName);
 }

@@ -12,6 +12,7 @@ class TriggersController extends BaseController {
   Router get router {
     final router = Router();
     router.post('/', _runTriggerHandler);
+    router.get('/<serviceId>/builds', _getTriggerBuildsHandler);
     return router;
   }
 
@@ -39,6 +40,33 @@ class TriggersController extends BaseController {
       } else {
         return Response.internalServerError(
           body: jsonResponseEncode({"msg": "Failed to run trigger"}),
+        );
+      }
+    } on Exception catch (e, stacktrace) {
+      print("Exception occurred: $e stackTrace: $stacktrace");
+      return Response.internalServerError(
+        body: jsonResponseEncode({"msg": "Internal Server Error"}),
+      );
+    }
+  }
+
+  Future<Response> _getTriggerBuildsHandler(Request request) async {
+    try {
+      String? serviceId = request.params['serviceId'];
+      String? projectId = request.url.queryParameters['projectId'];
+
+      var triggerName = serviceId! + "-webhook-trigger";
+
+      List<Map> response =
+          await _triggersService.getTriggerBuilds(projectId, triggerName);
+
+      if (response != null) {
+        return Response.ok(
+          jsonResponseEncode(response),
+        );
+      } else {
+        return Response.internalServerError(
+          body: jsonResponseEncode({"msg": "Failed to get trigger builds"}),
         );
       }
     } on Exception catch (e, stacktrace) {

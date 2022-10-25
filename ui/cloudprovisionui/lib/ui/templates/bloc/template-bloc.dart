@@ -13,7 +13,6 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
   TemplateBloc({required this.templateRepository}) : super(TemplateInitial()) {
     on<GetTemplate>(_mapGetTemplateToState);
     on<GetTemplatesList>(_mapGetTemplatesListToState);
-    on<ForkTemplateRepo>(_mapForkTemplateRepoToState);
     on<TemplatesListTagAdded>(_mapTemplatesListTagAddedToState);
     on<TemplatesListTagRemoved>(_mapTemplatesListTagRemovedToState);
   }
@@ -52,6 +51,7 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
 
       final template = await templateRepository.loadTemplateById(
           event.template.id, catalogSource);
+
       emit(TemplateLoaded(template));
     } on Exception {
       emit(const TemplateError("Failed to fetch template details."));
@@ -67,18 +67,6 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
       emit(TemplatesLoaded(templates));
     } on Exception {
       emit(const TemplateError("Failed to fetch list of templates."));
-    }
-  }
-
-  void _mapForkTemplateRepoToState(
-      ForkTemplateRepo event, Emitter<TemplateState> emit) async {
-    try {
-      // await templateRepository.forkRepository(
-      //     event.sourceRepo, event.token, event.targetRepoName);
-      emit(TemplateGitConfigUpdated(
-          event.sourceRepo, event.token, event.targetRepoName));
-    } on Exception {
-      emit(const TemplateError("Failed to fork template repository"));
     }
   }
 }

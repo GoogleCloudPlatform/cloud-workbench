@@ -15,6 +15,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: "assets/env");
@@ -33,6 +34,18 @@ Future<void> main() async {
         appId: dotenv.get('APP_ID'),
         measurementId: dotenv.get('MEASUREMENT_ID')),
   );
+
+  // Uncomment to run with local Firebase emulator
+
+  // if (kDebugMode) {
+  //   try {
+  //     FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8088);
+  //     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
+
   runApp(const CloudProvisionApp());
 }
 

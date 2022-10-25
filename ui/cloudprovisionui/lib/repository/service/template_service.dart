@@ -29,7 +29,9 @@ class TemplateService extends BaseService {
       HttpHeaders.authorizationHeader: "Bearer " + identityToken,
     };
 
-    var response = await http.get(url, headers: requestHeaders);
+    var response = await http
+        .get(url, headers: requestHeaders)
+        .timeout(Duration(seconds: 10));
 
     Iterable l = json.decode(response.body);
     List<Template> templates =
@@ -58,32 +60,12 @@ class TemplateService extends BaseService {
       HttpHeaders.authorizationHeader: "Bearer " + identityToken,
     };
 
-    var response = await http.get(url, headers: requestHeaders);
+    var response = await http
+        .get(url, headers: requestHeaders)
+        .timeout(Duration(seconds: 10));
 
     Template template = Template.fromJson(json.decode(response.body));
 
     return template;
-  }
-
-  forkRepository(String sourceRepo, String token, String targetRepoName) async {
-    Map<String, String> requestHeaders = {
-      HttpHeaders.authorizationHeader: "Bearer " + token,
-    };
-
-    DateTime dateTime = DateTime.now();
-    String YYYY_MM_DD = dateTime.toIso8601String();
-
-    var body = json.encode({
-      "name": targetRepoName +
-          "-" +
-          YYYY_MM_DD
-              .replaceAll("-", "")
-              .replaceAll(":", "")
-              .replaceAll(".", ""),
-    });
-    var url = Uri.https("api.github.com", "/repos/octocat/Hello-World/forks");
-    var response = await http.post(url, headers: requestHeaders, body: body);
-    print(response.statusCode);
-    print(jsonDecode(response.body));
   }
 }

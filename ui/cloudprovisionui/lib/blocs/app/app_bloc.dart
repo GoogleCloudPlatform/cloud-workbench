@@ -2,6 +2,7 @@ import 'package:cloudprovision/repository/firebase_repository.dart';
 import 'package:cloudprovision/repository/models/cast_application.dart';
 import 'package:cloudprovision/repository/models/git_settings.dart';
 import 'package:cloudprovision/repository/models/service.dart';
+import 'package:cloudprovision/repository/models/template.dart';
 import 'package:cloudprovision/repository/service/cast_highlight_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -89,11 +90,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   void _mapServiceDeploymentRequestEventToState(
       ServiceDeploymentRequest event, Emitter<AppState> emit) async {
     Service deployedService = Service(
+      serviceId: event.serviceId,
       name: event.name,
+      user: event.user,
+      userEmail: event.userEmail,
       owner: event.owner,
       instanceRepo: event.instanceRepo,
       templateId: event.templateId,
       templateName: event.templateName,
+      template: event.template,
       region: event.region,
       projectId: event.projectId,
       cloudBuildId: event.cloudBuildId,
