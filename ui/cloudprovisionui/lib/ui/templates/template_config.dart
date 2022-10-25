@@ -135,9 +135,18 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
 
     String projectId = dotenv.get('PROJECT_ID');
 
-    _formFieldValues["_INSTANCE_GIT_REPO_OWNER"] = state.instanceGitUsername;
-    _formFieldValues["_INSTANCE_GIT_REPO_TOKEN"] = state.instanceGitToken;
-    _formFieldValues["_API_KEY"] = state.gcpApiKey;
+    bool isCICDenabled = false;
+    template.inputs.forEach((element) {
+      if (element.param == "_INSTANCE_GIT_REPO_OWNER") {
+        isCICDenabled = true;
+      }
+    });
+
+    if (isCICDenabled) {
+      _formFieldValues["_INSTANCE_GIT_REPO_OWNER"] = state.instanceGitUsername;
+      _formFieldValues["_INSTANCE_GIT_REPO_TOKEN"] = state.instanceGitToken;
+      _formFieldValues["_API_KEY"] = state.gcpApiKey;
+    }
     _formFieldValues["_APP_ID"] = _appId;
 
     String buildDetails = await BuildRepository(service: BuildService())
