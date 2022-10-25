@@ -35,14 +35,16 @@ Future<void> main() async {
         measurementId: dotenv.get('MEASUREMENT_ID')),
   );
 
-  if (kDebugMode) {
-    try {
-      FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8088);
-      await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-    } catch (e) {
-      print(e);
-    }
-  }
+  // Uncomment to run with local Firebase emulator
+
+  // if (kDebugMode) {
+  //   try {
+  //     FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8088);
+  //     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   runApp(const CloudProvisionApp());
 }
