@@ -7,6 +7,7 @@ import 'package:cloudprovision/ui/pages/workspace_overview.dart';
 import 'package:cloudprovision/ui/settings/settings.dart';
 import 'package:cloudprovision/ui/signin/sign_in.dart';
 import 'package:cloudprovision/ui/templates/templates.dart';
+import 'package:cloudprovision/utils/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -212,7 +213,11 @@ class MainScreenState extends State<MainScreen> {
             child: Row(
               children: [
                 user.displayName != null
-                    ? Text("${user.displayName}")
+                    ? Tooltip(
+                        message: "${user.email}",
+                        child: Text("${user.displayName}",
+                            style: AppText.buttonFontStyle),
+                      )
                     : Container(),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
