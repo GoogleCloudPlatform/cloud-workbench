@@ -30,7 +30,7 @@ class SecurityService {
         response.add(Map.from({
           'severity': f.severity,
           'totalCount': f.totalCount,
-          'fixableCount': f.fixableCount,
+          'fixableCount': f.fixableCount == null ? "0" : f.fixableCount,
           'resourceUri': f.resourceUri,
         }));
       }
