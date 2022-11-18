@@ -1,21 +1,12 @@
-import 'dart:io';
-
-import 'package:googleapis_auth/auth_io.dart';
+import 'package:cloud_provision_server/services/BaseService.dart';
 import 'package:googleapis/containeranalysis/v1.dart' as ca;
 import 'package:googleapis/recommender/v1.dart' as ra;
 
-class SecurityService {
+class SecurityService extends BaseService {
   /// Returns list of vulnerabilities
   /// [projectId]
   /// [serviceId]
   getContainerVulnerabilities(String? projectId, String serviceId) async {
-    AuthClient client;
-    if (Platform.isMacOS) {
-      client = await clientViaApplicationDefaultCredentials(
-          scopes: ["https://www.googleapis.com/auth/cloud-platform"]);
-    } else {
-      client = await clientViaMetadataServer();
-    }
     String parent = "projects/${projectId}";
 
     var containerAnalysisApi = ca.ContainerAnalysisApi(client);
@@ -27,12 +18,14 @@ class SecurityService {
 
     for (ca.FixableTotalByDigest f in list.counts!) {
       if (f.resourceUri!.contains(serviceId)) {
-        response.add(Map.from({
-          'severity': f.severity,
-          'totalCount': f.totalCount,
-          'fixableCount': f.fixableCount == null ? "0" : f.fixableCount,
-          'resourceUri': f.resourceUri,
-        }));
+        if (f.severity != null) {
+          response.add(Map.from({
+            'severity': f.severity,
+            'totalCount': f.totalCount,
+            'fixableCount': f.fixableCount == null ? "0" : f.fixableCount,
+            'resourceUri': f.resourceUri,
+          }));
+        }
       }
     }
 
@@ -43,13 +36,6 @@ class SecurityService {
   /// [projectId]
   /// [serviceId]
   getSecurityRecommendations(String? projectId, String serviceId) async {
-    AuthClient client;
-    if (Platform.isMacOS) {
-      client = await clientViaApplicationDefaultCredentials(
-          scopes: ["https://www.googleapis.com/auth/cloud-platform"]);
-    } else {
-      client = await clientViaMetadataServer();
-    }
     String parent = "projects/${projectId}";
 
     List<Map<String, String>> response = [];
@@ -107,14 +93,6 @@ class SecurityService {
   /// [projectId]
   /// [serviceId]
   getSecurityInsights(String? projectId, String serviceId) async {
-    AuthClient client;
-    if (Platform.isMacOS) {
-      client = await clientViaApplicationDefaultCredentials(
-          scopes: ["https://www.googleapis.com/auth/cloud-platform"]);
-    } else {
-      client = await clientViaMetadataServer();
-    }
-
     List<Map<String, String>> response = [];
 
     String parent =

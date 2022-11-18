@@ -1,16 +1,13 @@
-import 'dart:io';
-
-import 'package:googleapis_auth/auth_io.dart';
+import 'package:cloud_provision_server/services/BaseService.dart';
 import 'package:googleapis/cloudbuild/v1.dart' as cb;
 
-class TriggersService {
+class TriggersService extends BaseService {
   /// Runs Cloud Build trigger
   ///
   /// [projectId]
   /// [branchName]
   /// [triggerName]
   runTrigger(String projectId, String branchName, String triggerName) async {
-    AuthClient client = await clientViaMetadataServer();
     var cloudBuildApi = cb.CloudBuildApi(client);
 
     var list = await cloudBuildApi.projects.triggers.list(projectId);
@@ -43,14 +40,6 @@ class TriggersService {
   }
 
   getTriggerBuilds(String? projectId, String triggerName) async {
-    AuthClient client;
-    if (Platform.isMacOS) {
-      client = await clientViaApplicationDefaultCredentials(
-          scopes: ["https://www.googleapis.com/auth/cloud-platform"]);
-    } else {
-      client = await clientViaMetadataServer();
-    }
-
     var cloudBuildApi = cb.CloudBuildApi(client);
     var list = await cloudBuildApi.projects.triggers.list(projectId!);
     late cb.BuildTrigger buildTrigger;

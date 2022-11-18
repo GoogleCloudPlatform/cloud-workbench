@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'package:cloud_provision_server/models/param_model.dart';
 import 'package:cloud_provision_server/models/template_model.dart';
+import 'package:cloud_provision_server/services/BaseService.dart';
 import 'package:cloud_provision_server/services/ConfigService.dart';
 import 'package:http/http.dart' as http;
 
-class TemplatesService {
+class TemplatesService extends BaseService {
   ConfigService _configService = ConfigService();
 
   // TODO: Read/inject URI from configuration

@@ -1,13 +1,12 @@
-import 'package:googleapis_auth/auth_io.dart';
+import 'package:cloud_provision_server/services/BaseService.dart';
 import 'package:googleapis/cloudbuild/v1.dart' as cb;
 
-class BuildsService {
+class BuildsService extends BaseService {
   /// Returns Cloud Build details for specified parameters
   ///
   /// [projectId]
   /// [buildId]
   Future<cb.Build> getBuildDetails(projectId, buildId) async {
-    AuthClient client = await clientViaMetadataServer();
     var cloudBuildApi = cb.CloudBuildApi(client);
 
     cb.Build build =
@@ -40,7 +39,6 @@ class BuildsService {
         steps: buildSteps,
         options: buildOptions);
 
-    AuthClient client = await clientViaMetadataServer();
     var cloudBuildApi = cb.CloudBuildApi(client);
     cb.Operation buildOp = await cloudBuildApi.projects.builds
         .create(buildRequest, projectId, parent: parent);

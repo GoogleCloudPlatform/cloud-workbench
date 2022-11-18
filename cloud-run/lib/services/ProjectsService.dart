@@ -1,7 +1,7 @@
-import 'package:googleapis_auth/auth_io.dart';
+import 'package:cloud_provision_server/services/BaseService.dart';
 import 'package:googleapis/cloudresourcemanager/v1.dart' as crm;
 
-class ProjectsService {
+class ProjectsService extends BaseService {
   /// Returns list of ACTIVE projects for provided user
   ///
   /// [userIdentityToken]
@@ -16,7 +16,6 @@ class ProjectsService {
     //
     // final client = GoogleAuthClient(authHeaders);
 
-    AuthClient client = await clientViaMetadataServer();
     final response = await crm.CloudResourceManagerApi(client).projects.list();
 
     var projects = response.projects
