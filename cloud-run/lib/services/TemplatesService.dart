@@ -9,25 +9,27 @@ import 'package:http/http.dart' as http;
 class TemplatesService extends BaseService {
   ConfigService _configService = ConfigService();
 
-  // TODO: Read/inject URI from configuration
-  String templatesUri =
-      "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates.json";
-
-  String communityCatalogUrl =
-      "https://raw.githubusercontent.com/gitrey/community-templates/main/templates.json";
+  String _getCatalogUrl(String catalogSource) {
+    var catalogUrl = getEnvVar("GCP_CATALOG_URL")!;
+    if (catalogSource == "community") {
+      catalogUrl = getEnvVar("COMMUNITY_CATALOG_URL")!;
+    } else if (catalogSource == "customer") {
+      catalogUrl = "";
+    }
+    return catalogUrl;
+  }
 
   /// Returns list of solution templates
   Future<List<Template>> getTemplates(
       String catalogSource, String catalogUrl) async {
     final http.Client client = new http.Client();
 
-    var catalogUrl = templatesUri;
-    if (catalogSource == "community") {
-      catalogUrl = communityCatalogUrl;
-    } else if (catalogSource == "customer") {
-      catalogUrl = "";
+    // TODO: add logic to handle private catalog
+    if (catalogSource == "customer") {
       return [];
     }
+
+    var catalogUrl = _getCatalogUrl(catalogSource);
 
     var response = await client.get(Uri.parse(catalogUrl));
 
@@ -42,13 +44,12 @@ class TemplatesService extends BaseService {
       int templateId, String catalogSource) async {
     final http.Client client = new http.Client();
 
-    var catalogUrl = templatesUri;
-    if (catalogSource == "community") {
-      catalogUrl = communityCatalogUrl;
-    } else if (catalogSource == "customer") {
-      catalogUrl = "";
+    // TODO: add logic to handle private catalog
+    if (catalogSource == "customer") {
       return null;
     }
+
+    var catalogUrl = _getCatalogUrl(catalogSource);
 
     var response = await client.get(Uri.parse(catalogUrl));
 

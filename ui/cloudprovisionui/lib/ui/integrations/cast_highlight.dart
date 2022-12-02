@@ -320,11 +320,11 @@ class CastHighlightPage extends StatelessWidget {
                                                     ),
                                                     onPressed: () async {
                                                       Template template = Template(
-                                                          8,
-                                                          "Onboard Go application - Cloud Run",
-                                                          "Onboard Go application - Cloud Run",
-                                                          "https://github.com/gitrey/cp-templates/tree/main/application/go-app-v2",
-                                                          "https://raw.githubusercontent.com/gitrey/cp-templates/main/application/go-app-v2/cloudprovision.json",
+                                                          9,
+                                                          "Golang w/ CICD",
+                                                          "Golang w/ CICD",
+                                                          "https://github.com/gitrey/cp-templates/tree/main/application/go-app-cicd",
+                                                          "https://raw.githubusercontent.com/gitrey/cp-templates/main/application/go-app-cicd/cloudprovision.json",
                                                           [],
                                                           "1.0.0",
                                                           "application",

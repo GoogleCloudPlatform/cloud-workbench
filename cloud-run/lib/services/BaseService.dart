@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:dotenv/dotenv.dart';
 
 class BaseService {
+  var _env = DotEnv(includePlatformEnvironment: true)
+    ..load(["/app/bin/config/env", "./config/env"]);
   late AuthClient client;
 
   BaseService() {
@@ -20,5 +23,13 @@ class BaseService {
     }
 
     return client;
+  }
+
+  bool isEnvVarSet(String varName) {
+    return _env.isDefined(varName);
+  }
+
+  String? getEnvVar(String varName) {
+    return _env[varName];
   }
 }
