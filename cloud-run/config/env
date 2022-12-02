@@ -1,0 +1,7 @@
+# Service Configuration
+
+GCP_CATALOG_URL=https://raw.githubusercontent.com/gitrey/cp-templates/main/catalog.json
+
+COMMUNITY_CATALOG_URL=https://raw.githubusercontent.com/gitrey/community-templates/main/catalog.json
+
+PRIVATE_CATALOG_URL=
