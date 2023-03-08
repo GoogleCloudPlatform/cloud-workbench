@@ -67,7 +67,7 @@ class TriggersService extends BaseService {
           'buildId': build.id,
           'status': build.status,
           'createTime': build.createTime,
-          'finishTime': build.finishTime,
+          // 'finishTime': build.finishTime,
           'buildTriggerId': build.buildTriggerId,
           'projectId': build.projectId,
           'buildLogUrl': build.logUrl,
