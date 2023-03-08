@@ -17,9 +17,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       : super(AppState(
           castAPI: "https://demo.casthighlight.com/WS2",
           gcpTemplateGitRepository:
-              "https://raw.githubusercontent.com/gitrey/cp-templates/main/templates.json",
+              "https://raw.githubusercontent.com/gitrey/cp-templates/main/catalog.json",
           communityTemplateGitRepository:
-              "https://raw.githubusercontent.com/gitrey/community-templates/main/templates.json",
+              "https://raw.githubusercontent.com/gitrey/community-templates/main/catalog.json",
         )) {
     on<GetAppState>(_mapGetAppEventToState);
     on<SettingsChanged>(_mapSettingsChangedEventToState);
