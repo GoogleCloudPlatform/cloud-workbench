@@ -16,11 +16,7 @@ class TemplateService extends BaseService {
       'catalogUrl': catalogUrl,
     };
 
-    var url = Uri.https(cloudProvisionServerUrl, endpointPath, queryParameters);
-
-    if (cloudProvisionServerUrl.contains("localhost")) {
-      url = Uri.http(cloudProvisionServerUrl, endpointPath, queryParameters);
-    }
+    var url = getUrl(endpointPath, queryParameters: queryParameters);
 
     final user = FirebaseAuth.instance.currentUser!;
     var identityToken = await user.getIdToken();
@@ -48,10 +44,7 @@ class TemplateService extends BaseService {
       'catalogSource': catalogSource,
     };
 
-    var url = Uri.https(cloudProvisionServerUrl, endpointPath, queryParameters);
-    if (cloudProvisionServerUrl.contains("localhost")) {
-      url = Uri.http(cloudProvisionServerUrl, endpointPath, queryParameters);
-    }
+    var url = getUrl(endpointPath, queryParameters: queryParameters);
 
     final user = FirebaseAuth.instance.currentUser!;
     var identityToken = await user.getIdToken();

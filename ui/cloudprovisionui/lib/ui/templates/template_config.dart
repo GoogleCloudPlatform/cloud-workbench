@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloudprovision/blocs/app/app_bloc.dart';
+import 'package:cloudprovision/firebase_options.dart';
 import 'package:cloudprovision/ui/main/main_screen.dart';
 import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
 import 'package:cloudprovision/repository/service/build_service.dart';
@@ -133,7 +134,7 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
       _appName = _formFieldValues["_APP_NAME"];
     });
 
-    String projectId = dotenv.get('PROJECT_ID');
+    String projectId = DefaultFirebaseOptions.currentPlatform.projectId;
 
     bool isCICDenabled = false;
     template.inputs.forEach((element) {
@@ -171,11 +172,12 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         templateId: template.id,
         template: template,
         region: _formFieldValues["_REGION"],
-        projectId: dotenv.get('PROJECT_ID'),
+        projectId: DefaultFirebaseOptions.currentPlatform.projectId,
         cloudBuildId: buildConfig['build']['id'],
         cloudBuildLogUrl: buildConfig['build']['logUrl'],
         params: _formFieldValues,
       );
+
 
       BlocProvider.of<AppBloc>(context).add(serviceDeployedEvent);
 
@@ -482,12 +484,12 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
                 TextButton(
                   onPressed: () async {
                     final Uri _url = Uri.parse(
-                        "https://console.cloud.google.com/home/dashboard?project=${dotenv.get('PROJECT_ID')}");
+                        "https://console.cloud.google.com/home/dashboard?project=${DefaultFirebaseOptions.currentPlatform.projectId}");
                     if (!await launchUrl(_url)) {
                       throw 'Could not launch $_url';
                     }
                   },
-                  child: Text(dotenv.get('PROJECT_ID'),
+                  child: Text(DefaultFirebaseOptions.currentPlatform.projectId,
                       style: GoogleFonts.openSans(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,

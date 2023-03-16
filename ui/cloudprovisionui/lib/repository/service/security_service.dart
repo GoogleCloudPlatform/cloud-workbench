@@ -31,11 +31,7 @@ class SecurityService extends BaseService {
         'projectId': projectId,
       };
 
-      var url =
-          Uri.https(cloudProvisionServerUrl, endpointPath, queryParameters);
-      if (cloudProvisionServerUrl.contains("localhost")) {
-        url = Uri.http(cloudProvisionServerUrl, endpointPath, queryParameters);
-      }
+      var url = getUrl(endpointPath, queryParameters: queryParameters);
 
       var response = await http
           .get(url, headers: requestHeaders)
@@ -69,11 +65,7 @@ class SecurityService extends BaseService {
         'projectId': projectId,
       };
 
-      var url =
-          Uri.https(cloudProvisionServerUrl, endpointPath, queryParameters);
-      if (cloudProvisionServerUrl.contains("localhost")) {
-        url = Uri.http(cloudProvisionServerUrl, endpointPath, queryParameters);
-      }
+      var url = getUrl(endpointPath, queryParameters: queryParameters);
 
       var response = await http
           .get(url, headers: requestHeaders)
@@ -108,11 +100,7 @@ class SecurityService extends BaseService {
         'projectId': projectId,
       };
 
-      var url =
-          Uri.https(cloudProvisionServerUrl, endpointPath, queryParameters);
-      if (cloudProvisionServerUrl.contains("localhost")) {
-        url = Uri.http(cloudProvisionServerUrl, endpointPath, queryParameters);
-      }
+      var url = getUrl(endpointPath, queryParameters: queryParameters);
 
       var response = await http
           .get(url, headers: requestHeaders)

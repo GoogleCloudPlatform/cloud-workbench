@@ -402,8 +402,12 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
             const SizedBox(height: 4),
             TextButton(
               onPressed: () async {
-                final Uri _url = Uri.parse(
-                    "https://console.cloud.google.com/cloud-build/triggers;region=global/edit/${_triggerId}?project=${service.projectId}");
+                Uri _url = Uri.parse("https://console.cloud.google.com/cloud-build/triggers?project=${service.projectId}");
+                if (_triggerBuilds.isNotEmpty) {
+                  _url = Uri.parse(
+                      "https://console.cloud.google.com/cloud-build/triggers;region=global/edit/${_triggerId}?project=${service.projectId}");
+                }
+
                 if (!await launchUrl(_url)) {
                   throw 'Could not launch $_url';
                 }
@@ -418,8 +422,13 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
             const SizedBox(height: 4),
             TextButton(
               onPressed: () async {
-                final Uri _url = Uri.parse(
-                    "https://console.cloud.google.com/cloud-build/builds;region=global?query=trigger_id=${_triggerId}&project=${service.projectId}");
+
+                Uri _url = Uri.parse("https://console.cloud.google.com/cloud-build/triggers?project=${service.projectId}");
+                if (_triggerBuilds.isNotEmpty) {
+                  _url = Uri.parse(
+                      "https://console.cloud.google.com/cloud-build/builds;region=global?query=trigger_id=${_triggerId}&project=${service.projectId}");
+                }
+
                 if (!await launchUrl(_url)) {
                   throw 'Could not launch $_url';
                 }
@@ -430,6 +439,7 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
                 maxLines: 1,
                 style: AppText.linkFontStyle,
               ),
+
             )
           ],
         ),

@@ -35,12 +35,6 @@ final Section dashboardSection = Section(
         page: NavigationPage.MyServices,
       ),
       SectionItem(
-        title: "Notifications",
-        subTitle: "Review workspace notifications",
-        image: "cloudmessaging",
-        page: NavigationPage.Notifications,
-      ),
-      SectionItem(
         title: "Settings",
         subTitle: "Workspace settings",
         image: "hosting",
@@ -58,37 +52,6 @@ final Section cloudProvisionCatalogSection = Section(
         image: "appdistro@2x",
         page: NavigationPage.MicroserviceTemplates,
       ),
-      SectionItem(
-        title: "Solution Architectures",
-        subTitle: "Create a full architecture from template",
-        image: "functions",
-        page: NavigationPage.SolutionArchitectures,
-      ),
-      SectionItem(
-        title: "Infra Modules",
-        subTitle: "Add single component to existing application",
-        image: "realtime_database2x",
-        page: NavigationPage.InfraModules,
-      ),
-      SectionItem(
-        title: "Community Templates",
-        subTitle: "Community maintained templates",
-        image: "discovery-cards-crashlytics",
-        page: NavigationPage.CommunityTemplates,
-      ),
-      SectionItem(
-        title: "Customer Templates",
-        subTitle: "Customer maintained templates",
-        image: "disovery_card_ml2",
-        page: NavigationPage.CustomerTemplates,
-      ),
-      SectionItem(
-        title: "Stack Composer",
-        subTitle:
-            "Create new stack from infra modules and application templates",
-        image: "dynamiclinks",
-        page: NavigationPage.StackComposer,
-      )
     ]);
 
 final Section teamsSection = Section(
@@ -177,8 +140,8 @@ class WorkspaceOverviewPage extends StatelessWidget {
             ),
             _cloudProvisionCatalog(dashboardSection, context),
             _cloudProvisionCatalog(cloudProvisionCatalogSection, context),
-            _cloudProvisionCatalog(teamsSection, context),
-            _cloudProvisionCatalog(servicesSection, context),
+            // _cloudProvisionCatalog(teamsSection, context),
+            // _cloudProvisionCatalog(servicesSection, context),
           ],
         ),
       ),

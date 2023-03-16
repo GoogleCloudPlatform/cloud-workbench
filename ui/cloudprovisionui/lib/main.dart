@@ -17,22 +17,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/foundation.dart';
 
+import 'firebase_options.dart';
+
 Future<void> main() async {
   await dotenv.load(fileName: "assets/env");
 
   WidgetsFlutterBinding.ensureInitialized();
-  // FirebaseOptions from Firebase console - web app config
-  // Set values in assets/env
-  // example: PROJECT_ID="your-project-name"
+
   await Firebase.initializeApp(
-    options: FirebaseOptions(
-        apiKey: dotenv.get('API_KEY'),
-        authDomain: dotenv.get('AUTH_DOMAIN'),
-        projectId: dotenv.get('PROJECT_ID'),
-        storageBucket: dotenv.get('STORAGE_BUCKET'),
-        messagingSenderId: dotenv.get('MESSAGING_SENDER_ID'),
-        appId: dotenv.get('APP_ID'),
-        measurementId: dotenv.get('MEASUREMENT_ID')),
+    options: DefaultFirebaseOptions.currentPlatform,
   );
 
   // Uncomment to run with local Firebase emulator

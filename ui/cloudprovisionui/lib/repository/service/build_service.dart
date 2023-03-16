@@ -27,11 +27,7 @@ class BuildService extends BaseService {
 
       var endpointPath = '/v1/builds';
 
-      var url = Uri.https(cloudProvisionServerUrl, endpointPath);
-
-      if (cloudProvisionServerUrl.contains("localhost")) {
-        url = Uri.http(cloudProvisionServerUrl, endpointPath);
-      }
+      var url = getUrl(endpointPath);
 
       var catalogSource = "gcp";
 
@@ -84,11 +80,8 @@ class BuildService extends BaseService {
         'buildId': buildId,
       };
 
-      var url =
-          Uri.https(cloudProvisionServerUrl, endpointPath, queryParameters);
-      if (cloudProvisionServerUrl.contains("localhost")) {
-        url = Uri.http(cloudProvisionServerUrl, endpointPath, queryParameters);
-      }
+      var url = getUrl(endpointPath, queryParameters: queryParameters);
+
       var response = await http
           .get(url, headers: requestHeaders)
           .timeout(Duration(seconds: 10));
@@ -117,10 +110,7 @@ class BuildService extends BaseService {
 
       var endpointPath = '/v1/triggers';
 
-      var url = Uri.https(cloudProvisionServerUrl, endpointPath);
-      if (cloudProvisionServerUrl.contains("localhost")) {
-        url = Uri.http(cloudProvisionServerUrl, endpointPath);
-      }
+      var url = getUrl(endpointPath);
 
       var body = json.encode({
         "project_id": projectId,
@@ -160,11 +150,7 @@ class BuildService extends BaseService {
         'projectId': projectId,
       };
 
-      var url =
-          Uri.https(cloudProvisionServerUrl, endpointPath, queryParameters);
-      if (cloudProvisionServerUrl.contains("localhost")) {
-        url = Uri.http(cloudProvisionServerUrl, endpointPath, queryParameters);
-      }
+      var url = getUrl(endpointPath, queryParameters: queryParameters);
 
       var response = await http
           .get(url, headers: requestHeaders)
