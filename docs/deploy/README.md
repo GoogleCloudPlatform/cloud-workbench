@@ -132,7 +132,7 @@ This is manual step through the UI
 ### Deploy
 
 ```sh
-gcloud run deploy cloudprovisionui-1 \
+gcloud run deploy developer-workbench \
   --source . \
   --region $REGION \
   --allow-unauthenticated \
@@ -143,7 +143,7 @@ gcloud run deploy cloudprovisionui-1 \
 ### Authorized domains configuration
 
 Run the command to print URL for settings page.
-Add cloudprovisionui service domain(ex. cloudprovisionui-1-2lltdgq-ue.a.run.app) to Authorized domains under Authentication/Settings:
+Add developer-workbench service domain(ex. developer-workbench-2lltdgq-ue.a.run.app) to Authorized domains under Authentication/Settings:
 
 ```sh
 printf "\nhttps://console.firebase.google.com/u/0/project/$PROJECT_ID/authentication/settings\n"
