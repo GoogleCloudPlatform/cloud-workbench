@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "overview/Example.md",
+                "file": "installation/README.md",
                 "mode": "source",
                 "source": false
               }
@@ -108,7 +108,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "overview/Example.md",
+                "file": "installation/README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -125,7 +125,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "overview/Example.md",
+                "file": "installation/README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -148,11 +148,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "overview/Example.md"
+                "file": "installation/README.md"
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -169,14 +170,17 @@
       "obsidian-excalidraw-plugin:Create new drawing": false
     }
   },
-  "active": "5c1460b29a66de90",
+  "active": "09c9201d6c32ec6c",
   "lastOpenFiles": [
+    "local_development",
+    "getting_started",
+    "index.md",
+    "installation/README.md",
+    "overview/Example.md",
     "overview/img/OverviewScreenshot.png",
     "overview/img/ 2023-04-17 16.00.36.excalidraw.md",
-    "overview/Example.md",
     "overview/img/ 2023-04-17 16.00.36.excalidraw.svg",
     "overview/img",
-    "index.md",
     "Notebook.md"
   ]
 }

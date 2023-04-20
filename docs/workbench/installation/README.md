@@ -1,5 +1,9 @@
 # Installation Steps
 
+
+[index](../index.md)
+
+
 ## Clone the repo
 
 ```sh
