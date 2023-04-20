@@ -1,62 +1,35 @@
 {
   "main": {
-    "id": "2198758adf0d1b22",
+    "id": "7b3f2da32c3ceb2e",
     "type": "split",
     "children": [
       {
-        "id": "39e497f7a842da24",
+        "id": "108f19e78a341d0f",
         "type": "tabs",
         "children": [
           {
-            "id": "0318c60e5a7c4fea",
+            "id": "5517cfe7e059c24a",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "index.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "09c9201d6c32ec6c",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "installation/README.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "2ed994c289307867",
-            "type": "leaf",
-            "state": {
-              "type": "excalidraw",
-              "state": {
-                "file": "overview/img/ 2023-04-17 16.00.36.excalidraw.md"
-              }
+              "type": "empty",
+              "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
   },
   "left": {
-    "id": "dedc990db8c780d1",
+    "id": "66fd74c0f52bfcc5",
     "type": "split",
     "children": [
       {
-        "id": "f9d1f130a744f2e0",
+        "id": "a0026bdd30e2a16e",
         "type": "tabs",
         "children": [
           {
-            "id": "5c1460b29a66de90",
+            "id": "c48afe9902156416",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -66,7 +39,7 @@
             }
           },
           {
-            "id": "c8d103f9e066bbbf",
+            "id": "6cab2b6c3a726307",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -81,7 +54,7 @@
             }
           },
           {
-            "id": "96f5bc38a971377d",
+            "id": "ac249d1f53e45fdf",
             "type": "leaf",
             "state": {
               "type": "starred",
@@ -95,20 +68,19 @@
     "width": 300
   },
   "right": {
-    "id": "c7d90bd80f6e4729",
+    "id": "bde326333ea56e55",
     "type": "split",
     "children": [
       {
-        "id": "7f71ed9bb976eef3",
+        "id": "995123337b34896b",
         "type": "tabs",
         "children": [
           {
-            "id": "933459948282530b",
+            "id": "28dd5a64bd5fa66b",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "installation/README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -120,19 +92,18 @@
             }
           },
           {
-            "id": "26e494bd9bad659f",
+            "id": "918a4b6f65b28580",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "installation/README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
             }
           },
           {
-            "id": "afdacd2c0f8f31e2",
+            "id": "81761bcfd1f60010",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -143,21 +114,19 @@
             }
           },
           {
-            "id": "19ab5b24b888efb0",
+            "id": "fe41b608e209ffae",
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "installation/README.md"
-              }
+              "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -166,21 +135,11 @@
       "canvas:Create new canvas": false,
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "obsidian-excalidraw-plugin:Create new drawing": false
+      "command-palette:Open command palette": false
     }
   },
-  "active": "09c9201d6c32ec6c",
+  "active": "5517cfe7e059c24a",
   "lastOpenFiles": [
-    "local_development",
-    "getting_started",
-    "index.md",
-    "installation/README.md",
-    "overview/Example.md",
-    "overview/img/OverviewScreenshot.png",
-    "overview/img/ 2023-04-17 16.00.36.excalidraw.md",
-    "overview/img/ 2023-04-17 16.00.36.excalidraw.svg",
-    "overview/img",
-    "Notebook.md"
+    "docs/CLOUD_WORKBENCH.md"
   ]
 }

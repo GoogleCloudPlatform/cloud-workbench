@@ -1,9 +1,5 @@
 # Installation Steps
 
-
-[index](../index.md)
-
-
 ## Clone the repo
 
 ```sh
@@ -161,4 +157,7 @@ https://console.cloud.google.com/apis/credentials
 
 ### User settings
 
-Complete the configuration by following steps under usermanual/README.md.
+Complete the configuration by following the [system settings steps](system_settings.md).
+
+
+[Home](../README.md)

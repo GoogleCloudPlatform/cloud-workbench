@@ -1,5 +1,5 @@
 {
-  "folder": "Excalidraw",
+  "folder": "diagrams",
   "embedUseExcalidrawFolder": false,
   "templateFilePath": "Excalidraw/Template.excalidraw",
   "scriptFolderPath": "Excalidraw/Scripts",
@@ -15,7 +15,7 @@
   "useExcalidrawExtension": true,
   "displaySVGInPreview": true,
   "displayExportedImageIfAvailable": false,
-  "previewMatchObsidianTheme": true,
+  "previewMatchObsidianTheme": false,
   "width": "400",
   "dynamicStyling": "colorful",
   "isLeftHanded": false,
