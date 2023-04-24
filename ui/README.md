@@ -2,20 +2,16 @@
 
 Set the values in cloudprovisionui/assets/env file.
 ```
-# FirebaseOptions from Firebase console - web app config
-PROJECT_ID=''
-API_KEY=''
-AUTH_DOMAIN=''
-STORAGE_BUCKET=''
-MESSAGING_SENDER_ID=''
-APP_ID=''
-MEASUREMENT_ID='
-
-# Client ID from GCP Auth Credentials
+# Client ID from Firebase Web App config
 CLIENT_ID=''
+```
 
-# Cloud Provision API Url
-CLOUD_PROVISION_API_URL='cloud-provision-server-aaabbbccc-ue.a.run.app'
+To run application locally:
+```
+flutter run lib/main.dart \
+    -d chrome \
+    --web-port=5000 \
+    --dart-define=CLOUD_PROVISION_API_URL=localhost:8080
 ```
 
 Build and Deploy application:
