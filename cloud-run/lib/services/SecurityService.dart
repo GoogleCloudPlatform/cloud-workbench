@@ -63,7 +63,7 @@ class SecurityService extends BaseService {
       for (ra.GoogleCloudRecommenderV1RecommendationInsightReference ins
           in r.associatedInsights!) {
         var insight = await rApi.projects.locations.insightTypes.insights
-            .get(ins!.insight!);
+            .get(ins.insight!);
 
         responseMap['insightName'] = insight.name!;
         responseMap['insightDescription'] = insight.description!;
@@ -107,7 +107,7 @@ class SecurityService extends BaseService {
         print("associatedInsights: ${ins.insight}");
 
         var insight = await rApi.projects.locations.insightTypes.insights
-            .get(ins!.insight!);
+            .get(ins.insight!);
 
         response.add(Map.from({
           'serviceName': insight.content!['serviceName'],

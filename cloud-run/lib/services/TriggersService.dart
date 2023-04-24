@@ -31,7 +31,7 @@ class TriggersService extends BaseService {
           source: repoSource, projectId: projectId, triggerId: triggerId);
 
       cb.Operation operation = await cloudBuildApi.projects.locations.triggers
-          .run(rbtr, triggerName!);
+          .run(rbtr, triggerName);
 
       return operation;
     }
@@ -58,7 +58,7 @@ class TriggersService extends BaseService {
       String parent = "projects/${projectId}/locations/global";
 
       cb.ListBuildsResponse buildsList = await cloudBuildApi.projects.builds
-          .list(projectId!, parent: parent, filter: "trigger_id=${triggerId}");
+          .list(projectId, parent: parent, filter: "trigger_id=${triggerId}");
 
       List<cb.Build>? builds = buildsList.builds;
 
