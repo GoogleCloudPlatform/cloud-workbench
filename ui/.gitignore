@@ -6,6 +6,7 @@ cloudprovisionui/.packages
 cloudprovisionui/.dart_tool
 cloudprovisionui/.dart_tool/*
 cloudprovisionui/lib/generated_plugin_registrant.dart
+firebase_options.dart 
 
 # Miscellaneous
 *.class
@@ -54,4 +55,3 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-firebase_options.dart
