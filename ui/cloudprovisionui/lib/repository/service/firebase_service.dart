@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloudprovision/repository/models/git_settings.dart';
-import 'package:cloudprovision/repository/models/service.dart';
-import 'package:cloudprovision/repository/service/base_service.dart';
+import '../models/git_settings.dart';
+import '../models/service.dart';
+import 'base_service.dart';
 
 class FirebaseService extends BaseService {
   final FirebaseFirestore firestore;

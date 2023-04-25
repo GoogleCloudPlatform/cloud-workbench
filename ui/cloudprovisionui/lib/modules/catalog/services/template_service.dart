@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:cloudprovision/modules/catalog/models/template.dart';
-import 'package:cloudprovision/repository/service/base_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+
+import '../models/template.dart';
+import '../../../repository/service/base_service.dart';
 
 class TemplateService extends BaseService {
   Future<List<Template>> loadTemplates(

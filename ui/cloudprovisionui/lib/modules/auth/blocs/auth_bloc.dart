@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
-import 'package:cloudprovision/modules/auth/repositories/auth_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+
+import '../repositories/auth_repository.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';

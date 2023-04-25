@@ -1,12 +1,13 @@
-import 'package:cloudprovision/repository/models/build.dart';
-import 'package:cloudprovision/repository/service/base_service.dart';
 import 'dart:convert';
 
-import 'package:cloudprovision/modules/catalog/models/template.dart';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+
+import '../../modules/catalog/models/template.dart';
+import '../models/build.dart';
+import 'base_service.dart';
 
 class BuildService extends BaseService {
   /// Deploys selected template

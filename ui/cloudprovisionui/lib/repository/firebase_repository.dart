@@ -1,6 +1,6 @@
-import 'package:cloudprovision/repository/models/git_settings.dart';
-import 'package:cloudprovision/repository/models/service.dart';
-import 'package:cloudprovision/repository/service/firebase_service.dart';
+import 'models/git_settings.dart';
+import 'models/service.dart';
+import 'service/firebase_service.dart';
 
 class FirebaseRepository {
   const FirebaseRepository({required this.service});

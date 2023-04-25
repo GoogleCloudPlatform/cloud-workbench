@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:cloudprovision/repository/models/build.dart';
-import 'package:cloudprovision/modules/catalog/models/template.dart';
-import 'package:cloudprovision/repository/service/build_service.dart';
+import 'models/build.dart';
+import '../modules/catalog/models/template.dart';
+import 'service/build_service.dart';
 
 class BuildRepository {
   const BuildRepository({required this.service});

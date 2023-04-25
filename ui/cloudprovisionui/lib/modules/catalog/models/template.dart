@@ -1,6 +1,7 @@
-import 'package:cloudprovision/repository/models/metadata_model.dart';
-import 'package:cloudprovision/repository/models/param.dart';
 import 'dart:convert';
+
+import '../../../repository/models/metadata_model.dart';
+import '../../../repository/models/param.dart';
 
 class Template {
   int id;

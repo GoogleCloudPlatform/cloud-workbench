@@ -1,6 +1,6 @@
-import 'package:cloudprovision/repository/models/recommendation_insight.dart';
-import 'package:cloudprovision/repository/models/vulnerability.dart';
-import 'package:cloudprovision/repository/service/security_service.dart';
+import 'models/recommendation_insight.dart';
+import 'models/vulnerability.dart';
+import 'service/security_service.dart';
 
 class SecurityRepository {
   const SecurityRepository({required this.service});

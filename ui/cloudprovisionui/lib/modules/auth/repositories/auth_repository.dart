@@ -1,4 +1,4 @@
-import 'package:cloudprovision/modules/auth/services/auth_service.dart';
+import '../services/auth_service.dart';
 
 class AuthRepository {
   const AuthRepository({required this.service});

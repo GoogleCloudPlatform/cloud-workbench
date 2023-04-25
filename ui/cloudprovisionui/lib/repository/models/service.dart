@@ -1,4 +1,4 @@
-import 'package:cloudprovision/modules/catalog/models/template.dart';
+import '../../modules/catalog/models/template.dart';
 
 class Service {
   String? id;

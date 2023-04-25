@@ -1,13 +1,12 @@
-import 'package:cloudprovision/repository/models/build.dart';
-import 'package:cloudprovision/repository/models/recommendation_insight.dart';
-import 'package:cloudprovision/repository/models/vulnerability.dart';
-import 'package:cloudprovision/repository/service/base_service.dart';
 import 'dart:convert';
-
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+
+import '../models/build.dart';
+import '../models/recommendation_insight.dart';
+import '../models/vulnerability.dart';
+import 'base_service.dart';
 
 class SecurityService extends BaseService {
   /// Returns list of Cloud Build records for specified serviceId
