@@ -53,7 +53,10 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
   final _key = GlobalKey<FormState>();
 
   final TemplateBloc _templateBloc = TemplateBloc(
-      templateRepository: TemplateRepository(service: TemplateService()));
+    templateRepository: TemplateRepository(
+      service: TemplateService(),
+    ),
+  );
 
   String _errorMessage = "";
 
