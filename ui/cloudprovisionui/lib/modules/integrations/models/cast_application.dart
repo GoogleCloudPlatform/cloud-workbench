@@ -1,4 +1,4 @@
-import 'package:cloudprovision/repository/models/cast_recommendation.dart';
+import 'cast_recommendation.dart';
 
 class CastApplication {
   String name;

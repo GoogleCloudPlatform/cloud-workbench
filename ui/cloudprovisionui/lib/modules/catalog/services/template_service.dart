@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cloudprovision/repository/models/template.dart';
+import 'package:cloudprovision/modules/catalog/models/template.dart';
 import 'package:cloudprovision/repository/service/base_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;

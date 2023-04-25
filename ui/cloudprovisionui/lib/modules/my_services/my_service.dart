@@ -12,9 +12,10 @@ import '../../repository/models/vulnerability.dart';
 import '../../repository/security_repository.dart';
 import '../../repository/service/build_service.dart';
 import '../../repository/service/security_service.dart';
-import '../../repository/service/template_service.dart';
-import '../../repository/template_repository.dart';
-import '../../screens/templates/bloc/template-bloc.dart';
+import '../catalog/bloc/template-bloc.dart';
+import '../catalog/services/template_service.dart';
+import '../catalog/repositories/template_repository.dart';
+
 import '../../utils/styles.dart';
 
 class MyServiceDialog extends StatefulWidget {

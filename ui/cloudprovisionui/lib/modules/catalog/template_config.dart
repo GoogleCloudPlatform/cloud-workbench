@@ -11,13 +11,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../blocs/app/app_bloc.dart';
 import '../../firebase_options.dart';
+import 'repositories/template_repository.dart';
 import '../main/main_screen.dart';
 import 'bloc/template-bloc.dart';
 import '../../repository/service/build_service.dart';
-import '../../repository/service/template_service.dart';
-import '../../repository/template_repository.dart';
+import 'services/template_service.dart';
+
 import '../../repository/models/param.dart';
-import '../../repository/models/template.dart';
+import 'models/template.dart';
 import '../../utils/styles.dart';
 import '../../repository/build_repository.dart';
 

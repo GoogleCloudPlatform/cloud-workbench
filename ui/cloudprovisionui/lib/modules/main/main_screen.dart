@@ -4,15 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../blocs/app/app_bloc.dart';
-import '../../blocs/auth/auth_bloc.dart';
-import '../../screens/integrations/cast_highlight.dart';
-import '../../screens/my_services/my_services.dart';
-import '../../screens/pages/page.dart';
-import '../../screens/pages/workspace_overview.dart';
-import '../../screens/settings/settings.dart';
-import '../../screens/signin/sign_in.dart';
-import '../../screens/templates/templates.dart';
+
+import '../../modules/integrations/cast_highlight.dart';
+import '../../modules/my_services/my_services.dart';
+import '../../modules/pages/page.dart';
+import '../../modules/pages/workspace_overview.dart';
+import '../../modules/settings/settings.dart';
+
+import '../../modules/catalog/templates.dart';
 import '../../utils/styles.dart';
+
+import '../../modules/auth/sign_in_screen.dart';
+import '../auth/blocs/auth_bloc.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -209,7 +212,7 @@ class MainScreenState extends State<MainScreen> {
               if (state is UnAuthenticated) {
                 // Navigate to the sign in screen when the user Signs Out
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => SignIn()),
+                  MaterialPageRoute(builder: (context) => SignInScreen()),
                   (route) => false,
                 );
               }

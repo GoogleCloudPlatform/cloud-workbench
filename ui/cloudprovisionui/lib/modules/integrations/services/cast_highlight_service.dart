@@ -1,9 +1,10 @@
-import 'package:cloudprovision/repository/models/cast_application.dart';
-import 'package:cloudprovision/repository/models/cast_recommendation.dart';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+
+import '../models/cast_application.dart';
+import '../models/cast_recommendation.dart';
 
 class CastHighlightService {
   Future<List<CastApplication>> loadAssessmentByCampaignId(

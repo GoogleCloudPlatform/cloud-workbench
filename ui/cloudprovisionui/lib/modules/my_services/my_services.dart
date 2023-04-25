@@ -6,7 +6,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 import '../../blocs/app/app_bloc.dart';
 import '../../repository/models/service.dart';
-import '../../screens/my_services/my_service.dart';
+import '../../modules/my_services/my_service.dart';
 import '../../utils/styles.dart';
 
 class MyServicesPage extends StatelessWidget {

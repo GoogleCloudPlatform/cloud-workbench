@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:cloudprovision/repository/auth_repository.dart';
+import 'package:cloudprovision/modules/auth/repositories/auth_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 

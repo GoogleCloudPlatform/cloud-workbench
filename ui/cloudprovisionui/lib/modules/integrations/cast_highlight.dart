@@ -4,10 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../blocs/app/app_bloc.dart';
-import '../../repository/models/cast_application.dart';
-import '../../repository/models/template.dart';
-import '../../screens/main/main_screen.dart';
-import '../../screens/templates/template_config.dart';
+import '../catalog/models/template.dart';
+
+import '../catalog/template_config.dart';
+import '../main/main_screen.dart';
+import 'models/cast_application.dart';
 
 class CastHighlightPage extends StatelessWidget {
   final void Function(NavigationPage page) navigateTo;

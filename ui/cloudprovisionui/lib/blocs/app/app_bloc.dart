@@ -1,11 +1,14 @@
 import 'package:cloudprovision/repository/firebase_repository.dart';
-import 'package:cloudprovision/repository/models/cast_application.dart';
+
 import 'package:cloudprovision/repository/models/git_settings.dart';
 import 'package:cloudprovision/repository/models/service.dart';
-import 'package:cloudprovision/repository/models/template.dart';
-import 'package:cloudprovision/repository/service/cast_highlight_service.dart';
+
+import '../../modules/integrations/services/cast_highlight_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../modules/catalog/models/template.dart';
+import '../../modules/integrations/models/cast_application.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';

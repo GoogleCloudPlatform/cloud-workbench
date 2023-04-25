@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'repositories/template_repository.dart';
 import '../main/main_screen.dart';
 import 'bloc/template-bloc.dart';
-import '../../repository/service/template_service.dart';
-import '../../repository/template_repository.dart';
+import 'services/template_service.dart';
+
 import 'template_list.dart';
 
 class TemplatesPage extends StatelessWidget {

@@ -7,15 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'blocs/app/app_bloc.dart';
-import 'blocs/auth/auth_bloc.dart';
-import 'repository/auth_repository.dart';
-import 'repository/firebase_repository.dart';
-import 'repository/service/auth_service.dart';
-import 'repository/service/firebase_service.dart';
-import 'theme.dart';
-import 'screens/main/main_screen.dart';
 
-import 'screens/signin/sign_in.dart';
+import 'modules/auth/blocs/auth_bloc.dart';
+import 'modules/auth/repositories/auth_repository.dart';
+import 'repository/firebase_repository.dart';
+import 'modules/auth/services/auth_service.dart';
+import 'repository/service/firebase_service.dart';
+import 'modules/auth/sign_in_screen.dart';
+import 'theme.dart';
+import 'modules/main/main_screen.dart';
 
 import 'firebase_options.dart';
 
@@ -76,7 +76,7 @@ class CloudProvisionApp extends StatelessWidget {
                   return const MainScreen();
                 }
                 // Otherwise, they're not signed in. Show the sign in page.
-                return const SignIn();
+                return const SignInScreen();
               }),
         ),
       ),

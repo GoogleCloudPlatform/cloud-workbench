@@ -7,7 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../repository/models/metadata_model.dart';
 import '../main/main_screen.dart';
 import 'bloc/template-bloc.dart';
-import '../../repository/models/template.dart';
+import 'models/template.dart';
 import 'tags_filter.dart';
 import '../../utils/styles.dart';
 import 'template_config.dart';

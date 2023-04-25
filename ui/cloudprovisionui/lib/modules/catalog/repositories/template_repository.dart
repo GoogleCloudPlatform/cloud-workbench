@@ -1,5 +1,5 @@
-import 'package:cloudprovision/repository/models/template.dart';
-import 'package:cloudprovision/repository/service/template_service.dart';
+import '../models/template.dart';
+import '../services/template_service.dart';
 
 class TemplateRepository {
   const TemplateRepository({required this.service});
