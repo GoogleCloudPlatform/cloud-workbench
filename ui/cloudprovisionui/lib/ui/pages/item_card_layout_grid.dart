@@ -1,8 +1,9 @@
-import 'package:cloudprovision/ui/main/main_screen.dart';
-import 'package:cloudprovision/ui/pages/workspace_overview.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../main/main_screen.dart';
+import 'workspace_overview.dart';
 
 class ItemCardLayoutGrid extends StatelessWidget {
   final void Function(NavigationPage page) navigateTo;

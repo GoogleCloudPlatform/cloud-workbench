@@ -1,20 +1,21 @@
-import 'package:cloudprovision/repository/build_repository.dart';
-import 'package:cloudprovision/repository/models/build.dart';
-import 'package:cloudprovision/repository/models/metadata_model.dart';
-import 'package:cloudprovision/repository/models/recommendation_insight.dart';
-import 'package:cloudprovision/repository/models/service.dart';
-import 'package:cloudprovision/repository/models/vulnerability.dart';
-import 'package:cloudprovision/repository/security_repository.dart';
-import 'package:cloudprovision/repository/service/build_service.dart';
-import 'package:cloudprovision/repository/service/security_service.dart';
-import 'package:cloudprovision/repository/service/template_service.dart';
-import 'package:cloudprovision/repository/template_repository.dart';
-import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
-import 'package:cloudprovision/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:timeago/timeago.dart' as timeago;
+
+import '../../repository/build_repository.dart';
+import '../../repository/models/build.dart';
+import '../../repository/models/metadata_model.dart';
+import '../../repository/models/recommendation_insight.dart';
+import '../../repository/models/service.dart';
+import '../../repository/models/vulnerability.dart';
+import '../../repository/security_repository.dart';
+import '../../repository/service/build_service.dart';
+import '../../repository/service/security_service.dart';
+import '../../repository/service/template_service.dart';
+import '../../repository/template_repository.dart';
+import '../../ui/templates/bloc/template-bloc.dart';
+import '../../utils/styles.dart';
 
 class MyServiceDialog extends StatefulWidget {
   final Service _service;
@@ -402,7 +403,8 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
             const SizedBox(height: 4),
             TextButton(
               onPressed: () async {
-                Uri _url = Uri.parse("https://console.cloud.google.com/cloud-build/triggers?project=${service.projectId}");
+                Uri _url = Uri.parse(
+                    "https://console.cloud.google.com/cloud-build/triggers?project=${service.projectId}");
                 if (_triggerBuilds.isNotEmpty) {
                   _url = Uri.parse(
                       "https://console.cloud.google.com/cloud-build/triggers;region=global/edit/${_triggerId}?project=${service.projectId}");
@@ -422,8 +424,8 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
             const SizedBox(height: 4),
             TextButton(
               onPressed: () async {
-
-                Uri _url = Uri.parse("https://console.cloud.google.com/cloud-build/triggers?project=${service.projectId}");
+                Uri _url = Uri.parse(
+                    "https://console.cloud.google.com/cloud-build/triggers?project=${service.projectId}");
                 if (_triggerBuilds.isNotEmpty) {
                   _url = Uri.parse(
                       "https://console.cloud.google.com/cloud-build/builds;region=global?query=trigger_id=${_triggerId}&project=${service.projectId}");
@@ -439,7 +441,6 @@ class _MyServiceDialogState extends State<MyServiceDialog> {
                 maxLines: 1,
                 style: AppText.linkFontStyle,
               ),
-
             )
           ],
         ),

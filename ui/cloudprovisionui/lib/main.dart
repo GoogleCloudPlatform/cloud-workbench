@@ -1,21 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloudprovision/blocs/app/app_bloc.dart';
-import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
-import 'package:cloudprovision/repository/auth_repository.dart';
-import 'package:cloudprovision/repository/firebase_repository.dart';
-import 'package:cloudprovision/repository/service/auth_service.dart';
-import 'package:cloudprovision/repository/service/firebase_service.dart';
-import 'package:cloudprovision/theme.dart';
-import 'package:cloudprovision/ui/main/main_screen.dart';
-import 'package:cloudprovision/ui/settings/settings.dart';
-import 'package:cloudprovision/ui/signin/sign_in.dart';
-import 'package:cloudprovision/ui/templates/templates.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter/foundation.dart';
+
+import 'blocs/app/app_bloc.dart';
+import 'blocs/auth/auth_bloc.dart';
+import 'repository/auth_repository.dart';
+import 'repository/firebase_repository.dart';
+import 'repository/service/auth_service.dart';
+import 'repository/service/firebase_service.dart';
+import 'theme.dart';
+import 'ui/main/main_screen.dart';
+
+import 'ui/signin/sign_in.dart';
 
 import 'firebase_options.dart';
 

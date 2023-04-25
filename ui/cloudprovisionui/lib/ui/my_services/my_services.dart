@@ -1,13 +1,13 @@
-import 'package:cloudprovision/blocs/app/app_bloc.dart';
-import 'package:cloudprovision/repository/models/service.dart';
-import 'package:cloudprovision/ui/my_services/my_service.dart';
-import 'package:cloudprovision/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:timeago/timeago.dart' as timeago;
+
+import '../../blocs/app/app_bloc.dart';
+import '../../repository/models/service.dart';
+import '../../ui/my_services/my_service.dart';
+import '../../utils/styles.dart';
 
 class MyServicesPage extends StatelessWidget {
   Future<void> _dialogBuilder(BuildContext context, Service service) {

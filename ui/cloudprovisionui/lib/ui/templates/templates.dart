@@ -1,10 +1,11 @@
-import 'package:cloudprovision/ui/main/main_screen.dart';
-import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
-import 'package:cloudprovision/repository/service/template_service.dart';
-import 'package:cloudprovision/repository/template_repository.dart';
-import 'package:cloudprovision/ui/templates/template_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../main/main_screen.dart';
+import 'bloc/template-bloc.dart';
+import '../../repository/service/template_service.dart';
+import '../../repository/template_repository.dart';
+import 'template_list.dart';
 
 class TemplatesPage extends StatelessWidget {
   final void Function(NavigationPage page) navigateTo;

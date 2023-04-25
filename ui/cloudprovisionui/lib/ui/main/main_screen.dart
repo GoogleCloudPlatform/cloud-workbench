@@ -1,17 +1,18 @@
-import 'package:cloudprovision/blocs/app/app_bloc.dart';
-import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
-import 'package:cloudprovision/ui/integrations/cast_highlight.dart';
-import 'package:cloudprovision/ui/my_services/my_services.dart';
-import 'package:cloudprovision/ui/pages/page.dart';
-import 'package:cloudprovision/ui/pages/workspace_overview.dart';
-import 'package:cloudprovision/ui/settings/settings.dart';
-import 'package:cloudprovision/ui/signin/sign_in.dart';
-import 'package:cloudprovision/ui/templates/templates.dart';
-import 'package:cloudprovision/utils/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../blocs/app/app_bloc.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../ui/integrations/cast_highlight.dart';
+import '../../ui/my_services/my_services.dart';
+import '../../ui/pages/page.dart';
+import '../../ui/pages/workspace_overview.dart';
+import '../../ui/settings/settings.dart';
+import '../../ui/signin/sign_in.dart';
+import '../../ui/templates/templates.dart';
+import '../../utils/styles.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -148,7 +149,6 @@ class MainScreenState extends State<MainScreen> {
                   _subTitle("Cloud Provision Catalog"),
                   _menuItem('Microservice Templates',
                       NavigationPage.MicroserviceTemplates, context),
-
                 ],
               ),
             ),

@@ -1,10 +1,11 @@
-import 'package:cloudprovision/blocs/app/app_bloc.dart';
-import 'package:cloudprovision/firebase_options.dart';
-import 'package:cloudprovision/ui/settings/switch_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../blocs/app/app_bloc.dart';
+import '../../firebase_options.dart';
+import 'switch_widget.dart';
 
 class SettingsPage extends StatelessWidget {
   TextStyle textStyle = GoogleFonts.openSans(
@@ -157,7 +158,8 @@ class SettingsPage extends StatelessWidget {
                                   'Project ID',
                                   style: TextStyle(color: Colors.black54),
                                 ))),
-                            DataCell(Text(DefaultFirebaseOptions.currentPlatform.projectId)),
+                            DataCell(Text(DefaultFirebaseOptions
+                                .currentPlatform.projectId)),
                           ],
                         ),
                         DataRow(

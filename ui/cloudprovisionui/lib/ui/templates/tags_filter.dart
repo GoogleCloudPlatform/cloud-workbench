@@ -20,9 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import 'package:cloudprovision/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:textfield_tags/textfield_tags.dart';
+
+import '../../utils/styles.dart';
 
 class TagsFilterWidget extends StatefulWidget {
   final void Function(String tag) addedTag;

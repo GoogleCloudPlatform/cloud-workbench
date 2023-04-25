@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloudprovision/repository/template_repository.dart';
-import 'package:cloudprovision/repository/models/template.dart';
 import 'package:equatable/equatable.dart';
+
+import '../../../repository/template_repository.dart';
+import '../../../repository/models/template.dart';
+
 part 'template-event.dart';
 part 'template-state.dart';
 

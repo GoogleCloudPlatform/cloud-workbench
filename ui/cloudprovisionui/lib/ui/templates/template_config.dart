@@ -1,24 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloudprovision/blocs/app/app_bloc.dart';
-import 'package:cloudprovision/firebase_options.dart';
-import 'package:cloudprovision/ui/main/main_screen.dart';
-import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
-import 'package:cloudprovision/repository/service/build_service.dart';
-import 'package:cloudprovision/repository/service/template_service.dart';
-import 'package:cloudprovision/repository/template_repository.dart';
-import 'package:cloudprovision/repository/models/param.dart';
-import 'package:cloudprovision/repository/models/template.dart';
-import 'package:cloudprovision/utils/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:cloudprovision/repository/build_repository.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import '../../blocs/app/app_bloc.dart';
+import '../../firebase_options.dart';
+import '../main/main_screen.dart';
+import 'bloc/template-bloc.dart';
+import '../../repository/service/build_service.dart';
+import '../../repository/service/template_service.dart';
+import '../../repository/template_repository.dart';
+import '../../repository/models/param.dart';
+import '../../repository/models/template.dart';
+import '../../utils/styles.dart';
+import '../../repository/build_repository.dart';
 
 class TemplateConfigPage extends StatefulWidget {
   final void Function(NavigationPage page) navigateTo;
@@ -177,7 +178,6 @@ class _TemplateConfigPageState extends State<TemplateConfigPage> {
         cloudBuildLogUrl: buildConfig['build']['logUrl'],
         params: _formFieldValues,
       );
-
 
       BlocProvider.of<AppBloc>(context).add(serviceDeployedEvent);
 

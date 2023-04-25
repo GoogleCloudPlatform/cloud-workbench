@@ -1,7 +1,8 @@
-import 'package:cloudprovision/ui/main/main_screen.dart';
-import 'package:cloudprovision/ui/pages/item_card_layout_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../main/main_screen.dart';
+import 'item_card_layout_grid.dart';
 
 class Section {
   String title;

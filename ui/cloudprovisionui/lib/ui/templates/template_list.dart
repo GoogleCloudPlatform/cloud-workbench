@@ -1,15 +1,15 @@
-import 'package:cloudprovision/repository/models/metadata_model.dart';
-import 'package:cloudprovision/ui/main/main_screen.dart';
-import 'package:cloudprovision/ui/templates/bloc/template-bloc.dart';
-import 'package:cloudprovision/repository/models/template.dart';
-import 'package:cloudprovision/ui/templates/tags_filter.dart';
-import 'package:cloudprovision/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../repository/models/metadata_model.dart';
+import '../main/main_screen.dart';
+import 'bloc/template-bloc.dart';
+import '../../repository/models/template.dart';
+import 'tags_filter.dart';
+import '../../utils/styles.dart';
 import 'template_config.dart';
 
 class TemplateList extends StatefulWidget {

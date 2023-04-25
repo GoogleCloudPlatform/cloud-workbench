@@ -1,8 +1,9 @@
-import 'package:cloudprovision/blocs/auth/auth_bloc.dart';
-import 'package:cloudprovision/ui/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../blocs/auth/auth_bloc.dart';
+import '../main/main_screen.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);

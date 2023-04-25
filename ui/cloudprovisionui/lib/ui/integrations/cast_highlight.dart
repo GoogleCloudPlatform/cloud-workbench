@@ -1,12 +1,13 @@
-import 'package:cloudprovision/blocs/app/app_bloc.dart';
-import 'package:cloudprovision/repository/models/cast_application.dart';
-import 'package:cloudprovision/repository/models/template.dart';
-import 'package:cloudprovision/ui/main/main_screen.dart';
-import 'package:cloudprovision/ui/templates/template_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../blocs/app/app_bloc.dart';
+import '../../repository/models/cast_application.dart';
+import '../../repository/models/template.dart';
+import '../../ui/main/main_screen.dart';
+import '../../ui/templates/template_config.dart';
 
 class CastHighlightPage extends StatelessWidget {
   final void Function(NavigationPage page) navigateTo;
