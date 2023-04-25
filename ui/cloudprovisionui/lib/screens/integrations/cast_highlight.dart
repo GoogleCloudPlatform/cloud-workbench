@@ -6,8 +6,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../blocs/app/app_bloc.dart';
 import '../../repository/models/cast_application.dart';
 import '../../repository/models/template.dart';
-import '../../ui/main/main_screen.dart';
-import '../../ui/templates/template_config.dart';
+import '../../screens/main/main_screen.dart';
+import '../../screens/templates/template_config.dart';
 
 class CastHighlightPage extends StatelessWidget {
   final void Function(NavigationPage page) navigateTo;

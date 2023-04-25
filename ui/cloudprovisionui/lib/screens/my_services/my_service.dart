@@ -14,7 +14,7 @@ import '../../repository/service/build_service.dart';
 import '../../repository/service/security_service.dart';
 import '../../repository/service/template_service.dart';
 import '../../repository/template_repository.dart';
-import '../../ui/templates/bloc/template-bloc.dart';
+import '../../screens/templates/bloc/template-bloc.dart';
 import '../../utils/styles.dart';
 
 class MyServiceDialog extends StatefulWidget {

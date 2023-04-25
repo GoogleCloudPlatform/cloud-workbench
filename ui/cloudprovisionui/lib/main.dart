@@ -13,9 +13,9 @@ import 'repository/firebase_repository.dart';
 import 'repository/service/auth_service.dart';
 import 'repository/service/firebase_service.dart';
 import 'theme.dart';
-import 'ui/main/main_screen.dart';
+import 'screens/main/main_screen.dart';
 
-import 'ui/signin/sign_in.dart';
+import 'screens/signin/sign_in.dart';
 
 import 'firebase_options.dart';
 

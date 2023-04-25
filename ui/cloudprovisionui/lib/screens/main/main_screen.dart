@@ -5,13 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../blocs/app/app_bloc.dart';
 import '../../blocs/auth/auth_bloc.dart';
-import '../../ui/integrations/cast_highlight.dart';
-import '../../ui/my_services/my_services.dart';
-import '../../ui/pages/page.dart';
-import '../../ui/pages/workspace_overview.dart';
-import '../../ui/settings/settings.dart';
-import '../../ui/signin/sign_in.dart';
-import '../../ui/templates/templates.dart';
+import '../../screens/integrations/cast_highlight.dart';
+import '../../screens/my_services/my_services.dart';
+import '../../screens/pages/page.dart';
+import '../../screens/pages/workspace_overview.dart';
+import '../../screens/settings/settings.dart';
+import '../../screens/signin/sign_in.dart';
+import '../../screens/templates/templates.dart';
 import '../../utils/styles.dart';
 
 class MainScreen extends StatefulWidget {
