@@ -6,6 +6,7 @@ import 'BuildsController.dart';
 import 'ProjectsController.dart';
 import 'TemplatesController.dart';
 import 'TriggersController.dart';
+import 'WorkstationsController.dart';
 
 class ServerController {
   TemplatesController _templatesController = TemplatesController();
@@ -13,6 +14,7 @@ class ServerController {
   BuildsController _buildsController = BuildsController();
   TriggersController _triggersController = TriggersController();
   SecurityController _securityController = SecurityController();
+  WorkstationsController _workstationsController = WorkstationsController();
 
   Handler get handler {
     final router = Router();
@@ -26,6 +28,7 @@ class ServerController {
     router.mount('/v1/builds', _buildsController.router);
     router.mount('/v1/triggers', _triggersController.router);
     router.mount('/v1/security', _securityController.router);
+    router.mount('/v1/workstationClusters', _workstationsController.router);
 
     router.all('/<ignored|.*>', (Request request) {
       return Response.notFound('Not found');

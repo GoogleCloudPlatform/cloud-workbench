@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:cloud_provision_server/models/param_model.dart';
-import 'package:cloud_provision_server/models/template_model.dart';
+import 'package:cloud_provision_shared/catalog/models/param.dart';
+import 'package:cloud_provision_shared/catalog/models/template.dart';
 import 'package:cloud_provision_server/services/BaseService.dart';
 import 'package:cloud_provision_server/services/ConfigService.dart';
 import 'package:http/http.dart' as http;

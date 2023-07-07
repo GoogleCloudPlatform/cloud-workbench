@@ -1,25 +1,20 @@
 import 'package:cloud_provision_server/controllers/BaseController.dart';
-import 'package:cloud_provision_server/services/ConfigService.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf/shelf.dart';
 import '../services/BuildsService.dart';
 
 import 'dart:convert';
 
-import 'package:cloud_provision_server/models/template_model.dart';
 import 'package:googleapis/cloudbuild/v1.dart' as cb;
-
-import '../services/TemplatesService.dart';
 
 class BuildsController extends BaseController {
   BuildsService _buildsService = BuildsService();
-  TemplatesService _templatesService = TemplatesService();
-  ConfigService _configService = ConfigService();
 
   Router get router {
     final router = Router();
     router.get('/', _getBuildHandler);
     router.post('/', _startBuildHandler);
+    router.delete('/', _startBuildHandler);
     return router;
   }
 
@@ -45,29 +40,13 @@ class BuildsController extends BaseController {
       final body = await request.readAsString();
       Map<String, dynamic> requestMap = jsonDecode(body);
 
-      var catalogSource = requestMap['catalogSource'];
-      var catalogUrl = requestMap['catalogUrl'];
-
-      List<Template> templates =
-          await _templatesService.getTemplates(catalogSource, catalogUrl);
-      var templatesMap =
-          Map.fromIterable(templates, key: (t) => t.id, value: (t) => t);
-
-      Template? template = templatesMap[int.parse(requestMap['template_id'])];
-
-      Map<String, dynamic> cloudProvisionJsonConfig =
-          await _configService.getJson(template!.cloudProvisionConfigUrl);
-
-      var cloudProvisionJsonConfigList =
-          cloudProvisionJsonConfig['create']['steps'];
-
       var projectId = requestMap['project_id'];
-
+      var templateConfigUrl = requestMap['cloudProvisionConfigUrl'];
       Map<String, String> substitutionsMap =
           Map<String, String>.from(requestMap['params']);
 
       cb.Operation buildOp = await _buildsService.startBuild(
-          projectId, substitutionsMap, cloudProvisionJsonConfigList);
+          projectId, substitutionsMap, templateConfigUrl, request.method);
 
       return Response.ok(
         jsonResponseEncode(buildOp.metadata),

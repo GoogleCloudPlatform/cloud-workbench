@@ -1,7 +1,10 @@
 import 'package:cloud_provision_server/services/BaseService.dart';
 import 'package:googleapis/cloudbuild/v1.dart' as cb;
 
+import 'ConfigService.dart';
+
 class BuildsService extends BaseService {
+  ConfigService _configService = ConfigService();
   /// Returns Cloud Build details for specified parameters
   ///
   /// [projectId]
@@ -21,12 +24,20 @@ class BuildsService extends BaseService {
   /// [substitutionsMap]
   /// [cloudProvisionJsonConfig]
   Future<cb.Operation> startBuild(
-      projectId, substitutionsMap, cloudProvisionJsonConfig) async {
+      projectId, substitutionsMap, templateConfigUrl, String method) async {
+
+    Map<String, dynamic> templateJsonConfig =
+    await _configService.getJson(templateConfigUrl);
+
+    var templateBuildSteps = templateJsonConfig['create']['steps'];
+    if (method == "DELETE")
+       templateBuildSteps = templateJsonConfig['destroy']['steps'];
+
     String parent = "projects/${projectId}/locations/global";
 
     List<cb.BuildStep> buildSteps = [];
 
-    for (Map<dynamic, dynamic> jsonStep in cloudProvisionJsonConfig) {
+    for (Map<dynamic, dynamic> jsonStep in templateBuildSteps) {
       var buildStep = cb.BuildStep.fromJson(jsonStep);
       buildSteps.add(buildStep);
     }

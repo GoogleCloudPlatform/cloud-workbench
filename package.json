@@ -1,0 +1,7 @@
+{
+    "name": "workbench",
+    "scripts": {
+      "server": "( cd cloud-run && dart run lib/server.dart )"
+      
+    }
+}

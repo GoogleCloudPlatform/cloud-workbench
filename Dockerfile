@@ -41,8 +41,9 @@ ENV PATH="$PATH:/home/flutter/flutter-sdk/bin/cache/dart-sdk/bin"
 
 # Copy files to container and build
 WORKDIR /home/flutter/app
-COPY --chown=flutter:flutter ui/cloudprovisionui ./cloudprovisionui
-RUN cd cloudprovisionui && flutter build web
+COPY --chown=flutter:flutter shared ./shared
+COPY --chown=flutter:flutter ui/cloudprovisionui ./ui/cloudprovisionui
+RUN cd ui/cloudprovisionui && flutter build web
 
 # Official Dart image: https://hub.docker.com/_/dart
 # Specify the Dart SDK base image version using dart:<version> (ex: dart:2.12)
@@ -50,25 +51,27 @@ FROM dart:stable AS api-build
 
 # Resolve app dependencies.
 WORKDIR /app
-COPY cloud-run/pubspec.* ./
-RUN dart pub get
+COPY shared ./shared
+COPY cloud-run/pubspec.* ./cloud-run/
+
+RUN cd cloud-run && dart pub get
 
 # Copy app source code and AOT compile it.
-COPY cloud-run/ .
+COPY cloud-run ./cloud-run
 # Ensure packages are still up-to-date if anything has changed
-RUN dart pub get --offline
-RUN dart compile exe lib/server.dart -o ./server
+RUN cd cloud-run && dart pub get --offline
+RUN cd cloud-run && dart compile exe lib/server.dart -o ./server
 
 # Build minimal serving image from AOT-compiled `/server` and required system
 # libraries and configuration files stored in `/runtime/` from the build stage.
 FROM scratch
 
 COPY --from=api-build /runtime/ /
-COPY --from=api-build /app/config/env /app/bin/config/env
-COPY --from=api-build /app/server /app/bin/
+COPY --from=api-build /app/cloud-run/config/env /app/bin/config/env
+COPY --from=api-build /app/cloud-run/server /app/bin/
 
-COPY --from=ui-build /home/flutter/app/cloudprovisionui/build/web /app/bin/public
-COPY --from=ui-build /home/flutter/app/cloudprovisionui/assets/images /app/bin/public/assets/images
+COPY --from=ui-build /home/flutter/app/ui/cloudprovisionui/build/web /app/bin/public
+COPY --from=ui-build /home/flutter/app/ui/cloudprovisionui/assets/images /app/bin/public/assets/images
 
 # Start server.
 EXPOSE 8080

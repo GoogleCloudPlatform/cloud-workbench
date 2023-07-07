@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../services/auth_service.dart';
 
 class AuthRepository {
@@ -10,4 +12,6 @@ class AuthRepository {
 
   /// Signs out the user
   Future<void> signOut() async => service.signOut();
+
+  User? currentUser() => service.getCurrentUser();
 }

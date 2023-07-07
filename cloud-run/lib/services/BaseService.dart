@@ -6,14 +6,15 @@ import 'package:dotenv/dotenv.dart';
 class BaseService {
   var _env = DotEnv(includePlatformEnvironment: true)
     ..load(["/app/bin/config/env", "./config/env"]);
-  late AuthClient client;
+  late AutoRefreshingAuthClient client;
 
   BaseService() {
     getClient().then((value) => client = value);
   }
 
-  Future<AuthClient> getClient() async {
-    AuthClient client;
+  Future<AutoRefreshingAuthClient> getClient() async {
+
+    AutoRefreshingAuthClient client;
 
     if (Platform.isMacOS) {
       client = await clientViaApplicationDefaultCredentials(

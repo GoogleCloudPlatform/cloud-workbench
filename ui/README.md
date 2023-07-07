@@ -22,3 +22,9 @@ gcloud run deploy cloudprovisionui \
   --region us-east1 \
   --allow-unauthenticated
 ```
+## Riverpod annotations
+
+Start build runner to process annotations and generate providers:
+```
+flutter pub run build_runner watch
+```
