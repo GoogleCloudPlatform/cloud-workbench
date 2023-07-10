@@ -345,12 +345,42 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
             elevation: 0,
             child: Form(
               key: _key,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: template.inputs.length,
-                itemBuilder: (context, index) {
-                  return _buildDynamicParam(index, template.inputs[index]);
-                },
+              child: Column(
+                children: [
+                  TextFormField(
+                    maxLength: 30,
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.abc_sharp),
+                      labelText: "Workstations Cluster Name",
+                    ),
+                    validator: (value) {
+                      return null;
+                    },
+                    onChanged: (val) {
+                      _onTextFormUpdate(val, "_WS_CLUSTER");
+                    },
+                  ),
+                  TextFormField(
+                    maxLength: 30,
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.abc_sharp),
+                      labelText: "Workstations Config Name",
+                    ),
+                    validator: (value) {
+                      return null;
+                    },
+                    onChanged: (val) {
+                      _onTextFormUpdate(val, "_WS_CONFIG");
+                    },
+                  ),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: template.inputs.length,
+                    itemBuilder: (context, index) {
+                      return _buildDynamicParam(index, template.inputs[index]);
+                    },
+                  ),
+                ],
               ),
             ),
           ),
@@ -599,7 +629,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                                     }
                                   }
 
-                                  _onTextFormUpdate(index, val, param.param);
+                                  _onTextFormUpdate(val, param.param);
                                 }),
                           ),
                           SizedBox(
@@ -618,7 +648,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
     );
   }
 
-  _onTextFormUpdate(int index, String val, String param) async {
+  _onTextFormUpdate(String val, String param) async {
     String key = param;
     if (_formFieldValues.containsKey(key)) {
       _formFieldValues.remove(key);
