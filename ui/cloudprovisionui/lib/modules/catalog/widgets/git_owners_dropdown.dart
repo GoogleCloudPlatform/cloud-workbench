@@ -52,7 +52,7 @@ class _GitOwnersDropdownState extends ConsumerState<GitOwnersDropdown> {
               setState(() {
                 dropdownValue = value!;
                 widget.onTextFormUpdate(
-                    1000, value, "_INSTANCE_GIT_REPO_OWNER");
+                    value, "_INSTANCE_GIT_REPO_OWNER");
               });
             },
             items: [
