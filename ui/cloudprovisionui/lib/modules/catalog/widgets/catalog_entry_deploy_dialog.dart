@@ -347,6 +347,13 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
               key: _key,
               child: Column(
                 children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: template.inputs.length,
+                    itemBuilder: (context, index) {
+                      return _buildDynamicParam(index, template.inputs[index]);
+                    },
+                  ),
                   TextFormField(
                     maxLength: 30,
                     decoration: InputDecoration(
@@ -371,13 +378,6 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                     },
                     onChanged: (val) {
                       _onTextFormUpdate(val, "_WS_CONFIG");
-                    },
-                  ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: template.inputs.length,
-                    itemBuilder: (context, index) {
-                      return _buildDynamicParam(index, template.inputs[index]);
                     },
                   ),
                 ],
@@ -459,7 +459,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
             name: _formFieldValues["_APP_NAME"],
             owner: gitSettings.instanceGitUsername,
             instanceRepo:
-            "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_appId}",
+                "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_appId}",
             templateName: template.name,
             templateId: template.id,
             template: template,
@@ -470,10 +470,11 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
             params: _formFieldValues,
             deploymentDate: DateTime.now(),
             workstationCluster: _formFieldValues.containsKey("_WS_CLUSTER")
-              ? _formFieldValues["_WS_CLUSTER"] : "",
+                ? _formFieldValues["_WS_CLUSTER"]
+                : "",
             workstationConfig: _formFieldValues.containsKey("_WS_CONFIG")
-              ? _formFieldValues["_WS_CONFIG"] : ""
-        );
+                ? _formFieldValues["_WS_CONFIG"]
+                : "");
 
         await ref.read(servicesRepositoryProvider).addService(deployedService);
 
@@ -490,7 +491,6 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
           _building = false;
           _errorMessage = "Request failed";
         });
-
       }
     } on Error catch (e, stacktrace) {
       ScaffoldMessenger.of(context).showSnackBar(
