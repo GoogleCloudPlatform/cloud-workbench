@@ -67,27 +67,26 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        margin: EdgeInsets.all(100),
-        padding: EdgeInsets.all(25),
-        color: Colors.white,
-        child: Column(
-          children: [
-            _templateDetails(_template, context),
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.all(100),
+          padding: EdgeInsets.all(25),
+          color: Colors.white,
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    child: Text('Close'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
               ),
-              child: Text(
-                'Close',
-                style: AppText.linkFontStyle,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            )
-          ],
+              _templateDetails(_template, context),
+            ],
+          ),
         ),
       ),
     );
@@ -95,8 +94,6 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
 
   _templateDetails(Template template, BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisSize: MainAxisSize.max,
@@ -107,204 +104,57 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 140,
-                        child: Text(
-                          'Template:',
-                          style: AppText.fontStyleBold,
-                        ),
-                      ),
-                      Text(template.name)
-                    ],
+                  // Template Details Section
+                  _SummaryItem(label: "Template", child: Text(template.name)),
+                  _SummaryItem(
+                      label: "Description", child: Text(template.description)),
+                  _SummaryItem(label: "Owner", child: Text(template.owner)),
+                  _SummaryItem(label: "Version", child: Text(template.version)),
+                  _SummaryItem(
+                      label: "Last modified",
+                      child: Text(DateFormat('MM/d/yy, h:mm a')
+                              .format(template.lastModified) +
+                          "  (${timeago.format(template.lastModified)})")),
+                  _SummaryItem(label: "Tags", child: Text('${template.tags}')),
+                  _SummaryItem(
+                      label: "Category", child: Text('${template.category}')),
+                  Divider(),
+                  // Resources Section
+                  _SummaryItem(
+                    label: "Template Repo",
+                    child: TextButton(
+                      onPressed: () async {
+                        final Uri _url = Uri.parse(template.sourceUrl);
+                        if (!await launchUrl(_url)) {
+                          throw 'Could not launch $_url';
+                        }
+                      },
+                      child: Text("GitHub repo"),
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 150,
-                        child: Text(
-                          'Description:',
-                          style: AppText.fontStyleBold,
-                        ),
+                  _SummaryItem(
+                    label: "CloudBuild config",
+                    child: TextButton(
+                      onPressed: () async {
+                        final Uri _url =
+                            Uri.parse(template.cloudProvisionConfigUrl);
+                        if (!await launchUrl(_url)) {
+                          throw 'Could not launch $_url';
+                        }
+                      },
+                      child: Text(
+                        "GitHub repo",
+                        style: AppText.linkFontStyle,
                       ),
-                      Text(
-                        '${template.description}',
-                        style: AppText.fontStyle,
-                      ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 150,
-                        child: Text(
-                          'Owner:',
-                          style: AppText.fontStyleBold,
-                        ),
-                      ),
-                      Text(
-                        '${template.owner}',
-                        style: AppText.fontStyle,
-                      ),
-                    ],
+                  Divider(),
+                  // Template Inputs  Section
+                  Text(
+                    "Template Parameters: ",
+                    style: AppText.fontStyleBold,
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 150,
-                        child: Text(
-                          'Version:',
-                          style: AppText.fontStyleBold,
-                        ),
-                      ),
-                      Text(
-                        '${template.version}',
-                        style: AppText.fontStyle,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 150,
-                        child: Text(
-                          'Last modified:',
-                          style: AppText.fontStyleBold,
-                        ),
-                      ),
-                      Text(
-                        DateFormat('MM/d/yy, h:mm a')
-                            .format(template.lastModified),
-                        style: AppText.fontStyle,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        "(${timeago.format(template.lastModified)})",
-                        style: AppText.fontStyle,
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 150,
-                        child: Text(
-                          'Tags:',
-                          style: AppText.fontStyleBold,
-                        ),
-                      ),
-                      Text(
-                        '${template.tags}',
-                        style: AppText.fontStyle,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        Divider(),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Template Repo: ",
-                        style: AppText.fontStyleBold,
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          final Uri _url = Uri.parse(template.sourceUrl);
-                          if (!await launchUrl(_url)) {
-                            throw 'Could not launch $_url';
-                          }
-                        },
-                        child: Text(
-                          "GitHub repo",
-                          style: AppText.linkFontStyle,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "CloudBuild config: ",
-                        style: AppText.fontStyleBold,
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          final Uri _url =
-                              Uri.parse(template.cloudProvisionConfigUrl);
-                          if (!await launchUrl(_url)) {
-                            throw 'Could not launch $_url';
-                          }
-                        },
-                        child: Text(
-                          "GitHub repo",
-                          style: AppText.linkFontStyle,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        Divider(),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Template Parameters: ",
-                        style: AppText.fontStyleBold,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Row(
-                    children: [
-                      _dynamicParamsSection(),
-                    ],
-                  ),
+                  _dynamicParamsSection(),
                 ],
               ),
             ),
@@ -321,7 +171,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
     return asyncTemplateValue.when(
       data: (template) {
         return Container(
-          child: _dynamicParams(template),
+          child: _dynamicParamsForm(template),
         );
       },
       loading: () => _buildLoading(),
@@ -333,75 +183,67 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
     );
   }
 
-  _dynamicParams(Template template) {
-    return Container(
-      // color: Colors.cyan,
-      // width: MediaQuery.of(context).size.width * 0.90,
-      width: 500,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Card(
-            elevation: 0,
-            child: Form(
-              key: _key,
-              child: Column(
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: template.inputs.length,
-                    itemBuilder: (context, index) {
-                      return _buildDynamicParam(index, template.inputs[index]);
-                    },
-                  ),
-                  TextFormField(
-                    maxLength: 30,
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.abc_sharp),
-                      labelText: "Workstations Cluster Name",
-                    ),
-                    validator: (value) {
-                      return null;
-                    },
-                    onChanged: (val) {
-                      _onTextFormUpdate(val, "_WS_CLUSTER");
-                    },
-                  ),
-                  TextFormField(
-                    maxLength: 30,
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.abc_sharp),
-                      labelText: "Workstations Config Name",
-                    ),
-                    validator: (value) {
-                      return null;
-                    },
-                    onChanged: (val) {
-                      _onTextFormUpdate(val, "_WS_CONFIG");
-                    },
-                  ),
-                ],
+  _dynamicParamsForm(Template template) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Form(
+          key: _key,
+          child: Column(
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: template.inputs.length,
+                itemBuilder: (context, index) {
+                  return _buildDynamicParam(index, template.inputs[index]);
+                },
               ),
-            ),
+              TextFormField(
+                maxLength: 30,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.abc_sharp),
+                  labelText: "Workstations Cluster Name",
+                ),
+                validator: (value) {
+                  return null;
+                },
+                onChanged: (val) {
+                  _onTextFormUpdate(val, "_WS_CLUSTER");
+                },
+              ),
+              TextFormField(
+                maxLength: 30,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.abc_sharp),
+                  labelText: "Workstations Config Name",
+                ),
+                validator: (value) {
+                  return null;
+                },
+                onChanged: (val) {
+                  _onTextFormUpdate(val, "_WS_CONFIG");
+                },
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: "state.instanceGitToken" != ""
-                ? ElevatedButton(
-                    child: Text(
-                      'Deploy template',
-                      style: AppText.buttonFontStyle,
-                    ),
-                    onPressed: () => _deployTemplate(template),
-                  )
-                : Text(
-                    "Please configure APIs integrations in the Settings section.",
-                    style: TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.bold),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10.0),
+          child: "state.instanceGitToken" != ""
+              ? ElevatedButton(
+                  child: Text(
+                    'Deploy template',
+                    style: AppText.buttonFontStyle,
                   ),
-          ),
-        ],
-      ),
+                  onPressed: () => _deployTemplate(template),
+                )
+              : Text(
+                  "Please configure APIs integrations in the Settings section.",
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+        ),
+      ],
     );
   }
 
@@ -506,6 +348,10 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
   }
 
   _buildDynamicParam(int index, Param param) {
+    if (param.display == false) {
+      return Container();
+    }
+
     if (param.param == "_REGION") {
       _formFieldValues["_REGION"] = dotenv.get("DEFAULT_REGION");
     }
@@ -526,126 +372,102 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
       );
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Text(param.label),
-        Row(
-          children: [
-            param.display == false
-                ? Container()
-                : param.param == "_INSTANCE_GIT_REPO_OWNER"
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 40.0),
-                            child: Text("Git Repository:"),
-                          ),
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 40,
-                              ),
-                              _gitOwnerDropdown(),
-                              Text(" / "),
-                              Text("${_appId}")
-                            ],
-                          ),
-                        ],
-                      )
-                    : Column(
-                        children: [
-                          SizedBox(
-                            width: 400.0,
-                            child: TextFormField(
-                                maxLength: 30,
-                                initialValue: (param.param == "_REGION")
-                                    ? dotenv.get("DEFAULT_REGION")
-                                    : "",
-                                decoration: InputDecoration(
-                                  icon: Icon(Icons.abc_sharp),
-                                  //hintText: param.description,
-                                  labelText: param.label,
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'This field is required';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (val) {
-                                  String tmpValue = val;
+    if (param.param == "_INSTANCE_GIT_REPO_OWNER") {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 40.0),
+            child: Text("Git Repository:"),
+          ),
+          Row(
+            children: [
+              SizedBox(
+                width: 40,
+              ),
+              GitOwnersDropdown(onTextFormUpdate: _onTextFormUpdate),
+              Text(" / "),
+              Text("${_appId}")
+            ],
+          ),
+        ],
+      );
+    }
 
-                                  if (param.param == "_APP_NAME") {
-                                    tmpValue = tmpValue
-                                        .replaceAll(" ", "")
-                                        .replaceAll("!", "")
-                                        .replaceAll("@", "")
-                                        .replaceAll("#", "")
-                                        .replaceAll("\$", "")
-                                        .replaceAll("%", "")
-                                        .replaceAll("^", "")
-                                        .replaceAll("&", "")
-                                        .replaceAll("*", "")
-                                        .replaceAll("(", "")
-                                        .replaceAll(")", "")
-                                        .replaceAll("_", "")
-                                        .replaceAll("_", "")
-                                        .replaceAll(".", "")
-                                        .replaceAll(",", "")
-                                        .replaceAll(";", "")
-                                        .replaceAll(":", "")
-                                        .replaceAll("[", "")
-                                        .replaceAll("]", "")
-                                        .replaceAll("\\", "")
-                                        .replaceAll("//", "")
-                                        .replaceAll("~", "")
-                                        .replaceAll(">", "")
-                                        .replaceAll("<", "")
-                                        .replaceAll("{", "")
-                                        .replaceAll("}", "")
-                                        .replaceAll("|", "")
-                                        .replaceAll("=", "")
-                                        .replaceAll("+", "")
-                                        .replaceAll("+", "")
-                                        .replaceAll("`", "")
-                                        .replaceAll("\"", "")
-                                        // .replaceAll(
-                                        //     RegExp(r'\!\@\#\$\%\^\&\*\(\)'),
-                                        //     "-")
-                                        .toLowerCase();
+    return Container(
+      child: TextFormField(
+          maxLength: 30,
+          initialValue:
+              (param.param == "_REGION") ? dotenv.get("DEFAULT_REGION") : "",
+          decoration: InputDecoration(
+            icon: Icon(Icons.abc_sharp),
+            labelText: param.label,
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'This field is required';
+            }
+            return null;
+          },
+          onChanged: (val) {
+            String tmpValue = val;
 
-                                    final validCharacters =
-                                        RegExp(r'^[a-z0-9\-]+$');
+            if (param.param == "_APP_NAME") {
+              tmpValue = _cleanName(tmpValue);
 
-                                    if (tmpValue == "" ||
-                                        validCharacters.hasMatch(tmpValue)) {
-                                      setState(() {
-                                        _appId = tmpValue;
-                                      });
-                                    }
-                                  }
+              final validCharacters = RegExp(r'^[a-z0-9\-]+$');
 
-                                  _onTextFormUpdate(val, param.param);
-                                }),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          SizedBox(
-                            width: 400.0,
-                            child: appId,
-                          ),
-                        ],
-                      ),
-          ],
-        ),
-        SizedBox(height: 20),
-      ],
+              if (tmpValue == "" || validCharacters.hasMatch(tmpValue)) {
+                setState(() {
+                  _appId = tmpValue;
+                });
+              }
+            }
+
+            _onTextFormUpdate(val, param.param);
+          }),
     );
+  }
+
+  String _cleanName(String tmpValue) {
+    return tmpValue
+        .replaceAll(" ", "")
+        .replaceAll("!", "")
+        .replaceAll("@", "")
+        .replaceAll("#", "")
+        .replaceAll("\$", "")
+        .replaceAll("%", "")
+        .replaceAll("^", "")
+        .replaceAll("&", "")
+        .replaceAll("*", "")
+        .replaceAll("(", "")
+        .replaceAll(")", "")
+        .replaceAll("_", "")
+        .replaceAll("_", "")
+        .replaceAll(".", "")
+        .replaceAll(",", "")
+        .replaceAll(";", "")
+        .replaceAll(":", "")
+        .replaceAll("[", "")
+        .replaceAll("]", "")
+        .replaceAll("\\", "")
+        .replaceAll("//", "")
+        .replaceAll("~", "")
+        .replaceAll(">", "")
+        .replaceAll("<", "")
+        .replaceAll("{", "")
+        .replaceAll("}", "")
+        .replaceAll("|", "")
+        .replaceAll("=", "")
+        .replaceAll("+", "")
+        .replaceAll("+", "")
+        .replaceAll("`", "")
+        .replaceAll("\"", "")
+        // .replaceAll(
+        //     RegExp(r'\!\@\#\$\%\^\&\*\(\)'),
+        //     "-")
+        .toLowerCase();
   }
 
   _onTextFormUpdate(String val, String param) async {
@@ -667,13 +489,32 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
       ),
     );
   }
+}
 
-  _gitOwnerDropdown() {
-    return Container(
-        child: Column(
+class _SummaryItem extends StatelessWidget {
+  final Widget child;
+  final String label;
+
+  const _SummaryItem({
+    super.key,
+    required this.label,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
       children: [
-        GitOwnersDropdown(onTextFormUpdate: _onTextFormUpdate),
+        SizedBox(
+          width: 140,
+          child: Text(
+            '$label:',
+            style: AppText.fontStyleBold,
+          ),
+        ),
+        child,
+        const SizedBox(height: 4),
       ],
-    ));
+    );
   }
 }
