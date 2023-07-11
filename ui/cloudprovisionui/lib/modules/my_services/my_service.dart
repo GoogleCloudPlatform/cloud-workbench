@@ -105,7 +105,7 @@ class _MyServiceDialogState extends ConsumerState<MyServiceDialog> {
               Divider(),
               //   << CLOUD SHELL || WORKSTATION BUTTON >>
 
-              service.workstationCluster.isNotEmpty
+              service.workstationConfig.isNotEmpty
                   ? WorkStationWidget(service)
                   : LaunchInCloudShellButton(service: service),
               Divider(),
