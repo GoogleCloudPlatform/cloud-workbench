@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../utils/styles.dart';
+import '../../../widgets/summary_item.dart';
 
 import 'package:cloud_provision_shared/catalog/models/template.dart';
 import 'dart:convert';
@@ -105,22 +106,22 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   // Template Details Section
-                  _SummaryItem(label: "Template", child: Text(template.name)),
-                  _SummaryItem(
+                  SummaryItem(label: "Template", child: Text(template.name)),
+                  SummaryItem(
                       label: "Description", child: Text(template.description)),
-                  _SummaryItem(label: "Owner", child: Text(template.owner)),
-                  _SummaryItem(label: "Version", child: Text(template.version)),
-                  _SummaryItem(
+                  SummaryItem(label: "Owner", child: Text(template.owner)),
+                  SummaryItem(label: "Version", child: Text(template.version)),
+                  SummaryItem(
                       label: "Last modified",
                       child: Text(DateFormat('MM/d/yy, h:mm a')
                               .format(template.lastModified) +
                           "  (${timeago.format(template.lastModified)})")),
-                  _SummaryItem(label: "Tags", child: Text('${template.tags}')),
-                  _SummaryItem(
+                  SummaryItem(label: "Tags", child: Text('${template.tags}')),
+                  SummaryItem(
                       label: "Category", child: Text('${template.category}')),
                   Divider(),
                   // Resources Section
-                  _SummaryItem(
+                  SummaryItem(
                     label: "Template Repo",
                     child: TextButton(
                       onPressed: () async {
@@ -132,7 +133,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                       child: Text("GitHub repo"),
                     ),
                   ),
-                  _SummaryItem(
+                  SummaryItem(
                     label: "CloudBuild config",
                     child: TextButton(
                       onPressed: () async {
@@ -487,34 +488,6 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
         height: 10.0,
         width: 10.0,
       ),
-    );
-  }
-}
-
-class _SummaryItem extends StatelessWidget {
-  final Widget child;
-  final String label;
-
-  const _SummaryItem({
-    super.key,
-    required this.label,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 140,
-          child: Text(
-            '$label:',
-            style: AppText.fontStyleBold,
-          ),
-        ),
-        child,
-        const SizedBox(height: 4),
-      ],
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../utils/utils.dart';
 import '../../my_services/my_services.dart';
-import 'catalog_entry_deploy_dialog.dart';
+import 'deploy_dialog.dart';
 
 class CatalogEntryCard extends StatelessWidget {
   final Template entry;
