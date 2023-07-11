@@ -1,4 +1,6 @@
 import 'package:cloudprovision/modules/my_services/widgets/workstation_widget.dart';
+import 'package:cloudprovision/widgets/summary_item.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -78,38 +80,35 @@ class _MyServiceDialogState extends ConsumerState<MyServiceDialog> {
                   )
                 ],
               ),
+
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   //   << REPO LINK >>
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text("Repository:"),
-                      const SizedBox(height: 4),
-                      TextButton(
-                        onPressed: () async {
-                          launchUrl(Uri.parse(service.instanceRepo));
-                        },
-                        child: Text(
-                          service.instanceRepo,
-                          style: AppText.linkFontStyle,
-                        ),
+                  SummaryItem(
+                    label: "Repository",
+                    child: Text.rich(
+                      TextSpan(
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            decoration: TextDecoration.underline),
+                        text: service.instanceRepo,
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            launchUrl(Uri.parse(service.instanceRepo));
+                          },
                       ),
-                    ],
+                    ),
                   ),
-
-                  //   << CLOUD SHELL BUTTON >>
-                  LaunchInCloudShellButton(service: service),
                 ],
               ),
               Divider(),
-              service.workstationCluster.isNotEmpty
-                  ? WorkStationWidget(service) : Container(),
-              Divider(),
+              //   << CLOUD SHELL || WORKSTATION BUTTON >>
 
+              service.workstationCluster.isNotEmpty
+                  ? WorkStationWidget(service)
+                  : LaunchInCloudShellButton(service: service),
+              Divider(),
               //   << VULNERABILITIES >>
 
               VulnerabilityWidget(service: service),

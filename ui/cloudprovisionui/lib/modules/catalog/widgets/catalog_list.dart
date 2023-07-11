@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_provision_shared/catalog/models/template.dart';
 
 import 'catalog_entry_card.dart';
-import 'catalog_entry_deploy_dialog.dart';
+import 'deploy_dialog.dart';
 
 import '../data/template_repository.dart';
 

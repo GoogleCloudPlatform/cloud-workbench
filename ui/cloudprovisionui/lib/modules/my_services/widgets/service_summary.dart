@@ -1,4 +1,5 @@
 import 'package:cloudprovision/modules/my_services/models/service.dart';
+import 'package:cloudprovision/widgets/summary_item.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -12,49 +13,25 @@ class ServiceSummary extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            SelectableText('Service name: ${service.name}'),
-            //_service(service),
-          ],
-        ),
-        Row(
-          children: [
-            SelectableText('Service ID: ${service.serviceId}'),
-          ],
-        ),
-        Row(
-          children: [
-            SelectableText('Region: ${service.region}'),
-          ],
-        ),
-        Row(
-          children: [
-            SelectableText('Project ID: ${service.projectId}'),
-          ],
-        ),
-        Row(
-          children: [
-            SelectableText('Workstation Cluster: ${service.workstationCluster}'),
-          ],
-        ),
-        Row(
-          children: [
-            Text('Workstation Config: ${service.workstationConfig}'),
-          ],
-        ),
-        Row(
-          children: [
-            SelectableText('Last Deployed:'),
-            SelectableText(DateFormat('MM/d/yy, h:mm a').format(service.deploymentDate)),
-            SelectableText("(${timeago.format(service.deploymentDate)})")
-          ],
-        ),
-        Row(
-          children: [
-            SelectableText('Deployed by: ${service.user}'),
-          ],
-        ),
+        SummaryItem(label: "Service name", child: SelectableText(service.name)),
+        SummaryItem(
+            label: "Service ID", child: SelectableText(service.serviceId)),
+        SummaryItem(label: "Region", child: SelectableText(service.region)),
+        SummaryItem(
+            label: "Project ID", child: SelectableText(service.projectId)),
+        SummaryItem(
+            label: "Workstation Cluster",
+            child: SelectableText(service.workstationCluster)),
+        SummaryItem(
+            label: "Workstation Config",
+            child: SelectableText(service.workstationConfig)),
+        SummaryItem(label: "Region", child: SelectableText(service.region)),
+        SummaryItem(
+            label: "Last Deployed",
+            child: SelectableText(
+                DateFormat('MM/d/yy, h:mm a').format(service.deploymentDate) +
+                    "( ${timeago.format(service.deploymentDate)})")),
+        SummaryItem(label: "Deployed by", child: SelectableText(service.user)),
       ],
     );
   }
