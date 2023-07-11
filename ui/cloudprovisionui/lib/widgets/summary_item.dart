@@ -17,7 +17,7 @@ class SummaryItem extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 140,
+          width: 200,
           child: SelectableText(
             '$label:',
             style: AppText.fontStyleBold,
