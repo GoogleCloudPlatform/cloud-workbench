@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../app_appbar.dart';
 import '../../app_drawer.dart';
-import '../../firebase_options.dart';
+import '../../utils/environment.dart';
 
 class SettingsScreen extends ConsumerWidget {
   TextStyle textStyle = GoogleFonts.openSans(
@@ -168,8 +168,7 @@ class SettingsScreen extends ConsumerWidget {
                                   'Project ID',
                                   style: TextStyle(color: Colors.black54),
                                 ))),
-                            DataCell(Text(DefaultFirebaseOptions
-                                .currentPlatform.projectId)),
+                            DataCell(Text(Environment.getProjectId())),
                           ],
                         ),
                         DataRow(

@@ -1,22 +1,16 @@
 import 'dart:math';
 
 import 'package:cloud_provision_shared/services/models/workstation.dart';
-import 'package:cloudprovision/firebase_options.dart';
 import 'package:cloudprovision/widgets/cloud_table.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
+import '../../utils/environment.dart';
 import '../../utils/styles.dart';
-import '../../utils/utils.dart';
 
-import '../../modules/my_services/my_service.dart';
 import '../my_services/data/cloud_workstations_repository.dart';
-import '../my_services/data/services_repository.dart';
-import '../my_services/models/service.dart';
 
 class MyWorkstationsPage extends ConsumerWidget {
   @override
@@ -64,11 +58,11 @@ class MyWorkstationsPage extends ConsumerWidget {
 
   _buildWorkstationsList(
       {required BuildContext context, required WidgetRef ref}) {
-    String projectId = DefaultFirebaseOptions.currentPlatform.projectId;
-    String region = "us-east1";
+    String projectId = Environment.getProjectId();
+    String region = Environment.getRegion();
     final workstationsList = ref.watch(allWorkstationsProvider(
         projectId: projectId,
-        clusterName: "workstations-cluster",
+        clusterName: Environment.getWorkstationCluster(),
         region: region));
 
     return workstationsList.when(
