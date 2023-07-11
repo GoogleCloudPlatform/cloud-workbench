@@ -19,6 +19,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../../firebase_options.dart';
+import '../../my_services/data/cloud_workstations_repository.dart';
 import '../data/build_repository.dart';
 import 'package:cloud_provision_shared/catalog/models/param.dart';
 import '../../my_services/models/service.dart';
@@ -40,23 +41,11 @@ class CatalogEntryDeployDialog extends ConsumerStatefulWidget {
 
 class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
   final Template _template;
-  String _appName = "";
   String _appId = "";
-
-  Map<String, dynamic> _cloudBuildDetails = {};
-  bool _building = false;
-  bool _buildDone = false;
-  String _cloudBuildStatus = "";
-
-  Map<String, dynamic> _cloudBuildTriggerDetails = {};
-  bool _buildingTrigger = false;
-  bool _buildTriggerDone = false;
-  String _cloudBuildTriggerStatus = "";
 
   Map<String, dynamic> _formFieldValues = {};
   final _key = GlobalKey<FormState>();
-
-  String _errorMessage = "";
+  final _key2 = GlobalKey<FormState>();
 
   _MyTemplateDialogState(this._template);
 
@@ -268,6 +257,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
             ),
           ],
         ),
+        _cloudWorkstationSection(),
         Divider(),
         Row(
           mainAxisSize: MainAxisSize.max,
@@ -347,32 +337,6 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
               key: _key,
               child: Column(
                 children: [
-                  TextFormField(
-                    maxLength: 30,
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.abc_sharp),
-                      labelText: "Workstations Cluster Name",
-                    ),
-                    validator: (value) {
-                      return null;
-                    },
-                    onChanged: (val) {
-                      _onTextFormUpdate(val, "_WS_CLUSTER");
-                    },
-                  ),
-                  TextFormField(
-                    maxLength: 30,
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.abc_sharp),
-                      labelText: "Workstations Config Name",
-                    ),
-                    validator: (value) {
-                      return null;
-                    },
-                    onChanged: (val) {
-                      _onTextFormUpdate(val, "_WS_CONFIG");
-                    },
-                  ),
                   ListView.builder(
                     shrinkWrap: true,
                     itemCount: template.inputs.length,
@@ -409,16 +373,6 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
     if (!_key.currentState!.validate()) {
       return;
     }
-
-    setState(() {
-      _building = true;
-      _buildingTrigger = false;
-      _cloudBuildDetails = {};
-      _cloudBuildTriggerDetails = {};
-      _buildDone = false;
-
-      _appName = _formFieldValues["_APP_NAME"];
-    });
 
     String projectId = DefaultFirebaseOptions.currentPlatform.projectId;
 
@@ -459,7 +413,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
             name: _formFieldValues["_APP_NAME"],
             owner: gitSettings.instanceGitUsername,
             instanceRepo:
-            "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_appId}",
+                "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_appId}",
             templateName: template.name,
             templateId: template.id,
             template: template,
@@ -470,10 +424,11 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
             params: _formFieldValues,
             deploymentDate: DateTime.now(),
             workstationCluster: _formFieldValues.containsKey("_WS_CLUSTER")
-              ? _formFieldValues["_WS_CLUSTER"] : "",
+                ? _formFieldValues["_WS_CLUSTER"]
+                : "",
             workstationConfig: _formFieldValues.containsKey("_WS_CONFIG")
-              ? _formFieldValues["_WS_CONFIG"] : ""
-        );
+                ? _formFieldValues["_WS_CONFIG"]
+                : "");
 
         await ref.read(servicesRepositoryProvider).addService(deployedService);
 
@@ -485,12 +440,6 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
         );
 
         context.go("/services");
-      } else {
-        setState(() {
-          _building = false;
-          _errorMessage = "Request failed";
-        });
-
       }
     } on Error catch (e, stacktrace) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -675,5 +624,207 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
         GitOwnersDropdown(onTextFormUpdate: _onTextFormUpdate),
       ],
     ));
+  }
+
+  Widget _workstationFields() {
+    String projectId = DefaultFirebaseOptions.currentPlatform.projectId;
+    String region = "us-east1";
+
+    final workstationClustersList = ref.watch(
+        WorkstationClustersProvider(projectId: projectId, region: region));
+
+    return workstationClustersList.when(
+        loading: () => Container(),
+        error: (err, stack) => Container(),
+        data: (clustersList) {
+          if (clustersList.isNotEmpty) {
+            if (clustersList.length == 1) {
+              String clusterName = clustersList.first.name
+                  .substring(clustersList.first.name.lastIndexOf('/') + 1);
+
+              _onTextFormUpdate(clusterName, "_WS_CLUSTER");
+              return Column(
+                children: [
+                  TextFormField(
+                    maxLength: 30,
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.abc_sharp),
+                      labelText: "Workstations Cluster",
+                    ),
+                    initialValue: clusterName,
+                    readOnly: true,
+                    validator: (value) {
+                      return null;
+                    },
+                    onChanged: (val) {
+                      _onTextFormUpdate(val, "_WS_CLUSTER");
+                    },
+                  ),
+                  _workstationConfig(projectId, region, clusterName),
+                ],
+              );
+            } else {
+              // TODO dropdown with clusters
+              return Container();
+            }
+          } else {
+            return Container();
+          }
+        });
+  }
+
+  _workstationConfig(String projectId, String region, String clusterName) {
+    final workstationConfigsList = ref.watch(WorkstationConfigsProvider(
+        projectId: projectId, region: region, clusterName: clusterName));
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 40.0),
+          child: Text("Workstations Configuration"),
+        ),
+        Row(
+          children: [
+            SizedBox(
+              width: 40,
+            ),
+            workstationConfigsList.when(
+                loading: () => Container(),
+                error: (err, stack) => Container(),
+                data: (configsList) {
+                  if (configsList.isNotEmpty) {
+                    if (configsList.length == 1) {
+                      String configName = configsList.first.name;
+
+                      String name =
+                          configName.substring(configName.lastIndexOf('/') + 1);
+
+                      return TextFormField(
+                        maxLength: 30,
+                        decoration: InputDecoration(
+                          icon: Icon(Icons.abc_sharp),
+                          labelText: "Workstations Config Name",
+                        ),
+                        initialValue: name,
+                        readOnly: true,
+                        validator: (value) {
+                          return null;
+                        },
+                        onChanged: (val) {
+                          _onTextFormUpdate(val, "_WS_CONFIG");
+                        },
+                      );
+                    } else {
+                      var configNames = configsList
+                          .map<String>((e) =>
+                              e.name.substring(e.name.lastIndexOf('/') + 1))
+                          .toList();
+
+                      var selectConfigurationText = "Select configuration";
+                      return SizedBox(
+                        width: 400,
+                        child: DropdownButtonFormField<String>(
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                value == "Select an owner") {
+                              return 'This field is required';
+                            }
+                            return null;
+                          },
+                          hint: Text(selectConfigurationText),
+                          value: selectConfigurationText,
+                          icon: const Icon(Icons.arrow_drop_down),
+                          style: const TextStyle(color: Colors.black),
+                          onChanged: (String? value) {
+                            _onTextFormUpdate(value!, "_WS_CONFIG");
+                          },
+                          items: [
+                            selectConfigurationText,
+                            ...configNames
+                          ].map<DropdownMenuItem<String>>((String configName) {
+                            return DropdownMenuItem<String>(
+                              value: configName,
+                              child: Text(configName),
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    }
+                  } else {
+                    return Container();
+                  }
+                }),
+          ],
+        ),
+      ],
+    );
+  }
+
+  _cloudWorkstationSection() {
+    return Column(
+      children: [
+        Divider(),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "Cloud Workstation: ",
+                        style: AppText.fontStyleBold,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    // color: Colors.cyan,
+                    // width: MediaQuery.of(context).size.width * 0.90,
+                    width: 500,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Card(
+                          elevation: 0,
+                          child: Form(
+                            key: _key2,
+                            child: Column(
+                              children: [
+                                _workstationFields(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
