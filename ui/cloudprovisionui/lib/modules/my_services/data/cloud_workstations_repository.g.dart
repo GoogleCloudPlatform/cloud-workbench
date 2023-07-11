@@ -154,6 +154,202 @@ class WorkstationsProvider
   }
 }
 
+String _$workstationClustersHash() =>
+    r'd831047dec264a8732aa9ca9aa261e97c63d6f0a';
+typedef WorkstationClustersRef = AutoDisposeFutureProviderRef<List<Cluster>>;
+
+/// See also [workstationClusters].
+@ProviderFor(workstationClusters)
+const workstationClustersProvider = WorkstationClustersFamily();
+
+/// See also [workstationClusters].
+class WorkstationClustersFamily extends Family<AsyncValue<List<Cluster>>> {
+  /// See also [workstationClusters].
+  const WorkstationClustersFamily();
+
+  /// See also [workstationClusters].
+  WorkstationClustersProvider call({
+    required String projectId,
+    required String region,
+  }) {
+    return WorkstationClustersProvider(
+      projectId: projectId,
+      region: region,
+    );
+  }
+
+  @override
+  WorkstationClustersProvider getProviderOverride(
+    covariant WorkstationClustersProvider provider,
+  ) {
+    return call(
+      projectId: provider.projectId,
+      region: provider.region,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'workstationClustersProvider';
+}
+
+/// See also [workstationClusters].
+class WorkstationClustersProvider
+    extends AutoDisposeFutureProvider<List<Cluster>> {
+  /// See also [workstationClusters].
+  WorkstationClustersProvider({
+    required this.projectId,
+    required this.region,
+  }) : super.internal(
+          (ref) => workstationClusters(
+            ref,
+            projectId: projectId,
+            region: region,
+          ),
+          from: workstationClustersProvider,
+          name: r'workstationClustersProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$workstationClustersHash,
+          dependencies: WorkstationClustersFamily._dependencies,
+          allTransitiveDependencies:
+              WorkstationClustersFamily._allTransitiveDependencies,
+        );
+
+  final String projectId;
+  final String region;
+
+  @override
+  bool operator ==(Object other) {
+    return other is WorkstationClustersProvider &&
+        other.projectId == projectId &&
+        other.region == region;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, projectId.hashCode);
+    hash = _SystemHash.combine(hash, region.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+String _$workstationConfigsHash() =>
+    r'ff03da4dc458b65e074eb2d49c41b3d69f0a060a';
+typedef WorkstationConfigsRef
+    = AutoDisposeFutureProviderRef<List<WorkstationConfig>>;
+
+/// See also [workstationConfigs].
+@ProviderFor(workstationConfigs)
+const workstationConfigsProvider = WorkstationConfigsFamily();
+
+/// See also [workstationConfigs].
+class WorkstationConfigsFamily
+    extends Family<AsyncValue<List<WorkstationConfig>>> {
+  /// See also [workstationConfigs].
+  const WorkstationConfigsFamily();
+
+  /// See also [workstationConfigs].
+  WorkstationConfigsProvider call({
+    required String projectId,
+    required String region,
+    required String clusterName,
+  }) {
+    return WorkstationConfigsProvider(
+      projectId: projectId,
+      region: region,
+      clusterName: clusterName,
+    );
+  }
+
+  @override
+  WorkstationConfigsProvider getProviderOverride(
+    covariant WorkstationConfigsProvider provider,
+  ) {
+    return call(
+      projectId: provider.projectId,
+      region: provider.region,
+      clusterName: provider.clusterName,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'workstationConfigsProvider';
+}
+
+/// See also [workstationConfigs].
+class WorkstationConfigsProvider
+    extends AutoDisposeFutureProvider<List<WorkstationConfig>> {
+  /// See also [workstationConfigs].
+  WorkstationConfigsProvider({
+    required this.projectId,
+    required this.region,
+    required this.clusterName,
+  }) : super.internal(
+          (ref) => workstationConfigs(
+            ref,
+            projectId: projectId,
+            region: region,
+            clusterName: clusterName,
+          ),
+          from: workstationConfigsProvider,
+          name: r'workstationConfigsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$workstationConfigsHash,
+          dependencies: WorkstationConfigsFamily._dependencies,
+          allTransitiveDependencies:
+              WorkstationConfigsFamily._allTransitiveDependencies,
+        );
+
+  final String projectId;
+  final String region;
+  final String clusterName;
+
+  @override
+  bool operator ==(Object other) {
+    return other is WorkstationConfigsProvider &&
+        other.projectId == projectId &&
+        other.region == region &&
+        other.clusterName == clusterName;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, projectId.hashCode);
+    hash = _SystemHash.combine(hash, region.hashCode);
+    hash = _SystemHash.combine(hash, clusterName.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
 String _$allWorkstationsHash() => r'e66875af19a30bdf09301e77f2afbabf94004660';
 typedef AllWorkstationsRef = AutoDisposeFutureProviderRef<List<Workstation>>;
 

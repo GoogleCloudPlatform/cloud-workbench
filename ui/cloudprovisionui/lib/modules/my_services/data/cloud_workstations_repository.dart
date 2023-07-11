@@ -262,12 +262,29 @@ CloudWorkstationsRepository cloudWorkstationsRepository(
 @riverpod
 Future<List<Workstation>> workstations(WorkstationsRef ref,
     {required String projectId,
-    required String clusterName,
-    required String configName,
-    required String region}) {
+      required String clusterName,
+      required String configName,
+      required String region}) {
   final servicesRepository = ref.watch(cloudWorkstationsRepositoryProvider);
   return servicesRepository.getWorkstations(
       projectId, clusterName, configName, region);
+}
+
+@riverpod
+Future<List<Cluster>> workstationClusters(WorkstationClustersRef ref,
+    {required String projectId,
+    required String region}) {
+  final servicesRepository = ref.watch(cloudWorkstationsRepositoryProvider);
+  return servicesRepository.getClusters(projectId, region);
+}
+
+@riverpod
+Future<List<WorkstationConfig>> workstationConfigs(WorkstationConfigsRef ref,
+    {required String projectId,
+      required String region,
+      required String clusterName}) {
+  final servicesRepository = ref.watch(cloudWorkstationsRepositoryProvider);
+  return servicesRepository.getConfigurations(projectId, clusterName, region);
 }
 
 @riverpod
