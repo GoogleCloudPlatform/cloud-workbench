@@ -75,9 +75,6 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                 ],
               ),
               _templateDetails(_template, context),
-              Divider(),
-              _cloudWorkstationSection(),
-              _deployButton(),
             ],
           ),
         ),
@@ -85,7 +82,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
     );
   }
 
-  Row _deployButton() {
+  Row _deployButton(Template template) {
     return Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -97,7 +94,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                       'Deploy template',
                       style: AppText.buttonFontStyle,
                     ),
-                    onPressed: () => _deployTemplate(_template),
+                    onPressed: () => _deployTemplate(template),
                   )
                       : Text(
                     "Please configure APIs integrations in the Settings section.",
@@ -187,8 +184,15 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
 
     return asyncTemplateValue.when(
       data: (template) {
-        return Container(
-          child: _dynamicParamsForm(template),
+        return Column(
+          children: [
+            Container(
+              child: _dynamicParamsForm(template),
+            ),
+            Divider(),
+            _cloudWorkstationSection(),
+            _deployButton(template),
+          ],
         );
       },
       loading: () => _buildLoading(),
@@ -277,10 +281,12 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
             cloudBuildLogUrl: buildConfig['build']['logUrl'],
             params: _formFieldValues,
             deploymentDate: DateTime.now(),
-            workstationCluster: _formFieldValues.containsKey("_WS_CLUSTER")
+            workstationCluster: _formFieldValues.containsKey("_WS_CLUSTER") && _formFieldValues["_WS_CLUSTER"] != "Select cluster"
                 ? _formFieldValues["_WS_CLUSTER"]
                 : "",
             workstationConfig: _formFieldValues.containsKey("_WS_CONFIG")
+                && _formFieldValues["_WS_CLUSTER"] != "Select cluster"
+                && _formFieldValues["_WS_CONFIG"] != "Select configuration"
                 ? _formFieldValues["_WS_CONFIG"]
                 : "");
 
@@ -497,6 +503,9 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
   }
 
   _workstationConfig(String projectId, String region, String clusterName) {
+
+    String clusterName = ref.watch(clusterDropdownProvider);
+
     final workstationConfigsList = ref.watch(WorkstationConfigsProvider(
         projectId: projectId, region: region, clusterName: clusterName));
 
@@ -505,14 +514,11 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 40.0),
+          padding: const EdgeInsets.only(left: 0.0),
           child: Text("Configuration"),
         ),
         Row(
           children: [
-            SizedBox(
-              width: 40,
-            ),
             workstationConfigsList.when(
                 loading: () => Container(),
                 error: (err, stack) => Container(),
@@ -541,8 +547,8 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                       );
                     } else {
                       var configNames = configsList
-                          .map<String>((e) =>
-                          e.name.substring(e.name.lastIndexOf('/') + 1))
+                          .map<String>((config) =>
+                          config.name.substring(config.name.lastIndexOf('/') + 1))
                           .toList();
 
                       var selectConfigurationText = "Select configuration";
@@ -572,7 +578,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                       );
                     }
                   } else {
-                    return Container();
+                    return Text("No configurations available");
                   }
                 }),
           ],
@@ -588,43 +594,100 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
     final workstationClustersList = ref.watch(
         WorkstationClustersProvider(projectId: projectId, region: region));
 
-    return workstationClustersList.when(
-        loading: () => Container(),
-        error: (err, stack) => Container(),
-        data: (clustersList) {
-          if (clustersList.isNotEmpty) {
-            if (clustersList.length == 1) {
-              String clusterName = clustersList.first.name
-                  .substring(clustersList.first.name.lastIndexOf('/') + 1);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 40.0),
+          child: Text("Cluster"),
+        ),
+        Row(
+          children: [
+            SizedBox(
+              width: 40,
+            ),
+            workstationClustersList.when(
+                loading: () => Container(),
+                error: (err, stack) => Container(),
+                data: (clustersList) {
+                  if (clustersList.isNotEmpty) {
+                    if (clustersList.length == 1) {
+                      String clusterName = clustersList.first.name
+                          .substring(clustersList.first.name.lastIndexOf('/') + 1);
 
-              _onTextFormUpdate(clusterName, "_WS_CLUSTER");
-              return Column(
-                children: [
-                  TextFormField(
-                    maxLength: 30,
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.abc_sharp),
-                      labelText: "Cluster",
-                    ),
-                    initialValue: clusterName,
-                    readOnly: true,
-                    validator: (value) {
-                      return null;
-                    },
-                    onChanged: (val) {
-                      _onTextFormUpdate(val, "_WS_CLUSTER");
-                    },
-                  ),
-                  _workstationConfig(projectId, region, clusterName),
-                ],
-              );
-            } else {
-              // TODO dropdown with clusters
-              return Container();
-            }
-          } else {
-            return Container();
-          }
-        });
+                      _onTextFormUpdate(clusterName, "_WS_CLUSTER");
+                      return Column(
+                        children: [
+                          TextFormField(
+                            maxLength: 30,
+                            decoration: InputDecoration(
+                              icon: Icon(Icons.abc_sharp),
+                              labelText: "Cluster",
+                            ),
+                            initialValue: clusterName,
+                            readOnly: true,
+                            validator: (value) {
+                              return null;
+                            },
+                            onChanged: (val) {
+                              _onTextFormUpdate(val, "_WS_CLUSTER");
+                            },
+                          ),
+                          _workstationConfig(projectId, region, clusterName),
+                        ],
+                      );
+                    } else {
+                      var clusterNames = clustersList
+                          .map<String>((e) =>
+                          e.name.substring(e.name.lastIndexOf('/') + 1))
+                          .toList();
+
+                      var selectClusterText = "Select cluster";
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 300,
+                            child: DropdownButtonFormField<String>(
+                              validator: (value) {
+                                return null;
+                              },
+                              hint: Text(selectClusterText),
+                              value: selectClusterText,
+                              icon: const Icon(Icons.arrow_drop_down),
+                              style: const TextStyle(color: Colors.black),
+                              onChanged: (String? value) {
+                                _onTextFormUpdate(value!, "_WS_CLUSTER");
+                                ref.read(clusterDropdownProvider.notifier).state = value;
+                              },
+                              items: [
+                                selectClusterText,
+                                ...clusterNames
+                              ].map<DropdownMenuItem<String>>((String clusterName) {
+                                return DropdownMenuItem<String>(
+                                  value: clusterName,
+                                  child: Text(clusterName),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          _workstationConfig(projectId, region, selectClusterText),
+                        ],
+                      );
+                    }
+                  } else {
+                    return Container();
+                  }
+                }),
+          ],
+        ),
+      ],
+    );
   }
+
 }
