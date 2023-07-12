@@ -39,7 +39,9 @@ class WorkstationsService extends BaseService {
 
     if (clusters.containsKey('workstationClusters')) {
       for (Map<String, dynamic> cluster in clusters['workstationClusters']) {
-        clustersList.add(Cluster.fromJson(cluster));
+        if (!cluster.containsKey("reconciling")) {
+          clustersList.add(Cluster.fromJson(cluster));
+        }
       }
     }
 
