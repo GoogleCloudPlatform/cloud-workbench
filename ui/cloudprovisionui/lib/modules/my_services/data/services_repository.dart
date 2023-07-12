@@ -26,21 +26,29 @@ class ServicesRepository {
     return entries;
   }
 
+  // Get by firestore docID
   Future<Service> get(String id) async {
     var document = _servicesRef.doc(id);
     var snapshot = await document.get();
     return Service.fromJson(snapshot.data()!)..id = snapshot.id;
   }
 
+  // Get by Service ID
+  Future<Service> getByServiceID(String serviceId) async {
+    var snapshot =
+        await _servicesRef.where("serviceId", isEqualTo: serviceId).get();
+    var docData = snapshot.docs.first.data();
+    return Service.fromJson(docData);
+  }
+
   Future<Service> addService(Service deployedService) async {
     var document = await _servicesRef.add(deployedService.toJson());
-
     return await get(document.id);
   }
 
   Future<void> deleteService(Service service) async {
-
-    String buildDetails = await BuildRepository(buildService: BuildService()).deleteService(service);
+    String buildDetails = await BuildRepository(buildService: BuildService())
+        .deleteService(service);
 
     if (buildDetails != "") {
       var document = await _servicesRef.doc(service.id);
@@ -49,18 +57,27 @@ class ServicesRepository {
       print("Service deletion failed.");
     }
   }
-
-
 }
 
+// ServicesRepositoryProvider
 @riverpod
 ServicesRepository servicesRepository(ServicesRepositoryRef ref) {
   final AuthRepository authRepo = ref.read(authRepositoryProvider);
-  return ServicesRepository(FirebaseFirestore.instance, authRepo.currentUser()!.uid);
+  return ServicesRepository(
+      FirebaseFirestore.instance, authRepo.currentUser()!.uid);
 }
 
+// ServicesProvider
 @riverpod
 Future<List<Service>> services(ServicesRef ref) {
   final servicesRepository = ref.watch(servicesRepositoryProvider);
   return servicesRepository.loadServices();
+}
+
+// ServiceByDocIdProvider
+@riverpod
+Future<Service> serviceByDocId(ServiceByDocIdRef ref, String serviceDocId) {
+  final servicesRepository = ref.watch(servicesRepositoryProvider);
+  final result = servicesRepository.get(serviceDocId);
+  return result;
 }

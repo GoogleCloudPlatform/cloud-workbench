@@ -1,3 +1,4 @@
+import 'package:cloudprovision/modules/my_services/service_detail.dart';
 import 'package:cloudprovision/widgets/cloud_table.dart';
 
 import 'package:flutter/material.dart';
@@ -164,10 +165,7 @@ class MyServicesPage extends ConsumerWidget {
         // onTap: () => _dialogBuilder(context, service),
 
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MyServiceDialog(service)),
-          );
+          context.go("/service/${service.id}");
         }
 
         // () async {

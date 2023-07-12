@@ -2,6 +2,7 @@ import 'package:cloudprovision/modules/catalog/catalog_screen.dart';
 import 'package:cloudprovision/modules/example_screen/example.dart';
 import 'package:cloudprovision/modules/home_page/home_screen.dart';
 import 'package:cloudprovision/modules/my_services/my_services_screen.dart';
+import 'package:cloudprovision/modules/my_services/service_detail.dart';
 
 import 'package:cloudprovision/modules/settings/settings_screen.dart';
 import 'package:cloudprovision/modules/workstations/my_workstations_screen.dart';
@@ -93,6 +94,17 @@ GoRouter goRouter(GoRouterRef ref) {
           child: MyServicesScreen(),
         ),
       ),
+      GoRoute(
+          path: '/service/:serviceDocId',
+          name: 'service',
+          pageBuilder: (context, state) {
+            final serviceID = state.params['serviceDocId']!;
+            return buildPageWithDefaultTransition<void>(
+              context: context,
+              state: state,
+              child: ServiceDetail(serviceID),
+            );
+          }),
       GoRoute(
         path: '/catalog',
         name: 'catalog',
