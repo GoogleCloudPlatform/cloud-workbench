@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloudprovision/shared/service/base_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'dart:convert';
 import 'package:cloud_provision_shared/services/models/workstation.dart';
@@ -252,6 +253,10 @@ class CloudWorkstationsRepository extends BaseService {
     }
   }
 }
+
+final clusterDropdownProvider = StateProvider.autoDispose<String>(
+      (ref) => "Select cluster",
+);
 
 @riverpod
 CloudWorkstationsRepository cloudWorkstationsRepository(
