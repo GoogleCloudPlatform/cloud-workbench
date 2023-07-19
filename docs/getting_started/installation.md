@@ -106,7 +106,7 @@ export PATH="$PATH":"$HOME/.pub-cache/bin:"
 ```
 
 ```sh
-( cd ui/cloudprovisionui && flutterfire configure -p ${PROJECT_ID} -y )
+( cd ui && flutterfire configure -p ${PROJECT_ID} -y )
 ```
 
 ## SetUI Values

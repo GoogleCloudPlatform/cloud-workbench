@@ -42,7 +42,7 @@ ENV PATH="$PATH:/home/flutter/flutter-sdk/bin/cache/dart-sdk/bin"
 # Copy files to container and build
 WORKDIR /home/flutter/app
 COPY --chown=flutter:flutter . .
-RUN cd cloudprovisionui && flutter build web
+RUN flutter build web
 
 FROM node:16
 
@@ -61,8 +61,8 @@ RUN npm install
 
 # Bundle app source
 COPY --from=builder /home/flutter/app/server.js .
-COPY --from=builder /home/flutter/app/cloudprovisionui/build/web ./public
-COPY --from=builder /home/flutter/app/cloudprovisionui/assets/images ./public/assets/images
+COPY --from=builder /home/flutter/app/build/web ./public
+COPY --from=builder /home/flutter/app/assets/images ./public/assets/images
 
 EXPOSE 8080
 CMD [ "node", "server.js" ]

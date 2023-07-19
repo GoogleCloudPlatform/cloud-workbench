@@ -1,11 +1,11 @@
-cloudprovisionui/assets/env
-cloudprovisionui/build/*
-cloudprovisionui/.flutter-plugins
-cloudprovisionui/.flutter-plugins-dependencies
-cloudprovisionui/.packages
-cloudprovisionui/.dart_tool
-cloudprovisionui/.dart_tool/*
-cloudprovisionui/lib/generated_plugin_registrant.dart
+assets/env
+build/*
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.dart_tool
+.dart_tool/*
+lib/generated_plugin_registrant.dart
 firebase_options.dart 
 
 # Miscellaneous

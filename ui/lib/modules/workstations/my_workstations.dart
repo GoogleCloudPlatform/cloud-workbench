@@ -188,11 +188,11 @@ class MyWorkstationsPage extends ConsumerWidget {
                       ref
                           .watch(cloudWorkstationsRepositoryProvider)
                           .deleteInstance(
-                          projectId,
-                          workstation.clusterName,
-                          workstation.configName,
-                          workstation.displayName,
-                          region);
+                              projectId,
+                              workstation.clusterName,
+                              workstation.configName,
+                              workstation.displayName,
+                              region);
                       ref.invalidate(allWorkstationsProvider);
                     },
                     child: Text(

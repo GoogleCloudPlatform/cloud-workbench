@@ -5,12 +5,12 @@
 
 Configure catalog repositories location:
 ```bash
-vim cloud-run/config/env
+vim server/config/env
 ```
 
 Start backend service:
 ```bash
-cd cloud-run
+cd server
 dart run lib/server.dart
 ```
 
@@ -26,8 +26,8 @@ for VSCode your `launch.json` file should look similar to this:
 
 ```json
         {
-            "name": "cloudprovisionui",
-            "cwd": "ui/cloudprovisionui",
+            "name": "ui",
+            "cwd": "ui",
             "request": "launch",
             "type": "dart",
             "args": ["--dart-define=CLOUD_PROVISION_API_URL=localhost:8080"]
@@ -37,7 +37,7 @@ for VSCode your `launch.json` file should look similar to this:
 To start the front end from the command line execute the following:
 
 ```bash
-cd ui/cloudprovisionui
+cd ui
 
 flutter run lib/main.dart \
     -d chrome \

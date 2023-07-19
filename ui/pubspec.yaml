@@ -53,7 +53,7 @@ dependencies:
   riverpod_annotation: ^2.1.1
   url_strategy: ^0.2.0
   cloud_provision_shared:
-    path: ../../shared
+    path: ../shared
 
 dev_dependencies:
   flutter_test:
