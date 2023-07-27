@@ -8,7 +8,7 @@ class TokenValidationHandler {
   Middleware tokenValidationHandler({Map<String, String>? headers}) {
     return (Handler handler) {
       return (Request request) async {
-        if (!_isValidToken(request)) {
+        if (request.url.path != "v1/env" && !_isValidToken(request)) {
           return Response.forbidden(
             JsonEncoder.withIndent(' ').convert({"msg": "Forbidden"}),
           );

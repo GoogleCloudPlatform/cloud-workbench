@@ -1,4 +1,5 @@
 import 'package:cloudprovision/theme.dart';
+import 'package:cloudprovision/utils/runtime_env_client.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -7,15 +8,23 @@ import 'package:url_strategy/url_strategy.dart';
 
 import 'routing/app_router.dart';
 
-import 'firebase_options.dart';
-
 Future<void> main() async {
+  var envMap = await RuntimeEnvClient.getEnvVars(url: "/v1/env");
+
   await dotenv.load(fileName: "assets/env");
 
   WidgetsFlutterBinding.ensureInitialized();
 
+  var firebaseConfigMap = envMap["FIREBASE_CONFIG"];
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: FirebaseOptions(
+      apiKey: firebaseConfigMap['apiKey'],
+      appId: firebaseConfigMap['appId'],
+      messagingSenderId: firebaseConfigMap['messagingSenderId'],
+      projectId: firebaseConfigMap['projectId'],
+      authDomain: firebaseConfigMap['authDomain'],
+      storageBucket: firebaseConfigMap['storageBucket'],
+    ),
   );
 
   // Uncomment to run with local Firebase emulator

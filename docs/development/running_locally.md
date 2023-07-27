@@ -8,6 +8,13 @@ Configure catalog repositories location:
 vim server/config/env
 ```
 
+Set FIREBASE_CONFIG environment variable before starting the backend service.
+You can get the values in Firebase Console for your Cloud Workbench web application configuration.
+
+```bash
+export FIREBASE_CONFIG={ apiKey: "AIzaSyAnnnn", appId: "1:850000000:web:499f000000c", messagingSenderId: "850000", projectId: "cloud-workbench-1000-2000", authDomain: "cloud-workbench-1000-2000.firebaseapp.com", storageBucket: "cloud-workbench-1000-2000.appspot.com"}
+```
+
 Start backend service:
 ```bash
 cd server
