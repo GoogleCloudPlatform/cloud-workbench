@@ -2,3 +2,5 @@
 .dart_tool/*
 .packages
 ./cli/cp.json
+.firebaserc
+firebase-env-file.yaml
