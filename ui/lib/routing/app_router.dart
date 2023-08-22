@@ -34,6 +34,7 @@ CustomTransitionPage buildPageWithDefaultTransition<T>({
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
   final authState = ref.watch(authProvider);
+  final googleAuthState = ref.watch(googleAuthProvider);
 
   return GoRouter(
     navigatorKey: _key,

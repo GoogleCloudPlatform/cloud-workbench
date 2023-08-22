@@ -63,7 +63,7 @@ Create Firestore database:
 ```sh
 gcloud app create --region=$REGION
 
-gcloud firestore databases create --region=$REGION
+gcloud firestore databases create --location=$REGION
 
 sed "s/PROJECT_ID/$PROJECT_ID/g" firebaserc.tmpl > .firebaserc
 

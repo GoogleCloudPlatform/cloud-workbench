@@ -40,12 +40,13 @@ class BuildsController extends BaseController {
       final body = await request.readAsString();
       Map<String, dynamic> requestMap = jsonDecode(body);
 
+      var accessToken = requestMap['accessToken'];
       var projectId = requestMap['project_id'];
       var templateConfigUrl = requestMap['cloudProvisionConfigUrl'];
       Map<String, String> substitutionsMap =
           Map<String, String>.from(requestMap['params']);
 
-      cb.Operation buildOp = await _buildsService.startBuild(
+      cb.Operation buildOp = await _buildsService.startBuild(accessToken,
           projectId, substitutionsMap, templateConfigUrl, request.method);
 
       return Response.ok(

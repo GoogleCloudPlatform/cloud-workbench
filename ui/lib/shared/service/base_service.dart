@@ -1,8 +1,22 @@
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BaseService {
+
+  bool serverEnabled = dotenv.get("SERVER_ENABLED", fallback: "false") == "true";
+
+  late String accessToken;
+
+  BaseService() {
+    accessToken = "test token";
+  }
+
+  BaseService.withAccessToken(String token) {
+    accessToken = token;
+  }
+
   static const String cloudProvisionServerUrl = String.fromEnvironment('CLOUD_PROVISION_API_URL', defaultValue: "");
 
   Uri getUrl(String endpointPath, {Map<String, dynamic>? queryParameters}) {
@@ -21,7 +35,8 @@ class BaseService {
 
       Map<String, String> requestHeaders = {
         HttpHeaders.authorizationHeader: "Bearer " + identityToken,
-        HttpHeaders.contentTypeHeader: "application/json"
+        HttpHeaders.contentTypeHeader: "application/json",
+        "Access-token": accessToken
       };
 
       return requestHeaders;

@@ -28,7 +28,7 @@ class App_AppBar extends ConsumerWidget implements PreferredSizeWidget {
           child: Row(
             children: [
               Image(
-                image: AssetImage('images/cloud_logo.png'),
+                image: AssetImage('assets/images/cloud_logo.png'),
               ),
               Text(
                 '  Developer Workbench',

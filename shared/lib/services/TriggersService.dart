@@ -1,14 +1,17 @@
-import 'package:cloud_provision_server/services/BaseService.dart';
 import 'package:googleapis/cloudbuild/v1.dart' as cb;
 
+import 'BaseService.dart';
+
 class TriggersService extends BaseService {
+  TriggersService(String accessToken) : super(accessToken);
+
   /// Runs Cloud Build trigger
   ///
   /// [projectId]
   /// [branchName]
   /// [triggerName]
   runTrigger(String projectId, String branchName, String triggerName) async {
-    var cloudBuildApi = cb.CloudBuildApi(client);
+    var cloudBuildApi = cb.CloudBuildApi(getAuthenticatedClient());
 
     var list = await cloudBuildApi.projects.triggers.list(projectId);
     late cb.BuildTrigger buildTrigger;
@@ -39,8 +42,8 @@ class TriggersService extends BaseService {
     return null;
   }
 
-  getTriggerBuilds(String? projectId, String triggerName, String? accessToken) async {
-    var cloudBuildApi = cb.CloudBuildApi(getAuthenticatedClient(accessToken!));
+  Future<List<Map<String, String>>> getTriggerBuilds(String? projectId, String triggerName) async {
+    var cloudBuildApi = cb.CloudBuildApi(getAuthenticatedClient());
     var list = await cloudBuildApi.projects.triggers.list(projectId!);
     late cb.BuildTrigger buildTrigger;
     bool foundTrigger = false;

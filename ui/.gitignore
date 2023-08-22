@@ -5,7 +5,6 @@ build/*
 .packages
 .dart_tool
 .dart_tool/*
-lib/generated_plugin_registrant.dart
 firebase_options.dart 
 
 # Miscellaneous
@@ -43,7 +42,6 @@ migrate_working_dir/
 /build/
 
 # Web related
-lib/generated_plugin_registrant.dart
 
 # Symbolication related
 app.*.symbols

@@ -35,11 +35,11 @@ final authRepositoryProvider = AutoDisposeProvider<AuthRepository>.internal(
 );
 
 typedef AuthRepositoryRef = AutoDisposeProviderRef<AuthRepository>;
-String _$authServiceHash() => r'e771c719cfb4bd87b7f15fc6722ef9f56a9844e4';
+String _$authServiceHash() => r'ac84fbd62ce222815ab95ba0aeeb9a7560d010d7';
 
 /// See also [authService].
 @ProviderFor(authService)
-final authServiceProvider = AutoDisposeProvider<AuthService>.internal(
+final authServiceProvider = Provider<AuthService>.internal(
   authService,
   name: r'authServiceProvider',
   debugGetCreateSourceHash:
@@ -48,5 +48,20 @@ final authServiceProvider = AutoDisposeProvider<AuthService>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef AuthServiceRef = AutoDisposeProviderRef<AuthService>;
+typedef AuthServiceRef = ProviderRef<AuthService>;
+String _$googleAuthHash() => r'80e8b28e837b5023e00f74c06301c640b4f78723';
+
+/// See also [googleAuth].
+@ProviderFor(googleAuth)
+final googleAuthProvider =
+    AutoDisposeStreamProvider<GoogleSignInAccount?>.internal(
+  googleAuth,
+  name: r'googleAuthProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$googleAuthHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef GoogleAuthRef = AutoDisposeStreamProviderRef<GoogleSignInAccount?>;
 // ignore_for_file: unnecessary_raw_strings, subtype_of_sealed_class, invalid_use_of_internal_member, do_not_use_environment, prefer_const_constructors, public_member_api_docs, avoid_private_typedef_functions

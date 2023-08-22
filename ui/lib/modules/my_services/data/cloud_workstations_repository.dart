@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_provision_shared/services/WorkstationsService.dart';
 import 'package:cloudprovision/shared/service/base_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -9,9 +10,16 @@ import 'package:cloud_provision_shared/services/models/workstation_config.dart';
 import 'package:cloud_provision_shared/services/models/cluster.dart';
 import 'package:http/http.dart' as http;
 
+import '../../auth/repositories/auth_provider.dart';
+
 part 'cloud_workstations_repository.g.dart';
 
 class CloudWorkstationsRepository extends BaseService {
+
+  CloudWorkstationsRepository(){}
+
+  CloudWorkstationsRepository.withAccessToken(accessToken) : super.withAccessToken(accessToken);
+
   /// Returns list of Cloud Workstations Clusters
   /// [projectId]
   /// [region]
@@ -19,23 +27,29 @@ class CloudWorkstationsRepository extends BaseService {
     List<Cluster> clusters = [];
 
     try {
-      Map<String, String> requestHeaders = await getRequestHeaders();
+      if (serverEnabled) {
+        Map<String, String> requestHeaders = await getRequestHeaders();
 
-      var endpointPath = '/v1/workstationClusters';
+        var endpointPath = '/v1/workstationClusters';
 
-      final queryParameters = {
-        'projectId': projectId,
-        'region': region,
-      };
+        final queryParameters = {
+          'projectId': projectId,
+          'region': region,
+        };
 
-      var url = getUrl(endpointPath, queryParameters: queryParameters);
+        var url = getUrl(endpointPath, queryParameters: queryParameters);
 
-      var response = await http
-          .get(url, headers: requestHeaders)
-          .timeout(Duration(seconds: 10));
+        var response = await http
+            .get(url, headers: requestHeaders)
+            .timeout(Duration(seconds: 10));
 
-      Iterable l = json.decode(response.body);
-      clusters = List<Cluster>.from(l.map((model) => Cluster.fromJson(model)));
+        Iterable l = json.decode(response.body);
+        clusters =
+        List<Cluster>.from(l.map((model) => Cluster.fromJson(model)));
+      } else {
+        WorkstationsService workstationsService = new WorkstationsService(accessToken);
+        clusters = await workstationsService.getClusters(projectId, region);
+      }
     } catch (e, stack) {
       print(e);
       print(stack);
@@ -53,25 +67,30 @@ class CloudWorkstationsRepository extends BaseService {
     List<WorkstationConfig> workstationConfigs = [];
 
     try {
-      Map<String, String> requestHeaders = await getRequestHeaders();
+      if (serverEnabled) {
+        Map<String, String> requestHeaders = await getRequestHeaders();
 
-      var endpointPath =
-          '/v1/workstationClusters/${clusterName}/workstationConfigs';
+        var endpointPath =
+            '/v1/workstationClusters/${clusterName}/workstationConfigs';
 
-      final queryParameters = {
-        'projectId': projectId,
-        'region': region,
-      };
+        final queryParameters = {
+          'projectId': projectId,
+          'region': region,
+        };
 
-      var url = getUrl(endpointPath, queryParameters: queryParameters);
+        var url = getUrl(endpointPath, queryParameters: queryParameters);
 
-      var response = await http
-          .get(url, headers: requestHeaders)
-          .timeout(Duration(seconds: 10));
+        var response = await http
+            .get(url, headers: requestHeaders)
+            .timeout(Duration(seconds: 10));
 
-      Iterable l = json.decode(response.body);
-      workstationConfigs = List<WorkstationConfig>.from(
-          l.map((model) => WorkstationConfig.fromJson(model)));
+        Iterable l = json.decode(response.body);
+        workstationConfigs = List<WorkstationConfig>.from(
+            l.map((model) => WorkstationConfig.fromJson(model)));
+      } else {
+        WorkstationsService workstationsService = new WorkstationsService(accessToken);
+        workstationConfigs = await workstationsService.getConfigurations(projectId, clusterName, region);
+      }
     } catch (e, stack) {
       print(e);
       print(stack);
@@ -127,25 +146,30 @@ class CloudWorkstationsRepository extends BaseService {
     }
 
     try {
-      Map<String, String> requestHeaders = await getRequestHeaders();
+      if (serverEnabled) {
+        Map<String, String> requestHeaders = await getRequestHeaders();
 
-      var endpointPath =
-          '/v1/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations';
+        var endpointPath =
+            '/v1/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations';
 
-      final queryParameters = {
-        'projectId': projectId,
-        'region': region,
-      };
+        final queryParameters = {
+          'projectId': projectId,
+          'region': region,
+        };
 
-      var url = getUrl(endpointPath, queryParameters: queryParameters);
+        var url = getUrl(endpointPath, queryParameters: queryParameters);
 
-      var response = await http
-          .get(url, headers: requestHeaders)
-          .timeout(Duration(seconds: 10));
+        var response = await http
+            .get(url, headers: requestHeaders)
+            .timeout(Duration(seconds: 10));
 
-      Iterable l = json.decode(response.body);
-      workstations =
-          List<Workstation>.from(l.map((model) => Workstation.fromJson(model)));
+        Iterable l = json.decode(response.body);
+        workstations =
+        List<Workstation>.from(l.map((model) => Workstation.fromJson(model)));
+      } else {
+        WorkstationsService workstationsService = new WorkstationsService(accessToken);
+        workstations = await workstationsService.getWorkstations(projectId, clusterName, configName, region);
+      }
     } catch (e, stack) {
       print(e);
       print(stack);
@@ -157,21 +181,27 @@ class CloudWorkstationsRepository extends BaseService {
   startInstance(String projectId, String clusterName, String configName,
       String workstationName, String region) async {
     try {
-      Map<String, String> requestHeaders = await getRequestHeaders();
+      if (serverEnabled) {
+        Map<String, String> requestHeaders = await getRequestHeaders();
 
-      var endpointPath =
-          '/v1/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations/${workstationName}/start';
+        var endpointPath =
+            '/v1/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations/${workstationName}/start';
 
-      final queryParameters = {
-        'projectId': projectId,
-        'region': region,
-      };
+        final queryParameters = {
+          'projectId': projectId,
+          'region': region,
+        };
 
-      var url = getUrl(endpointPath, queryParameters: queryParameters);
+        var url = getUrl(endpointPath, queryParameters: queryParameters);
 
-      var response = await http
-          .post(url, headers: requestHeaders)
-          .timeout(Duration(seconds: 10));
+        var response = await http
+            .post(url, headers: requestHeaders)
+            .timeout(Duration(seconds: 10));
+        return response;
+      } else {
+        WorkstationsService workstationsService = new WorkstationsService(accessToken);
+        return await workstationsService.startWorkstation(projectId, clusterName, configName, workstationName, region);
+      }
     } catch (e, stack) {
       print(e);
       print(stack);
@@ -181,21 +211,28 @@ class CloudWorkstationsRepository extends BaseService {
   stopInstance(String projectId, String clusterName, String configName,
       String workstationName, String region) async {
     try {
-      Map<String, String> requestHeaders = await getRequestHeaders();
+      if (serverEnabled) {
+        Map<String, String> requestHeaders = await getRequestHeaders();
 
-      var endpointPath =
-          '/v1/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations/${workstationName}/stop';
+        var endpointPath =
+            '/v1/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations/${workstationName}/stop';
 
-      final queryParameters = {
-        'projectId': projectId,
-        'region': region,
-      };
+        final queryParameters = {
+          'projectId': projectId,
+          'region': region,
+        };
 
-      var url = getUrl(endpointPath, queryParameters: queryParameters);
+        var url = getUrl(endpointPath, queryParameters: queryParameters);
 
-      var response = await http
-          .post(url, headers: requestHeaders)
-          .timeout(Duration(seconds: 10));
+        var response = await http
+            .post(url, headers: requestHeaders)
+            .timeout(Duration(seconds: 10));
+
+        return response;
+      } else {
+        WorkstationsService workstationsService = new WorkstationsService(accessToken);
+        return await workstationsService.stopWorkstation(projectId, clusterName, configName, workstationName, region);
+      }
     } catch (e, stack) {
       print(e);
       print(stack);
@@ -205,22 +242,27 @@ class CloudWorkstationsRepository extends BaseService {
   createInstance(String projectId, String clusterName, String configName,
       String workstationName, String region, String email) async {
     try {
-      Map<String, String> requestHeaders = await getRequestHeaders();
+      if (serverEnabled) {
+        Map<String, String> requestHeaders = await getRequestHeaders();
 
-      var endpointPath =
-          '/v1/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations/${workstationName}';
+        var endpointPath =
+            '/v1/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations/${workstationName}';
 
-      final queryParameters = {'projectId': projectId, 'region': region};
+        final queryParameters = {'projectId': projectId, 'region': region};
 
-      var url = getUrl(endpointPath, queryParameters: queryParameters);
+        var url = getUrl(endpointPath, queryParameters: queryParameters);
 
-      Map<String, String> body = {"email": email};
+        Map<String, String> body = {"email": email};
 
-      var response = await http
-          .post(url, headers: requestHeaders, body: jsonEncode(body))
-          .timeout(Duration(seconds: 10));
+        var response = await http
+            .post(url, headers: requestHeaders, body: jsonEncode(body))
+            .timeout(Duration(seconds: 10));
 
-      return response;
+        return response;
+      } else {
+        WorkstationsService workstationsService = new WorkstationsService(accessToken);
+        return await workstationsService.createWorkstation(projectId, clusterName, configName, workstationName, region);
+      }
     } catch (e, stack) {
       print(e);
       print(stack);
@@ -230,23 +272,28 @@ class CloudWorkstationsRepository extends BaseService {
   deleteInstance(String projectId, String clusterName, String configName,
       String workstationName, String region) async {
     try {
-      Map<String, String> requestHeaders = await getRequestHeaders();
+      if (serverEnabled) {
+        Map<String, String> requestHeaders = await getRequestHeaders();
 
-      var endpointPath =
-          '/v1/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations/${workstationName}';
+        var endpointPath =
+            '/v1/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations/${workstationName}';
 
-      final queryParameters = {
-        'projectId': projectId,
-        'region': region,
-      };
+        final queryParameters = {
+          'projectId': projectId,
+          'region': region,
+        };
 
-      var url = getUrl(endpointPath, queryParameters: queryParameters);
+        var url = getUrl(endpointPath, queryParameters: queryParameters);
 
-      var response = await http
-          .delete(url, headers: requestHeaders)
-          .timeout(Duration(seconds: 10));
+        var response = await http
+            .delete(url, headers: requestHeaders)
+            .timeout(Duration(seconds: 10));
 
-      return response;
+        return response;
+      } else {
+        WorkstationsService workstationsService = new WorkstationsService(accessToken);
+        return await workstationsService.deleteWorkstation(projectId, clusterName, configName, workstationName, region);
+      }
     } catch (e, stack) {
       print(e);
       print(stack);
@@ -255,13 +302,18 @@ class CloudWorkstationsRepository extends BaseService {
 }
 
 final clusterDropdownProvider = StateProvider.autoDispose<String>(
-      (ref) => "Select cluster",
+      (ref) => "Select a cluster",
 );
 
 @riverpod
 CloudWorkstationsRepository cloudWorkstationsRepository(
     CloudWorkstationsRepositoryRef ref) {
-  return CloudWorkstationsRepository();
+
+  final authRepo = ref.watch(authRepositoryProvider);
+  var authClient = authRepo.getAuthClient();
+  String accessToken = authClient.credentials.accessToken.data;
+
+  return CloudWorkstationsRepository.withAccessToken(accessToken);
 }
 
 @riverpod

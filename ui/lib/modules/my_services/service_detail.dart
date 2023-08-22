@@ -73,6 +73,7 @@ class _ServiceDetailState extends ConsumerState<ServiceDetail> {
           top: 50,
           child: Container(
             width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(25.0),
@@ -103,8 +104,26 @@ class _ServiceDetailState extends ConsumerState<ServiceDetail> {
           padding: EdgeInsets.only(left: 20),
           height: 32,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              InkWell(
+                  onTap: () {
+                    context.go('/services');
+                  },
+                  child: Text(
+                    'My Services',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  )
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Text(
+                '/',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              SizedBox(
+                width: 5,
+              ),
               Text(
                 "Service Detail",
                 style: Theme.of(context).textTheme.titleMedium,

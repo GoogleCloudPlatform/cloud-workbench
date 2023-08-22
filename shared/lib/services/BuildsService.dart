@@ -1,16 +1,21 @@
-import 'package:cloud_provision_server/services/BaseService.dart';
 import 'package:googleapis/cloudbuild/v1.dart' as cb;
 
+import '../catalog/models/build_details.dart';
+import 'BaseService.dart';
 import 'ConfigService.dart';
 
+
 class BuildsService extends BaseService {
+
+  BuildsService(String accessToken) : super(accessToken);
+
   ConfigService _configService = ConfigService();
   /// Returns Cloud Build details for specified parameters
   ///
   /// [projectId]
   /// [buildId]
   Future<cb.Build> getBuildDetails(projectId, buildId) async {
-    var cloudBuildApi = cb.CloudBuildApi(client);
+    var cloudBuildApi = cb.CloudBuildApi(null!);
 
     cb.Build build =
         await cloudBuildApi.projects.builds.get(projectId, buildId);
@@ -23,7 +28,7 @@ class BuildsService extends BaseService {
   /// [projectId]
   /// [substitutionsMap]
   /// [cloudProvisionJsonConfig]
-  Future<cb.Operation> startBuild(String accessToken,
+  Future<BuildDetails> startBuild(
       projectId, substitutionsMap, templateConfigUrl, String method) async {
 
     Map<String, dynamic> templateJsonConfig =
@@ -50,10 +55,13 @@ class BuildsService extends BaseService {
         steps: buildSteps,
         options: buildOptions);
 
-    var cloudBuildApi = cb.CloudBuildApi(getAuthenticatedClient(accessToken));
+    var cloudBuildApi = cb.CloudBuildApi(getAuthenticatedClient());
     cb.Operation buildOp = await cloudBuildApi.projects.builds
         .create(buildRequest, projectId, parent: parent);
 
-    return buildOp;
+    Map<String, dynamic> details = Map.from(buildOp.metadata?['build']! as Map);
+
+    return new BuildDetails(details["id"] as String,
+        details["logUrl"] as String);
   }
 }

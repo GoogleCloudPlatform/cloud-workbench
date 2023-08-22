@@ -46,6 +46,7 @@ class SettingsRepository {
       'customerTemplateGitRepository':
           gitSettings.customerTemplateGitRepository,
       'gcpApiKey': gitSettings.gcpApiKey,
+      'targetProject': gitSettings.targetProject,
       'updatedDate': FieldValue.serverTimestamp(),
       'createdDate': snapshot.exists
           ? snapshot.get("createdDate")

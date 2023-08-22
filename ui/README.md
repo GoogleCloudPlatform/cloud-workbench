@@ -20,7 +20,8 @@ Build and Deploy application:
 gcloud run deploy cloudprovisionui \
   --source . \
   --region us-east1 \
-  --allow-unauthenticated
+  --allow-unauthenticated \
+  --env-vars-file firebase-env-file.yaml
 ```
 ## Riverpod annotations
 

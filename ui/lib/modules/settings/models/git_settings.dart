@@ -4,12 +4,13 @@ class GitSettings {
   String instanceGitToken;
   String customerTemplateGitRepository;
   String gcpApiKey;
+  String targetProject;
 
   GitSettings(
     this.instanceGitUsername,
     this.instanceGitToken,
     this.customerTemplateGitRepository,
-    this.gcpApiKey,
+    this.gcpApiKey, this.targetProject,
   );
 
   GitSettings.fromJson(Map<String, dynamic> parsedJson)
@@ -17,7 +18,8 @@ class GitSettings {
         instanceGitToken = parsedJson['instanceGitToken'],
         customerTemplateGitRepository =
             parsedJson['customerTemplateGitRepository'],
-        gcpApiKey = parsedJson['gcpApiKey'];
+        gcpApiKey = parsedJson['gcpApiKey'],
+        targetProject = parsedJson['targetProject'] != null ? parsedJson['targetProject'] : "";
 
   Map<String, dynamic> toJson() {
     return {
@@ -25,6 +27,7 @@ class GitSettings {
       'instanceGitToken': instanceGitToken,
       'customerTemplateGitRepository': customerTemplateGitRepository,
       'gcpApiKey': gcpApiKey,
+      'targetProject': targetProject,
     };
   }
 }

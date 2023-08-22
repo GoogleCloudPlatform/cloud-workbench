@@ -1,4 +1,4 @@
-import 'package:cloudprovision/utils/environment.dart';
+import 'package:cloud_provision_shared/catalog/models/build_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +9,6 @@ import '../../../utils/styles.dart';
 import '../../../widgets/summary_item.dart';
 
 import 'package:cloud_provision_shared/catalog/models/template.dart';
-import 'dart:convert';
 
 import 'package:cloudprovision/modules/settings/models/git_settings.dart';
 import 'package:cloudprovision/modules/my_services/data/services_repository.dart';
@@ -20,6 +19,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import '../../auth/repositories/auth_provider.dart';
 import '../data/build_repository.dart';
 import 'package:cloud_provision_shared/catalog/models/param.dart';
 import '../../my_services/models/service.dart';
@@ -44,7 +44,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
   final Template _template;
   String _appId = "";
 
-  Map<String, dynamic> _formFieldValues = {};
+  Map<String, String> _formFieldValues = {};
   final _key = GlobalKey<FormState>();
 
   _MyTemplateDialogState(this._template);
@@ -106,6 +106,9 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
   }
 
   _templateDetails(Template template, BuildContext context) {
+
+    final gitSettingsValue = ref.watch(gitSettingsProvider);
+
     return Column(
       children: [
         Row(
@@ -161,6 +164,19 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                       ),
                     ),
                   ),
+                  Divider(),
+                  SummaryItem(
+                    label: "Target Project",
+                    child:
+                        gitSettingsValue.when(data: (settings) {
+                         return Text(settings.targetProject);
+                         },
+                         loading: () => Container(),
+                          error: (err, st) => Text(
+                            err.toString(),
+                            ),
+                        ),
+                    ),
                   Divider(),
                   // Template Inputs  Section
                   Text(
@@ -232,7 +248,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
       return;
     }
 
-    String projectId = Environment.getProjectId();
+    // String projectId = Environment.getProjectId();
 
     bool isCICDenabled = false;
     template.inputs.forEach((element) {
@@ -244,6 +260,8 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
     GitSettings gitSettings =
         await ref.read(settingsRepositoryProvider).loadGitSettings();
 
+    String projectId = gitSettings.targetProject;
+
     if (isCICDenabled) {
       _formFieldValues["_INSTANCE_GIT_REPO_OWNER"] =
           gitSettings.instanceGitUsername;
@@ -254,13 +272,16 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
     _formFieldValues["_APP_ID"] = _appId;
 
     try {
-      String buildDetails = await BuildRepository(buildService: BuildService())
-          .deployTemplate(projectId, template, _formFieldValues);
+
+      final authRepo = ref.watch(authRepositoryProvider);
+      var authClient = await authRepo.getAuthClient();
+      String accessToken = authClient.credentials.accessToken.data;
+
+      BuildDetails buildDetails = await BuildRepository(buildService: BuildService.withAccessToken(accessToken))
+          .deployTemplate(accessToken, projectId, template, _formFieldValues);
 
       if (buildDetails != "") {
-        Map<String, dynamic> buildConfig = jsonDecode(buildDetails);
-
-        _formFieldValues["tags"] = template.tags;
+        _formFieldValues["tags"] = template.tags.toString();
 
         final user = FirebaseAuth.instance.currentUser!;
 
@@ -268,27 +289,27 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
             user: user.displayName!,
             userEmail: user.email!,
             serviceId: _appId,
-            name: _formFieldValues["_APP_NAME"],
+            name: _formFieldValues["_APP_NAME"]!,
             owner: gitSettings.instanceGitUsername,
             instanceRepo:
                 "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_appId}",
             templateName: template.name,
             templateId: template.id,
             template: template,
-            region: _formFieldValues["_REGION"],
+            region: _formFieldValues["_REGION"]!,
             projectId: projectId,
-            cloudBuildId: buildConfig['build']['id'],
-            cloudBuildLogUrl: buildConfig['build']['logUrl'],
+            cloudBuildId: buildDetails.id,
+            cloudBuildLogUrl: buildDetails.logUrl,
             params: _formFieldValues,
             deploymentDate: DateTime.now(),
             workstationCluster: _formFieldValues.containsKey("_WS_CLUSTER") &&
-                    _formFieldValues["_WS_CLUSTER"] != "Select cluster"
-                ? _formFieldValues["_WS_CLUSTER"]
+                    _formFieldValues["_WS_CLUSTER"]! != "Select a cluster"
+                ? _formFieldValues["_WS_CLUSTER"]!
                 : "",
             workstationConfig: _formFieldValues.containsKey("_WS_CONFIG") &&
-                    _formFieldValues["_WS_CLUSTER"] != "Select cluster" &&
-                    _formFieldValues["_WS_CONFIG"] != "Select configuration"
-                ? _formFieldValues["_WS_CONFIG"]
+                    _formFieldValues["_WS_CLUSTER"]! != "Select a cluster" &&
+                    _formFieldValues["_WS_CONFIG"]! != "Select a configuration"
+                ? _formFieldValues["_WS_CONFIG"]!
                 : "");
 
         await ref.read(servicesRepositoryProvider).addService(deployedService);

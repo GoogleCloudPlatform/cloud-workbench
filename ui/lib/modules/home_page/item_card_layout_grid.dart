@@ -63,7 +63,7 @@ class ItemCardLayoutGrid extends StatelessWidget {
                       // ),
                       clipBehavior: Clip.antiAlias,
                       child: Image(
-                        image: AssetImage('images/${sectionItem.image}.png'),
+                        image: AssetImage('assets/images/${sectionItem.image}.png'),
                         fit: BoxFit.cover,
                       ),
                     ),

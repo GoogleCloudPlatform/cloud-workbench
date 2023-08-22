@@ -7,7 +7,7 @@ part of 'cloud_workstations_repository.dart';
 // **************************************************************************
 
 String _$cloudWorkstationsRepositoryHash() =>
-    r'7930a9865ec9327d8c706ad8b30bf1b91cecfdf2';
+    r'cf3b1a7f92c3fea4b51eb4b5c0ba27eb2f84da12';
 
 /// See also [cloudWorkstationsRepository].
 @ProviderFor(cloudWorkstationsRepository)

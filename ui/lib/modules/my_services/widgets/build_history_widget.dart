@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../../utils/styles.dart';
 
 import '../../catalog/data/build_repository.dart';
-import '../../catalog/data/build_service.dart';
 import '../../catalog/models/build.dart';
 import '../models/service.dart';
 
-class BuildHistoryWidget extends StatefulWidget {
+class BuildHistoryWidget extends ConsumerStatefulWidget {
   const BuildHistoryWidget({
     super.key,
     required Service service,
@@ -18,101 +18,98 @@ class BuildHistoryWidget extends StatefulWidget {
   final Service service;
 
   @override
-  State<BuildHistoryWidget> createState() => _BuildHistoryWidgetState();
+  ConsumerState<BuildHistoryWidget> createState() => _BuildHistoryWidgetState();
 }
 
-class _BuildHistoryWidgetState extends State<BuildHistoryWidget> {
-  List<Build> _triggerBuilds = [];
-
-  bool _loadingTriggerBuilds = false;
-  late String _triggerId;
+class _BuildHistoryWidgetState extends ConsumerState<BuildHistoryWidget> {
 
   @override
   void initState() {
-    _loadingTriggerBuilds = true;
-
-    loadTriggerBuilds();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
+
+    var triggerBuilds = ref.watch(triggerBuildsProvider(
+        projectId: widget.service.projectId,
+        serviceId: widget.service.serviceId));
+
+    return triggerBuilds.when(
+      loading: () => LinearProgressIndicator(),
+      error: (err, stack) => Text('Error: $err'),
+      data: (builds) {
+        String triggerId = "";
+
+        if (builds.isNotEmpty) {
+          triggerId = builds.first.buildTriggerId;
+        }
+
+        return Column(
           children: [
-            Text(
-              "Build History: ",
-              style: AppText.fontStyleBold,
+            Row(
+              children: [
+                Text(
+                  "Build History: ",
+                  style: AppText.fontStyleBold,
+                ),
+                const SizedBox(height: 4),
+                TextButton(
+                  onPressed: () async {
+                    Uri _url = Uri.parse(
+                        "https://console.cloud.google.com/cloud-build/triggers?project=${widget.service.projectId}");
+                    if (builds.isNotEmpty) {
+                      _url = Uri.parse(
+                          "https://console.cloud.google.com/cloud-build/triggers;region=global/edit/${triggerId}?project=${widget.service.projectId}");
+                    }
+
+                    if (!await launchUrl(_url)) {
+                      throw 'Could not launch $_url';
+                    }
+                  },
+                  child: Text(
+                    "${widget.service.serviceId}-webhook-trigger",
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: AppText.linkFontStyle,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                TextButton(
+                  onPressed: () async {
+                    Uri _url = Uri.parse(
+                        "https://console.cloud.google.com/cloud-build/triggers?project=${widget.service.projectId}");
+                    if (builds.isNotEmpty) {
+                      _url = Uri.parse(
+                          "https://console.cloud.google.com/cloud-build/builds;region=global?query=trigger_id=${triggerId}&project=${widget.service.projectId}");
+                    }
+
+                    if (!await launchUrl(_url)) {
+                      throw 'Could not launch $_url';
+                    }
+                  },
+                  child: Text(
+                    "View All",
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: AppText.linkFontStyle,
+                  ),
+                )
+              ],
             ),
             const SizedBox(height: 4),
-            TextButton(
-              onPressed: () async {
-                Uri _url = Uri.parse(
-                    "https://console.cloud.google.com/cloud-build/triggers?project=${widget.service.projectId}");
-                if (_triggerBuilds.isNotEmpty) {
-                  _url = Uri.parse(
-                      "https://console.cloud.google.com/cloud-build/triggers;region=global/edit/${_triggerId}?project=${widget.service.projectId}");
-                }
-
-                if (!await launchUrl(_url)) {
-                  throw 'Could not launch $_url';
-                }
-              },
-              child: Text(
-                "${widget.service.serviceId}-webhook-trigger",
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: AppText.linkFontStyle,
-              ),
-            ),
-            const SizedBox(height: 4),
-            TextButton(
-              onPressed: () async {
-                Uri _url = Uri.parse(
-                    "https://console.cloud.google.com/cloud-build/triggers?project=${widget.service.projectId}");
-                if (_triggerBuilds.isNotEmpty) {
-                  _url = Uri.parse(
-                      "https://console.cloud.google.com/cloud-build/builds;region=global?query=trigger_id=${_triggerId}&project=${widget.service.projectId}");
-                }
-
-                if (!await launchUrl(_url)) {
-                  throw 'Could not launch $_url';
-                }
-              },
-              child: Text(
-                "View All",
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: AppText.linkFontStyle,
-              ),
-            )
+            buildCloudBuildsSection(builds),
           ],
-        ),
-        const SizedBox(height: 4),
-        _loadingTriggerBuilds
-            ? LinearProgressIndicator()
-            : buildCloudBuildsSection(),
-      ],
+        );
+      },
     );
+
+
   }
 
-  void loadTriggerBuilds() async {
-    List<Build> builds = await BuildRepository(buildService: BuildService())
-        .getTriggerBuilds(widget.service.projectId, widget.service.serviceId);
-
-    setState(() {
-      if (builds.isNotEmpty) {
-        _triggerId = builds.first.buildTriggerId;
-      }
-      _triggerBuilds = builds;
-      _loadingTriggerBuilds = false;
-    });
-  }
-
-  buildCloudBuildsSection() {
+  buildCloudBuildsSection(var triggerBuilds) {
     List<Widget> rows = [];
-    for (Build build in _triggerBuilds) {
+    for (Build build in triggerBuilds) {
       rows.add(Row(
         children: [
           build.status == "SUCCESS"

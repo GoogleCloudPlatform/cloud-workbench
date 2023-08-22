@@ -1,3 +1,5 @@
+import 'package:cloud_provision_shared/services/ProjectService.dart';
+import 'package:cloud_provision_shared/services/models/project.dart';
 import 'package:cloudprovision/modules/settings/data/settings_repository.dart';
 import 'package:cloudprovision/modules/settings/models/git_settings.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../app_appbar.dart';
 import '../../app_drawer.dart';
 import '../../utils/environment.dart';
+import '../../utils/project_provider.dart';
+import '../auth/repositories/auth_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   TextStyle textStyle = GoogleFonts.openSans(
@@ -25,6 +29,7 @@ class SettingsScreen extends ConsumerWidget {
   late String _instanceGitUsername = "";
   late String _instanceGitToken = "";
   late String _gcpApiKey = "";
+  late String _targetProject = "Select a project";
 
   late String _castRESTAPI = "";
   late String _castUserToken = "";
@@ -47,6 +52,7 @@ class SettingsScreen extends ConsumerWidget {
             loading: () => Text('Loading...'),
             error: (err, stack) => Text('Error: $err'),
             data: (gitSettings) {
+
               return Container(
                 padding: EdgeInsets.all(24),
                 child: DefaultTabController(
@@ -71,14 +77,14 @@ class SettingsScreen extends ConsumerWidget {
                             Container(
                               child: Tab(
                                   child: Text(
-                                    "General",
+                                    "Workbench Config",
                                     style: textStyle,
                                   )),
                             ),
                             Container(
                               child: Tab(
                                   child: Text(
-                                    "APIs",
+                                    "Target Project Config",
                                     style: textStyle,
                                   )),
                             ),
@@ -176,7 +182,7 @@ class SettingsScreen extends ConsumerWidget {
                             DataCell(ConstrainedBox(
                                 constraints: BoxConstraints(maxWidth: 200),
                                 child: Text(
-                                  'Resource location',
+                                  'Location',
                                   style: TextStyle(color: Colors.black54),
                                 ))),
                             DataCell(Text(dotenv.get('DEFAULT_REGION'))),
@@ -223,6 +229,7 @@ class SettingsScreen extends ConsumerWidget {
     _instanceGitToken = settings.instanceGitToken;
     _gcpApiKey = settings.gcpApiKey;
     _customerTemplateGitRepository = settings.customerTemplateGitRepository;
+    _targetProject = settings.targetProject;
 
     TextEditingController _gcpApiKeyController = TextEditingController();
     TextEditingController _urlCustomerRepoController = TextEditingController();
@@ -230,6 +237,7 @@ class SettingsScreen extends ConsumerWidget {
     TextEditingController _urlGcpRepoController = TextEditingController();
     TextEditingController _usernameController = TextEditingController();
     TextEditingController _tokenController = TextEditingController();
+    TextEditingController _projectController = TextEditingController();
 
     _urlCustomerRepoController.text = settings.customerTemplateGitRepository;
     // _urlCommunityRepoController.text = settings.communityTemplateGitRepository;
@@ -237,6 +245,12 @@ class SettingsScreen extends ConsumerWidget {
     _usernameController.text = settings.instanceGitUsername;
     _tokenController.text = settings.instanceGitToken;
     _gcpApiKeyController.text = settings.gcpApiKey;
+    _projectController.text = settings.targetProject == ""
+        ? "Select a project"
+        : settings.targetProject;
+
+    final projectsList = ref.watch(projectsProvider);
+
 
     return SingleChildScrollView(
       child: Container(
@@ -270,6 +284,63 @@ class SettingsScreen extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Row(
+                                  children: [
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 700,
+                                      ),
+                                      child: projectsList.when(
+                                          loading: () => Container(),
+                                          error: (err, stack) => Text("Failed to load projects. ${err}"),
+                                          data: (projects) {
+                                            if (projects.isNotEmpty) {
+                                              var projectNames = projects.map<String>((e) => e.name).toList();
+
+                                              var selectProjectText = "Select a project";
+                                              return ConstrainedBox(
+                                                constraints: const BoxConstraints(
+                                                  maxWidth: 700,
+                                                ),
+                                                child: DropdownButtonFormField<String>(
+                                                  validator: (value) {
+                                                    return null;
+                                                  },
+                                                  hint: Text(selectProjectText),
+                                                  // value: settings.targetProject != "" ? settings.targetProject
+                                                  //     : ref.read(projectDropdownProvider.notifier).state,
+                                                  value: _projectController.text,
+                                                  icon: const Icon(Icons.arrow_drop_down),
+                                                  style: const TextStyle(color: Colors.black),
+                                                  onChanged: (String? value) {
+
+                                                    _projectController.text = value!;
+                                                    _targetProject = value!;
+
+                                                    // ref.read(projectDropdownProvider.notifier).state =
+                                                    // value!;
+
+                                                    ref.read(projectProvider.notifier).state =
+                                                        projects.where((project) => project.name == value!).first;
+                                                  },
+                                                  items: [selectProjectText, ...projectNames]
+                                                      .map<DropdownMenuItem<String>>(
+                                                          (String projectName) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: projectName,
+                                                          child: Text(projectName),
+                                                        );
+                                                      }).toList(),
+                                                ),
+                                              );
+                                            } else {
+                                              return Container();
+                                            }
+                                          }),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 30),
                                 Row(
                                   children: [
                                     ConstrainedBox(
@@ -360,6 +431,9 @@ class SettingsScreen extends ConsumerWidget {
                                   onPressed: () =>
                                       {_updateGitConfiguration(context, ref)},
                                 ),
+                                SizedBox(height: 30),
+                                _enableProjectSection(context, ref),
+
                               ],
                             ),
                           ),
@@ -411,10 +485,14 @@ class SettingsScreen extends ConsumerWidget {
       _instanceGitToken,
       _customerTemplateGitRepository,
       _gcpApiKey,
+      _targetProject,
     );
 
     settingRepo.updateGitSettings(gitSettings);
 
+    ref.read(projectDropdownProvider.notifier).state = _targetProject;
+
+    ref.invalidate(gitSettingsProvider);
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -423,6 +501,61 @@ class SettingsScreen extends ConsumerWidget {
       backgroundColor: Theme.of(context).primaryColor,
       content: Text("Configuration was updated."),
     ));
+  }
+
+
+  bootstrapTargetProject(String projectId, WidgetRef ref) {
+
+    final authRepo = ref.watch(authRepositoryProvider);
+    ProjectService projectService = new ProjectService(authRepo.getAuthClient());
+
+    Project project = ref.watch(projectProvider);
+
+    if (project.name != null) {
+      var apis = [
+        "cloudbuild.googleapis.com",
+        "workstations.googleapis.com",
+        "secretmanager.googleapis.com",
+        "cloudresourcemanager.googleapis.com",
+        "artifactregistry.googleapis.com",
+        "run.googleapis.com",
+        "container.googleapis.com",
+        "containeranalysis.googleapis.com",
+        "recommender.googleapis.com",
+        "containerscanning.googleapis.com",
+      ];
+
+      var authClient = authRepo.getAuthClient();
+
+      apis.forEach((serviceName) {
+        projectService.enableAPIs(projectId, serviceName, authClient);
+      });
+
+      // This could be moved to template scripts to setup the dependencies
+      projectService.createArtifactRegistry(projectId, "us-central1", "cp-repo", "DOCKER", authClient);
+
+      projectService.grantRoles(projectId, project.projectNumber, authClient);
+    }
+  }
+
+  _enableProjectSection(BuildContext context, WidgetRef ref) {
+    // Project project = ref.watch(projectProvider);
+
+    String projectId = ref.watch(projectDropdownProvider);
+
+    return projectId == "null" || projectId == "Select a project" ?
+    Text("Select a project from the dropdown to enable APIs and grant IAM roles") :
+    ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor:
+        Theme.of(context).primaryColor,
+      ),
+      child: Text("Enable APIs and IAM Roles in the ${_targetProject}"),
+      onPressed: () =>
+      {
+        bootstrapTargetProject(_targetProject, ref)
+      },
+    );
   }
 
 }

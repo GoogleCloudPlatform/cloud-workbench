@@ -54,11 +54,12 @@ class TriggersController extends BaseController {
     try {
       String? serviceId = request.params['serviceId'];
       String? projectId = request.url.queryParameters['projectId'];
+      String? accessToken = request.headers["Access-token"];
 
       var triggerName = serviceId! + "-webhook-trigger";
 
       List<Map> response =
-          await _triggersService.getTriggerBuilds(projectId, triggerName);
+          await _triggersService.getTriggerBuilds(projectId, triggerName, accessToken);
 
       if (response != null) {
         return Response.ok(

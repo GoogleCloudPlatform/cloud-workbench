@@ -2,51 +2,72 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:cloud_provision_shared/catalog/models/template.dart';
+import 'package:cloud_provision_shared/services/TemplatesService.dart' as sharedService;
 import '../../../shared/service/base_service.dart';
 
 class TemplateService extends BaseService {
+
   Future<List<Template>> loadTemplates(
       String catalogSource, String catalogUrl) async {
-    var endpointPath = '/v1/templates';
 
-    final queryParameters = {
-      'catalogSource': catalogSource,
-      'catalogUrl': catalogUrl,
-    };
+    List<Template> templates = [];
 
-    var url = getUrl(endpointPath, queryParameters: queryParameters);
+    if (serverEnabled) {
+      var endpointPath = '/v1/templates';
 
-    Map<String, String> requestHeaders = await getRequestHeaders();
+      final queryParameters = {
+        'catalogSource': catalogSource,
+        'catalogUrl': catalogUrl,
+      };
 
-    var response = await http
-        .get(url, headers: requestHeaders)
-        .timeout(Duration(seconds: 10));
+      var url = getUrl(endpointPath, queryParameters: queryParameters);
 
-    Iterable l = json.decode(response.body);
-    List<Template> templates =
-        List<Template>.from(l.map((model) => Template.fromJson(model)));
+      Map<String, String> requestHeaders = await getRequestHeaders();
+
+      var response = await http
+          .get(url, headers: requestHeaders)
+          .timeout(Duration(seconds: 10));
+
+      Iterable l = json.decode(response.body);
+
+      templates = List<Template>
+          .from(l.map((model) => Template.fromJson(model)));
+    } else {
+      sharedService.TemplatesService templatesService = new sharedService
+          .TemplatesService();
+      templates = await templatesService.getTemplates(catalogSource, catalogUrl);
+    }
 
     return templates;
   }
 
   Future<Template> loadTemplateById(
       int templateId, String catalogSource) async {
-    var endpointPath = '/v1/templates';
-    final queryParameters = {
-      'templateId': templateId.toString(),
-      'catalogSource': catalogSource,
-    };
 
-    var url = getUrl(endpointPath, queryParameters: queryParameters);
+    Template? template;
 
-    Map<String, String> requestHeaders = await getRequestHeaders();
+    if (serverEnabled) {
+      var endpointPath = '/v1/templates';
+      final queryParameters = {
+        'templateId': templateId.toString(),
+        'catalogSource': catalogSource,
+      };
 
-    var response = await http
-        .get(url, headers: requestHeaders)
-        .timeout(Duration(seconds: 10));
+      var url = getUrl(endpointPath, queryParameters: queryParameters);
 
-    Template template = Template.fromJson(json.decode(response.body));
+      Map<String, String> requestHeaders = await getRequestHeaders();
 
-    return template;
+      var response = await http
+          .get(url, headers: requestHeaders)
+          .timeout(Duration(seconds: 10));
+
+      template = Template.fromJson(json.decode(response.body));
+    } else {
+      sharedService.TemplatesService templatesService = new sharedService
+          .TemplatesService();
+      template = await templatesService.getTemplateById(templateId, catalogSource);
+    }
+
+    return template!;
   }
 }

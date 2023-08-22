@@ -1,9 +1,11 @@
+import 'package:cloudprovision/utils/project_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../utils/environment.dart';
 import '../../../utils/styles.dart';
 import '../../my_services/data/cloud_workstations_repository.dart';
+import '../../settings/data/settings_repository.dart';
 
 class CloudWorkstationWidget extends ConsumerStatefulWidget {
   const CloudWorkstationWidget({super.key, required this.onTextFormUpdate});
@@ -66,83 +68,95 @@ class _CloudWorkstationState extends ConsumerState<CloudWorkstationWidget> {
   }
 
   Widget _workstationCluster() {
-    String projectId = Environment.getProjectId();
-    String region = Environment.getRegion();
+    var settings = ref.watch(gitSettingsProvider);
 
-    final workstationClustersList = ref.watch(
-        WorkstationClustersProvider(projectId: projectId, region: region));
+    return settings.when(
+        loading: () => Text('Loading...'),
+        error: (err, stack) => Text('Error: $err'),
+        data: (settings) {
+          String region = Environment.getRegion();
+          String projectId = settings.targetProject;
 
-    return workstationClustersList.when(
-        loading: () => Container(),
-        error: (err, stack) => Container(),
-        data: (clustersList) {
-          if (clustersList.isNotEmpty) {
-            var clusterNames = clustersList
-                .map<String>(
-                    (e) => e.name.substring(e.name.lastIndexOf('/') + 1))
-                .toList();
+          final workstationClustersList = ref.watch(
+              WorkstationClustersProvider(projectId: projectId, region: region));
 
-            var selectClusterText = "Select cluster";
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 40.0),
-                  child: Text("Cluster"),
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 40,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 300,
-                          child: DropdownButtonFormField<String>(
-                            validator: (value) {
-                              return null;
-                            },
-                            hint: Text(selectClusterText),
-                            value: selectClusterText,
-                            icon: const Icon(Icons.arrow_drop_down),
-                            style: const TextStyle(color: Colors.black),
-                            onChanged: (String? value) {
-                              widget.onTextFormUpdate(value!, "_WS_CLUSTER");
-                              ref.read(clusterDropdownProvider.notifier).state =
-                                  value;
-                            },
-                            items: [selectClusterText, ...clusterNames]
-                                .map<DropdownMenuItem<String>>(
-                                    (String clusterName) {
-                              return DropdownMenuItem<String>(
-                                value: clusterName,
-                                child: Text(clusterName),
-                              );
-                            }).toList(),
+          return workstationClustersList.when(
+              loading: () => Container(),
+              error: (err, stack) => Container(),
+              data: (clustersList) {
+                if (clustersList.isNotEmpty) {
+                  var clusterNames = clustersList
+                      .map<String>(
+                          (e) => e.name.substring(e.name.lastIndexOf('/') + 1))
+                      .toList();
+
+                  var selectClusterText = "Select a cluster";
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 40.0),
+                        child: Text("Cluster"),
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 40,
                           ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        _workstationConfig(projectId, region),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            );
-          } else {
-            return Container();
-          }
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 300,
+                                child: DropdownButtonFormField<String>(
+                                  validator: (value) {
+                                    return null;
+                                  },
+                                  hint: Text(selectClusterText),
+                                  value: selectClusterText,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  style: const TextStyle(color: Colors.black),
+                                  onChanged: (String? value) {
+                                    widget.onTextFormUpdate(value!, "_WS_CLUSTER");
+                                    ref.read(clusterDropdownProvider.notifier).state =
+                                        value;
+                                  },
+                                  items: [selectClusterText, ...clusterNames]
+                                      .map<DropdownMenuItem<String>>(
+                                          (String clusterName) {
+                                        return DropdownMenuItem<String>(
+                                          value: clusterName,
+                                          child: Text(clusterName),
+                                        );
+                                      }).toList(),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              _workstationConfig(projectId, region),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                } else {
+                  return Container();
+                }
+              });
+
         });
   }
 
   Widget _workstationConfig(String projectId, String region) {
     String cluster = ref.watch(clusterDropdownProvider);
+    Text configNotFound = Text("Configurations not found");
+
+    if (cluster == "Select a cluster")
+      return configNotFound;
 
     final workstationConfigsList = ref.watch(WorkstationConfigsProvider(
         projectId: projectId, region: region, clusterName: cluster));
@@ -167,7 +181,7 @@ class _CloudWorkstationState extends ConsumerState<CloudWorkstationWidget> {
                             .substring(config.name.lastIndexOf('/') + 1))
                         .toList();
 
-                    var selectConfigurationText = "Select configuration";
+                    var selectConfigurationText = "Select a configuration";
                     return SizedBox(
                       width: 300,
                       child: DropdownButtonFormField<String>(
@@ -191,7 +205,7 @@ class _CloudWorkstationState extends ConsumerState<CloudWorkstationWidget> {
                       ),
                     );
                   } else {
-                    return Text("No configurations available");
+                    return configNotFound;
                   }
                 }),
           ],

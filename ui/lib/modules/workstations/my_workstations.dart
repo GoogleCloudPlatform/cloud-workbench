@@ -11,6 +11,7 @@ import '../../utils/environment.dart';
 import '../../utils/styles.dart';
 
 import '../my_services/data/cloud_workstations_repository.dart';
+import '../settings/data/settings_repository.dart';
 
 class MyWorkstationsPage extends ConsumerWidget {
   @override
@@ -58,18 +59,31 @@ class MyWorkstationsPage extends ConsumerWidget {
 
   _buildWorkstationsList(
       {required BuildContext context, required WidgetRef ref}) {
-    String projectId = Environment.getProjectId();
+    // String projectId = Environment.getProjectId();
     String region = Environment.getRegion();
-    final workstationsList = ref.watch(allWorkstationsProvider(
-        projectId: projectId,
-        clusterName: Environment.getWorkstationCluster(),
-        region: region));
 
-    return workstationsList.when(
+    // String projectId = ref.read(projectDropdownProvider.notifier).state;
+    var settings = ref.watch(gitSettingsProvider);
+
+    return settings.when(
       loading: () => Text('Loading...'),
       error: (err, stack) => Text('Error: $err'),
-      data: (wrkList) {
-        return _buildWorkstationRows(wrkList, ref, projectId, region);
+      data: (settings) {
+
+        var projectId = settings.targetProject;
+
+        final workstationsList = ref.watch(allWorkstationsProvider(
+            projectId: projectId,
+            clusterName: Environment.getWorkstationCluster(),
+            region: region));
+
+        return workstationsList.when(
+          loading: () => Text('Loading...'),
+          error: (err, stack) => Text('Error: $err'),
+          data: (wrkList) {
+            return _buildWorkstationRows(wrkList, ref, projectId, region);
+          },
+        );
       },
     );
   }

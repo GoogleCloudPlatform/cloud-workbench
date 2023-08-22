@@ -35,7 +35,7 @@ final Section dashboardSection = Section(
       ),
       SectionItem(
         title: "My Workstations",
-        subTitle: "Review Ops Metrics",
+        subTitle: "Manage available Cloud Workstations",
         image: "disovery_card_ml2",
         dest: "/workstations",
       ),

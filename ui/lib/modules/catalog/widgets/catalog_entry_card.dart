@@ -25,7 +25,7 @@ class CatalogEntryCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image(
-                image: AssetImage('images/${serviceIcon}.png'),
+                image: AssetImage('assets/images/${serviceIcon}.png'),
                 height: 40,
               ),
               SizedBox(height: 10),

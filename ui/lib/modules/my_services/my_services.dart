@@ -236,7 +236,7 @@ class MyServicesPage extends ConsumerWidget {
               throw 'Could not launch $_url';
             }
           },
-          icon: Image(image: AssetImage('images/${serviceIcon}.png')),
+          icon: Image(image: AssetImage('assets/images/${serviceIcon}.png')),
         ));
   }
 }

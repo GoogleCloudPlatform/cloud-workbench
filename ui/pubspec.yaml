@@ -38,7 +38,7 @@ dependencies:
   firebase_core_platform_interface: ^4.5.1
   cloud_firestore: ^4.5.2
   equatable: ^2.0.5
-  google_sign_in: ^6.1.0
+  google_sign_in: ^6.1.4
   http: ^0.13.5
   url_launcher: ^6.1.5
   flutter_dotenv: ^5.0.2
@@ -52,6 +52,8 @@ dependencies:
   flutter_riverpod: ^2.3.6
   riverpod_annotation: ^2.1.1
   url_strategy: ^0.2.0
+  extension_google_sign_in_as_googleapis_auth: ^2.0.10
+  googleapis_auth: ^1.4.1
   cloud_provision_shared:
     path: ../shared
 
@@ -69,6 +71,7 @@ dev_dependencies:
   riverpod_lint: ^1.3.1
   build_runner: ^2.3.3
   riverpod_generator: ^2.2.1
+  googleapis: ^11.3.0
 
 
 # For information on the generic Dart part of this file, see the

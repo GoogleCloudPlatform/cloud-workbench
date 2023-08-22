@@ -1,9 +1,9 @@
 import 'dart:convert';
 
+import 'package:cloud_provision_shared/catalog/models/build_details.dart';
 import 'package:cloudprovision/modules/settings/models/git_settings.dart';
 import 'package:cloudprovision/modules/my_services/data/services_repository.dart';
 import 'package:cloudprovision/modules/settings/data/settings_repository.dart';
-import 'package:cloudprovision/routing/app_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,7 +49,7 @@ class _CatalogConfigPageState extends ConsumerState<CatalogConfigPage> {
   bool _buildTriggerDone = false;
   String _cloudBuildTriggerStatus = "";
 
-  Map<String, dynamic> _formFieldValues = {};
+  Map<String, String> _formFieldValues = {};
   final _key = GlobalKey<FormState>();
 
   String _errorMessage = "";
@@ -128,7 +128,7 @@ class _CatalogConfigPageState extends ConsumerState<CatalogConfigPage> {
       _cloudBuildTriggerDetails = {};
       _buildDone = false;
 
-      _appName = _formFieldValues["_APP_NAME"];
+      _appName = _formFieldValues["_APP_NAME"]!;
     });
 
     String projectId = DefaultFirebaseOptions.currentPlatform.projectId;
@@ -152,13 +152,11 @@ class _CatalogConfigPageState extends ConsumerState<CatalogConfigPage> {
     }
     _formFieldValues["_APP_ID"] = _appId;
 
-    String buildDetails = await BuildRepository(buildService: BuildService())
-        .deployTemplate(projectId, template, _formFieldValues);
+    BuildDetails buildDetails = await BuildRepository(buildService: BuildService())
+        .deployTemplate("accessToken", projectId, template, _formFieldValues);
 
     if (buildDetails != "") {
-      Map<String, dynamic> buildConfig = jsonDecode(buildDetails);
-
-      _formFieldValues["tags"] = template.tags;
+      _formFieldValues["tags"] = template.tags.toString();
 
       final user = FirebaseAuth.instance.currentUser!;
 
@@ -166,21 +164,21 @@ class _CatalogConfigPageState extends ConsumerState<CatalogConfigPage> {
         user: user.displayName!,
         userEmail: user.email!,
         serviceId: _appId,
-        name: _formFieldValues["_APP_NAME"],
+        name: _formFieldValues["_APP_NAME"]!,
         owner: gitSettings.instanceGitUsername,
         instanceRepo:
             "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_appId}",
         templateName: template.name,
         templateId: template.id,
         template: template,
-        region: _formFieldValues["_REGION"],
+        region: _formFieldValues["_REGION"]!,
         projectId: DefaultFirebaseOptions.currentPlatform.projectId,
-        cloudBuildId: buildConfig['build']['id'],
-        cloudBuildLogUrl: buildConfig['build']['logUrl'],
+        cloudBuildId: buildDetails.id,
+        cloudBuildLogUrl: buildDetails.logUrl,
         params: _formFieldValues,
         deploymentDate: DateTime.now(),
-        workstationCluster: _formFieldValues["_WS_CLUSTER"],
-        workstationConfig: _formFieldValues["_WS_CONFIG"]
+        workstationCluster: _formFieldValues["_WS_CLUSTER"]!,
+        workstationConfig: _formFieldValues["_WS_CONFIG"]!
       );
 
       await ref.read(servicesRepositoryProvider).addService(deployedService);
