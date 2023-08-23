@@ -22,4 +22,6 @@ class AuthRepository {
   Future<AuthClient?> getAuthenticatedClient() => service.getAuthenticatedClient();
 
   AuthClient getAuthClient() => service.getAuthClient();
+
+  GoogleSignIn getGoogleSingIn() => service.googleSignIn();
 }
