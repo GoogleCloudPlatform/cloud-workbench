@@ -10,8 +10,6 @@ class App_AppBar extends ConsumerWidget implements PreferredSizeWidget {
     super.key,
   });
 
-  final user = FirebaseAuth.instance.currentUser!;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authRepo = ref.read(authRepositoryProvider);
@@ -44,10 +42,10 @@ class App_AppBar extends ConsumerWidget implements PreferredSizeWidget {
       actions: [
         Row(
           children: [
-            user.displayName != null
+            authRepo.currentUser()!.displayName != null
                 ? Tooltip(
-                    message: "${user.email}",
-                    child: Text("${user.displayName}",
+                    message: "${authRepo.currentUser()!.email}",
+                    child: Text("${authRepo.currentUser()!.displayName}",
                         style: TextStyle(color: Colors.black87)),
                   )
                 : Container(),
