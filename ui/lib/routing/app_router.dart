@@ -33,13 +33,16 @@ CustomTransitionPage buildPageWithDefaultTransition<T>({
 
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
-  final authState = ref.watch(authProvider);
-  final googleAuthState = ref.watch(googleAuthProvider);
+  final authFirebaseState = ref.watch(authProvider);
+  final authState = ref.watch(googleAuthProvider);
 
   return GoRouter(
     navigatorKey: _key,
     initialLocation: '/login',
     redirect: (context, state) async {
+      if (authState.valueOrNull == null)
+        return "/login";
+
       if (authState.isLoading || authState.hasError) return null;
 
       final isAuth = authState.valueOrNull != null;
