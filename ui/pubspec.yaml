@@ -38,7 +38,7 @@ dependencies:
   firebase_core_platform_interface: ^4.5.1
   cloud_firestore: ^4.5.2
   equatable: ^2.0.5
-  google_sign_in: ^6.1.4
+  google_sign_in: 5.4.3
   http: ^0.13.5
   url_launcher: ^6.1.5
   flutter_dotenv: ^5.0.2

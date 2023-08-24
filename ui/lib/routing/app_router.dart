@@ -35,13 +35,19 @@ CustomTransitionPage buildPageWithDefaultTransition<T>({
 GoRouter goRouter(GoRouterRef ref) {
   final authFirebaseState = ref.watch(authProvider);
   final authState = ref.watch(googleAuthProvider);
+  final authRepo = ref.watch(authRepositoryProvider);
 
   return GoRouter(
     navigatorKey: _key,
     initialLocation: '/login',
     redirect: (context, state) async {
-      if (authState.valueOrNull == null)
-        return "/login";
+
+      if (authState.valueOrNull == null) {
+        if (state.location == "/login")
+          return null;
+        else
+          await authRepo.signInWithGoogle();
+      }
 
       if (authState.isLoading || authState.hasError) return null;
 

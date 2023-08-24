@@ -30,7 +30,7 @@ class ProjectService {
     List<Project> projectsList = [];
 
     crm.CloudResourceManagerApi cloudResourceManagerApi = new crm.CloudResourceManagerApi(authClient);
-    crm.ListProjectsResponse list = await cloudResourceManagerApi.projects.list(filter: 'lifecycleState:ACTIVE parent.id=29428042487');
+    crm.ListProjectsResponse list = await cloudResourceManagerApi.projects.list(filter: 'lifecycleState:ACTIVE');
     list.projects!.forEach((project) {
       projectsList.add(Project.fromJson(project.toJson()));
     });

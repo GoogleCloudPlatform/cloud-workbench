@@ -11,10 +11,10 @@ class Project {
 
   factory Project.fromJson(Map<String, dynamic> json) {
     return Project(
-      name: json["name"],
-      projectId: json["projectId"],
-      projectNumber: json["projectNumber"],
-      createTime: DateTime.parse(json["createTime"]),
+      name: json["name"] != null ? json["name"] : json["projectNumber"],
+      projectId: json["projectId"] != null ? json["projectId"] : "",
+      projectNumber: json["projectNumber"] != null ? json["projectNumber"] : "",
+      createTime: json["createTime"] != null ? DateTime.parse(json["createTime"]) : DateTime.timestamp(),
     );
   }
 
