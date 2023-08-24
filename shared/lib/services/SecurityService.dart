@@ -49,6 +49,9 @@ class SecurityService extends BaseService {
     ra.GoogleCloudRecommenderV1ListRecommendationsResponse list =
         await rApi.projects.locations.recommenders.recommendations.list(parent);
 
+    if (list.recommendations == null)
+      return response;
+
     for (ra.GoogleCloudRecommenderV1Recommendation r in list.recommendations!) {
       String serviceName = r.content!.overview!['serviceName'] as String;
 
