@@ -1,4 +1,4 @@
-import 'package:cloudprovision/utils/project_provider.dart';
+import 'package:cloudprovision/modules/settings/data/project_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

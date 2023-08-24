@@ -4,32 +4,20 @@ import 'package:cloud_provision_shared/services/models/project.dart';
 import 'package:googleapis/cloudresourcemanager/v1.dart' as crm;
 import 'package:googleapis/serviceusage/v1.dart' as su;
 import 'package:googleapis/artifactregistry/v1.dart' as ar;
-import 'package:googleapis_auth/googleapis_auth.dart';
+
+import 'BaseService.dart';
 
 
-class ProjectService {
+class ProjectService extends BaseService {
+
+  ProjectService(String accessToken) : super(accessToken);
+
   String wsUrl = "cloudresourcemanager.googleapis.com";
-  late AuthClient authClient;
 
-  ProjectService(AuthClient client) {
-    authClient = client;
-  }
-
-  Map<String, String> getRequestHeaders() {
-    Map<String, String> requestHeaders = {
-      HttpHeaders.contentTypeHeader: "application/json; charset=utf-8",
-      HttpHeaders.authorizationHeader:
-      "Bearer ${authClient.credentials.accessToken}"
-    };
-
-    return requestHeaders;
-  }
-
-
-  Future<List<Project>> getProjects(AuthClient authClient) async {
+  Future<List<Project>> getProjects() async {
     List<Project> projectsList = [];
 
-    crm.CloudResourceManagerApi cloudResourceManagerApi = new crm.CloudResourceManagerApi(authClient);
+    crm.CloudResourceManagerApi cloudResourceManagerApi = new crm.CloudResourceManagerApi(getAuthenticatedClient());
     crm.ListProjectsResponse list = await cloudResourceManagerApi.projects.list(filter: 'lifecycleState:ACTIVE');
     list.projects!.forEach((project) {
       projectsList.add(Project.fromJson(project.toJson()));
@@ -54,12 +42,12 @@ class ProjectService {
     return projectsList;
   }
 
-  void enableAPIs(String projectId, String serviceName, AuthClient client) async {
+  enableAPIs(String projectId, String serviceName) async {
     if (projectId == "null")
       return;
 
     String service = 'projects/${projectId}/services/${serviceName}';
-    su.ServiceUsageApi serviceUsageApi = new su.ServiceUsageApi(client);
+    su.ServiceUsageApi serviceUsageApi = new su.ServiceUsageApi(getAuthenticatedClient());
     su.GoogleApiServiceusageV1Service res = await serviceUsageApi.services.get(service);
 
     if (res.state == "DISABLED") {
@@ -71,12 +59,12 @@ class ProjectService {
     }*/
   }
 
-  void grantRoles(String projectId, String projectNumber, AuthClient authClient) async {
+  grantRoles(String projectId, String projectNumber) async {
 
     if (projectId == "null")
       return;
 
-    crm.CloudResourceManagerApi cloudResourceManagerApi = new crm.CloudResourceManagerApi(authClient);
+    crm.CloudResourceManagerApi cloudResourceManagerApi = new crm.CloudResourceManagerApi(getAuthenticatedClient());
     crm.GetIamPolicyRequest request = new crm.GetIamPolicyRequest();
     crm.Policy projectPolicy = await cloudResourceManagerApi.projects.getIamPolicy(request, projectId);
 
@@ -110,10 +98,10 @@ class ProjectService {
   }
 
   createArtifactRegistry(String projectId, String region, String name,
-      String format, AuthClient authClient) async {
+      String format) async {
     String parent = 'projects/${projectId}/locations/${region}';
 
-    ar.ArtifactRegistryApi artifactRegistryApi = new ar.ArtifactRegistryApi(authClient);
+    ar.ArtifactRegistryApi artifactRegistryApi = new ar.ArtifactRegistryApi(getAuthenticatedClient());
 
     ar.Repository request = new ar.Repository();
     request.name = name;

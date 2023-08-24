@@ -1,19 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_provision_shared/services/ProjectService.dart';
 import 'package:cloudprovision/modules/auth/repositories/auth_provider.dart';
 import 'package:cloudprovision/modules/auth/repositories/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:cloudprovision/shared/service/base_service.dart';
 import '../models/git_settings.dart';
 
 part 'settings_repository.g.dart';
 
 
-class SettingsRepository {
+class SettingsRepository extends BaseService {
   final FirebaseFirestore firestore;
   final String userId;
   final CollectionReference<Map<String, dynamic>> _gitSettingsRef;
 
-  SettingsRepository(this.firestore, this.userId)
-      : _gitSettingsRef = firestore.collection('users/$userId/settings');
+  SettingsRepository(this.firestore, this.userId, String accessToken) :
+        _gitSettingsRef = firestore.collection('users/$userId/settings'),
+        super.withAccessToken(accessToken);
 
   Future<GitSettings> loadGitSettings() async {
     var document = _gitSettingsRef.doc('/git');
@@ -69,5 +72,10 @@ Future<GitSettings> gitSettings(GitSettingsRef ref) {
 @riverpod
 SettingsRepository settingsRepository(SettingsRepositoryRef ref) {
   final AuthRepository authRepo = ref.read(authRepositoryProvider);
-  return SettingsRepository(FirebaseFirestore.instance, authRepo.currentUser()!.uid);
+
+  var authClient = authRepo.getAuthClient();
+  String accessToken = authClient.credentials.accessToken.data;
+
+  return SettingsRepository(FirebaseFirestore.instance,
+      authRepo.currentUser()!.uid, accessToken);
 }

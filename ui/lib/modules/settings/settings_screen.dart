@@ -10,8 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../app_appbar.dart';
 import '../../app_drawer.dart';
 import '../../utils/environment.dart';
-import '../../utils/project_provider.dart';
-import '../auth/repositories/auth_provider.dart';
+import 'data/project_provider.dart';
+import 'data/project_repository.dart';
 
 class SettingsScreen extends ConsumerWidget {
   TextStyle textStyle = GoogleFonts.openSans(
@@ -503,38 +503,17 @@ class SettingsScreen extends ConsumerWidget {
     ));
   }
 
-
   bootstrapTargetProject(String projectId, WidgetRef ref) {
-
-    final authRepo = ref.watch(authRepositoryProvider);
-    ProjectService projectService = new ProjectService(authRepo.getAuthClient());
-
     Project project = ref.watch(projectProvider);
 
     if (project.name != null) {
-      var apis = [
-        "cloudbuild.googleapis.com",
-        "workstations.googleapis.com",
-        "secretmanager.googleapis.com",
-        "cloudresourcemanager.googleapis.com",
-        "artifactregistry.googleapis.com",
-        "run.googleapis.com",
-        "container.googleapis.com",
-        "containeranalysis.googleapis.com",
-        "recommender.googleapis.com",
-        "containerscanning.googleapis.com",
-      ];
-
-      var authClient = authRepo.getAuthClient();
-
-      apis.forEach((serviceName) {
-        projectService.enableAPIs(projectId, serviceName, authClient);
-      });
+      final ProjectRepository projectRepository = ref.read(projectRepositoryProvider);
+      projectRepository.enableAPIs(projectId);
 
       // This could be moved to template scripts to setup the dependencies
-      projectService.createArtifactRegistry(projectId, "us-central1", "cp-repo", "DOCKER", authClient);
+      projectRepository.createArtifactRegistry(projectId, "us-central1", "cp-repo", "DOCKER");
 
-      projectService.grantRoles(projectId, project.projectNumber, authClient);
+      projectRepository.grantRoles(projectId, project.projectNumber);
     }
   }
 

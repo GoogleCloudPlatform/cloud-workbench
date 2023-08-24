@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../utils/project_provider.dart';
-import '../my_services/data/cloud_workstations_repository.dart';
+import 'data/project_provider.dart';
 
 class ProjectWidget extends ConsumerStatefulWidget {
   const ProjectWidget({super.key});

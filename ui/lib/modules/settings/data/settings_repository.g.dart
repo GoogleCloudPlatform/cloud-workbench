@@ -21,7 +21,7 @@ final gitSettingsProvider = AutoDisposeFutureProvider<GitSettings>.internal(
 
 typedef GitSettingsRef = AutoDisposeFutureProviderRef<GitSettings>;
 String _$settingsRepositoryHash() =>
-    r'62b0c45520a21e18f91dd576d418b2bd6817370e';
+    r'e05ceb12b68afa315d5fac434e3f45771112f351';
 
 /// See also [settingsRepository].
 @ProviderFor(settingsRepository)
