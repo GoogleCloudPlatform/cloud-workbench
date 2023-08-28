@@ -37,7 +37,12 @@ class CatalogEntryCard extends StatelessWidget {
               SizedBox(height: 5),
               Text(entry.description),
               SizedBox(height: 5),
-              Text("Category: ${entry.category}")
+              Text("Category: ${entry.category}"),
+              SizedBox(height: 5),
+              entry.draft == true
+                  ? Text("(Draft)", style: Theme.of(context).textTheme.bodyLarge,
+              )
+                  : Container(),
             ],
           ),
         ),

@@ -14,7 +14,7 @@ class TemplatesService {
     return dotenv.get(varName);
   }
 
-  String _getCatalogUrl(String catalogSource) {
+  String _getCatalogUrl({String catalogSource = "gcp"}) {
     var catalogUrl = getEnvVar("GCP_CATALOG_URL")!;
     if (catalogSource == "community") {
       catalogUrl = getEnvVar("COMMUNITY_CATALOG_URL")!;
@@ -25,16 +25,10 @@ class TemplatesService {
   }
 
   /// Returns list of solution templates
-  Future<List<Template>> getTemplates(
-      String catalogSource, String catalogUrl) async {
+  Future<List<Template>> getTemplates() async {
     final http.Client client = new http.Client();
 
-    // TODO: add logic to handle private catalog
-    if (catalogSource == "customer") {
-      return [];
-    }
-
-    var catalogUrl = _getCatalogUrl(catalogSource);
+    var catalogUrl = _getCatalogUrl();
 
     var response = await client.get(Uri.parse(catalogUrl));
 
@@ -54,7 +48,7 @@ class TemplatesService {
       return null;
     }
 
-    var catalogUrl = _getCatalogUrl(catalogSource);
+    var catalogUrl = _getCatalogUrl(catalogSource: catalogSource);
 
     var response = await client.get(Uri.parse(catalogUrl));
 

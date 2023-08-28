@@ -6,7 +6,21 @@ part of 'template_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$templatesHash() => r'fec8fb3b7b75307b5529370dcecd83a1b350af42';
+String _$templatesHash() => r'6e2800486dd78de9d429da7ebecdac1e1fb1ddd4';
+
+/// See also [templates].
+@ProviderFor(templates)
+final templatesProvider = AutoDisposeFutureProvider<List<Template>>.internal(
+  templates,
+  name: r'templatesProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$templatesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef TemplatesRef = AutoDisposeFutureProviderRef<List<Template>>;
+String _$templateByIdHash() => r'ab40cd8726cbfbba0f51afd257aa235420701a34';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,96 +43,6 @@ class _SystemHash {
   }
 }
 
-typedef TemplatesRef = AutoDisposeFutureProviderRef<List<Template>>;
-
-/// See also [templates].
-@ProviderFor(templates)
-const templatesProvider = TemplatesFamily();
-
-/// See also [templates].
-class TemplatesFamily extends Family<AsyncValue<List<Template>>> {
-  /// See also [templates].
-  const TemplatesFamily();
-
-  /// See also [templates].
-  TemplatesProvider call(
-    String catalogSource,
-    String catalogUrl,
-  ) {
-    return TemplatesProvider(
-      catalogSource,
-      catalogUrl,
-    );
-  }
-
-  @override
-  TemplatesProvider getProviderOverride(
-    covariant TemplatesProvider provider,
-  ) {
-    return call(
-      provider.catalogSource,
-      provider.catalogUrl,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'templatesProvider';
-}
-
-/// See also [templates].
-class TemplatesProvider extends AutoDisposeFutureProvider<List<Template>> {
-  /// See also [templates].
-  TemplatesProvider(
-    this.catalogSource,
-    this.catalogUrl,
-  ) : super.internal(
-          (ref) => templates(
-            ref,
-            catalogSource,
-            catalogUrl,
-          ),
-          from: templatesProvider,
-          name: r'templatesProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$templatesHash,
-          dependencies: TemplatesFamily._dependencies,
-          allTransitiveDependencies: TemplatesFamily._allTransitiveDependencies,
-        );
-
-  final String catalogSource;
-  final String catalogUrl;
-
-  @override
-  bool operator ==(Object other) {
-    return other is TemplatesProvider &&
-        other.catalogSource == catalogSource &&
-        other.catalogUrl == catalogUrl;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, catalogSource.hashCode);
-    hash = _SystemHash.combine(hash, catalogUrl.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-String _$templateByIdHash() => r'ab40cd8726cbfbba0f51afd257aa235420701a34';
 typedef TemplateByIdRef = AutoDisposeFutureProviderRef<Template>;
 
 /// See also [templateById].

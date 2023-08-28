@@ -15,6 +15,7 @@ class Template {
   DateTime lastModified;
   String owner;
   String email;
+  bool draft;
   List<String> tags;
   List<Param> inputs;
   List<TemplateMetadata> metadata;
@@ -32,6 +33,7 @@ class Template {
       this.lastModified,
       this.owner,
       this.email,
+      this.draft,
       this.metadata);
 
   Template.fromJson(Map<String, dynamic> parsedJson)
@@ -45,6 +47,7 @@ class Template {
         lastModified = DateTime.parse(parsedJson['lastModified'] as String),
         owner = parsedJson['owner'],
         email = parsedJson['email'],
+        draft = parsedJson['draft'] == null ? true : parsedJson['draft'],
         tags = (parsedJson['tags'] as List<dynamic>).cast<String>(),
         inputs = parsedJson['inputs'] == null
             ? []
@@ -77,6 +80,7 @@ class Template {
       'lastModified': lastModified.toIso8601String(),
       'owner': owner,
       'email': email,
+      'email': draft,
       'tags': tags,
       'inputs': tmpInputs,
       'metadata': tmpMetadata,

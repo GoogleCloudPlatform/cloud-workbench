@@ -121,7 +121,7 @@ GoRouter goRouter(GoRouterRef ref) {
         pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
           context: context,
           state: state,
-          child: CatalogScreen(),
+          child: CatalogScreen(queryParams: state.queryParams),
         ),
       ),
       GoRoute(
