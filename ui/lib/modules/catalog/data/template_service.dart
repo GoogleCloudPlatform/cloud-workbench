@@ -7,8 +7,7 @@ import '../../../shared/service/base_service.dart';
 
 class TemplateService extends BaseService {
 
-  Future<List<Template>> loadTemplates(
-      String catalogSource, String catalogUrl) async {
+  Future<List<Template>> loadTemplates() async {
 
     List<Template> templates = [];
 
@@ -16,8 +15,8 @@ class TemplateService extends BaseService {
       var endpointPath = '/v1/templates';
 
       final queryParameters = {
-        'catalogSource': catalogSource,
-        'catalogUrl': catalogUrl,
+        'catalogSource': 'catalogSource',
+        'catalogUrl': 'catalogUrl',
       };
 
       var url = getUrl(endpointPath, queryParameters: queryParameters);
@@ -35,7 +34,7 @@ class TemplateService extends BaseService {
     } else {
       sharedService.TemplatesService templatesService = new sharedService
           .TemplatesService();
-      templates = await templatesService.getTemplates(catalogSource, catalogUrl);
+      templates = await templatesService.getTemplates();
     }
 
     return templates;

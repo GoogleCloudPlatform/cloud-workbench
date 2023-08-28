@@ -31,10 +31,10 @@ class BaseService {
 
   Future<Map<String, String>> getRequestHeaders() async {
     final user = FirebaseAuth.instance.currentUser!;
-    var identityToken = await user.getIdToken();
+    String? identityToken = await user.getIdToken();
 
       Map<String, String> requestHeaders = {
-        HttpHeaders.authorizationHeader: "Bearer " + identityToken,
+        HttpHeaders.authorizationHeader: "Bearer " + identityToken!,
         HttpHeaders.contentTypeHeader: "application/json",
         "Access-token": accessToken
       };

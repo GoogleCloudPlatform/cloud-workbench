@@ -48,7 +48,7 @@ class _CatalogListState extends ConsumerState<CatalogList> {
   @override
   Widget build(BuildContext context) {
     final templatesList =
-        ref.watch(templatesProvider(widget.catalogSource, widget.category));
+        ref.watch(templatesProvider);
     List<String> selectedTags = ref.watch(tagsProvider);
 
     return SingleChildScrollView(

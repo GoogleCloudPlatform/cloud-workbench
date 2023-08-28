@@ -101,5 +101,9 @@ getIconImage(String string) {
   if (string.contains("cloudsql")) {
     serviceIcon = "cloud_sql";
   }
+
+  if (string.contains("workstations")) {
+    serviceIcon = "workstations";
+  }
   return serviceIcon;
 }

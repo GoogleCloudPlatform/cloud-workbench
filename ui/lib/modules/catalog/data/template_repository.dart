@@ -11,9 +11,8 @@ class TemplateRepository {
   final TemplateService service;
 
   /// Returns list of templates
-  Future<List<Template>> loadTemplates(
-          String catalogSource, String catalogUrl) async =>
-      service.loadTemplates(catalogSource, catalogUrl);
+  Future<List<Template>> loadTemplates() async =>
+      service.loadTemplates();
 
   /// Returns template by id
   ///
@@ -46,9 +45,9 @@ class Tags extends _$Tags {
 }
 
 @riverpod
-Future<List<Template>> templates(TemplatesRef ref, String catalogSource, String catalogUrl) {
+Future<List<Template>> templates(TemplatesRef ref) {
   final templateRepository = ref.watch(templateRepositoryProvider);
-  return templateRepository.loadTemplates(catalogSource, catalogUrl);
+  return templateRepository.loadTemplates();
 }
 
 @riverpod
