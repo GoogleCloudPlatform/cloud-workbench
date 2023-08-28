@@ -302,35 +302,29 @@ class SettingsScreen extends ConsumerWidget {
                                                 constraints: const BoxConstraints(
                                                   maxWidth: 700,
                                                 ),
-                                                child: DropdownButtonFormField<String>(
-                                                  validator: (value) {
-                                                    return null;
-                                                  },
-                                                  hint: Text(selectProjectText),
-                                                  // value: settings.targetProject != "" ? settings.targetProject
-                                                  //     : ref.read(projectDropdownProvider.notifier).state,
-                                                  value: _projectController.text,
-                                                  icon: const Icon(Icons.arrow_drop_down),
-                                                  style: const TextStyle(color: Colors.black),
-                                                  onChanged: (String? value) {
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text("Select a project:"),
+                                                    Autocomplete<String>(
+                                                      initialValue: TextEditingValue(text: _projectController.text.toString()),
+                                                      optionsBuilder: (TextEditingValue textEditingValue) {
+                                                        if (textEditingValue.text == '') {
+                                                          return const Iterable<String>.empty();
+                                                        }
+                                                        return projectNames.where((String option) {
+                                                          return option.contains(textEditingValue.text.toLowerCase());
+                                                        });
+                                                      },
+                                                      onSelected: (String value) {
+                                                        _projectController.text = value!;
+                                                        _targetProject = value!;
 
-                                                    _projectController.text = value!;
-                                                    _targetProject = value!;
-
-                                                    // ref.read(projectDropdownProvider.notifier).state =
-                                                    // value!;
-
-                                                    ref.read(projectProvider.notifier).state =
-                                                        projects.where((project) => project.name == value!).first;
-                                                  },
-                                                  items: [selectProjectText, ...projectNames]
-                                                      .map<DropdownMenuItem<String>>(
-                                                          (String projectName) {
-                                                        return DropdownMenuItem<String>(
-                                                          value: projectName,
-                                                          child: Text(projectName),
-                                                        );
-                                                      }).toList(),
+                                                        ref.read(projectProvider.notifier).state =
+                                                            projects.where((project) => project.name == value!).first;
+                                                      },
+                                                    ),
+                                                  ],
                                                 ),
                                               );
                                             } else {
