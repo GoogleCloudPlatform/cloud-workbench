@@ -95,7 +95,7 @@ class AppDrawer extends StatelessWidget {
               children: [
                 _menuItem("Workspace Overview", "home", context,
                     iconData: Icons.home, settings: true),
-                _menuItem("Example Screen", "example", context),
+                _menuItem("Settings", "settings", context),
                 Divider(),
                 _subTitle("Dashboard"),
                 _menuItem("My Services", "services", context),
