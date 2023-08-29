@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app_appbar.dart';
 import '../../app_drawer.dart';
@@ -84,7 +85,7 @@ class SettingsScreen extends ConsumerWidget {
                             Container(
                               child: Tab(
                                   child: Text(
-                                    "Target Project Config",
+                                    "Git Config",
                                     style: textStyle,
                                   )),
                             ),
@@ -153,7 +154,7 @@ class SettingsScreen extends ConsumerWidget {
                                 ))),
                             DataCell(Row(
                               children: [
-                                Text('Product Dev Environment'),
+                                Text('Developer Workbench'),
                                 SizedBox(width: 5),
                                 IconButton(
                                   icon: new Icon(
@@ -186,6 +187,27 @@ class SettingsScreen extends ConsumerWidget {
                                   style: TextStyle(color: Colors.black54),
                                 ))),
                             DataCell(Text(dotenv.get('DEFAULT_REGION'))),
+                          ],
+                        ),
+                        DataRow(
+                          cells: <DataCell>[
+                            DataCell(ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: 200),
+                                child: Text(
+                                  'Catalog Repository',
+                                  style: TextStyle(color: Colors.black54),
+                                ))),
+                            DataCell(
+                                TextButton(
+                                  onPressed: () async {
+                                    final Uri _url = Uri.parse(dotenv.get("GCP_CATALOG_URL"));
+                                    if (!await launchUrl(_url)) {
+                                      throw 'Could not launch $_url';
+                                    }
+                                  },
+                                  child: Text("GitHub"),
+                                )
+                            )
                           ],
                         ),
                       ],
@@ -263,7 +285,6 @@ class SettingsScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                     SizedBox(height: 20),
-                    Container(width: 800, child: Text("APIs Configuration"))
                   ])),
             ),
             SizedBox(height: 10),
@@ -330,35 +351,6 @@ class SettingsScreen extends ConsumerWidget {
                                             } else {
                                               return Container();
                                             }
-                                          }),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 30),
-                                Row(
-                                  children: [
-                                    ConstrainedBox(
-                                      constraints: const BoxConstraints(
-                                        maxWidth: 700,
-                                      ),
-                                      child: TextFormField(
-                                          readOnly: true,
-                                          // initialValue: settings.customerTemplateGitRepository,
-                                          initialValue: "https://raw.githubusercontent.com/gitrey/cp-templates/main/catalog.json",
-                                          //controller: _urlController,
-                                          decoration: InputDecoration(
-                                            labelText:
-                                                "Catalog Repository (Read-only)",
-                                          ),
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return fieldIsRequired;
-                                            }
-                                            return null;
-                                          },
-                                          onChanged: (val) {
-                                            _gcpTemplateGitRepository = val;
                                           }),
                                     ),
                                   ],
@@ -523,10 +515,10 @@ class SettingsScreen extends ConsumerWidget {
         backgroundColor:
         Theme.of(context).primaryColor,
       ),
-      child: Text("Enable APIs and IAM Roles in the ${_targetProject}"),
+      child: Text("Enable APIs and IAM Roles in the ${projectId}"),
       onPressed: () =>
       {
-        bootstrapTargetProject(_targetProject, ref)
+        bootstrapTargetProject(projectId, ref)
       },
     );
   }
