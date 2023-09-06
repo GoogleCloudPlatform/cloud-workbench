@@ -18,10 +18,10 @@ class BuildRepository {
   ///
   /// [projectId]
   /// [template]
-  /// [formFieldValuesMap]
+  /// [templateParameters]
   Future<BuildDetails> deployTemplate(String accessToken, String projectId, Template template,
-          Map<String, String> formFieldValuesMap) async =>
-      buildService.deployTemplate(accessToken, projectId, template, formFieldValuesMap);
+          Map<String, String> templateParameters) async =>
+      buildService.deployTemplate(accessToken, projectId, template, templateParameters);
 
   /// Returns Cloud Build details
   ///

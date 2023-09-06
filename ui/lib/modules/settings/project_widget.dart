@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'data/project_provider.dart';
 
 class ProjectWidget extends ConsumerStatefulWidget {
-  const ProjectWidget({super.key});
+  final WidgetRef parentRef;
+  final String initialValue;
+
+  const ProjectWidget(this.parentRef, this.initialValue, {super.key});
 
   @override
   ConsumerState<ProjectWidget> createState() =>
@@ -18,37 +21,9 @@ class _ProjectState extends ConsumerState<ProjectWidget> {
 
   @override
   Widget build(BuildContext parentContext) {
-    return _projectSection();
-  }
-
-  Widget _projectSection() {
-    return Column(
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Card(
-                    elevation: 0,
-                    child: Form(
-                      key: _keyWS,
-                      child: Column(
-                        children: [
-                          _projects(),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
+    return Form(
+      key: _keyWS,
+      child: _projects(),
     );
   }
 
@@ -56,57 +31,34 @@ class _ProjectState extends ConsumerState<ProjectWidget> {
 
     final projectsList = ref.watch(projectsProvider);
 
+    TextEditingController _projectController = TextEditingController();
+    _projectController.text = widget.initialValue;
+
     return projectsList.when(
-        loading: () => Container(),
-        error: (err, stack) => Container(),
+        loading: () => LinearProgressIndicator(),
+        error: (err, stack) => Text('Error: $err'),
         data: (projects) {
           if (projects.isNotEmpty) {
             var projectNames = projects.map<String>((e) => e.name).toList();
 
             var selectProjectText = "Select a project";
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+            return Autocomplete<String>(
+              initialValue: TextEditingValue(text: _projectController.text.toString()),
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (textEditingValue.text == '') {
+                  return const Iterable<String>.empty();
+                }
+                return projectNames.where((String option) {
+                  return option.contains(textEditingValue.text.toLowerCase());
+                });
+              },
 
-                Row(
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 200,
-                          child: DropdownButtonFormField<String>(
-                            validator: (value) {
-                              return null;
-                            },
-                            hint: Text(selectProjectText),
-                            value: selectProjectText,
-                            icon: const Icon(Icons.arrow_drop_down),
-                            style: const TextStyle(color: Colors.black),
-                            onChanged: (String? value) {
-                              ref.read(projectDropdownProvider.notifier).state =
-                                  value!;
+              onSelected: (String value) {
+                _projectController.text = value!;
 
-                              ref.read(projectProvider.notifier).state =
-                              projects.where((project) => project.name == value!).first;
-                            },
-                            items: [selectProjectText, ...projectNames]
-                                .map<DropdownMenuItem<String>>(
-                                    (String projectName) {
-                              return DropdownMenuItem<String>(
-                                value: projectName,
-                                child: Text(projectName),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+                widget.parentRef.read(projectProvider.notifier).state =
+                    projects.where((project) => project.name == value!).first;
+              },
             );
           } else {
             return Container();

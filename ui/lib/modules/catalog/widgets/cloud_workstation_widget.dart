@@ -68,20 +68,25 @@ class _CloudWorkstationState extends ConsumerState<CloudWorkstationWidget> {
   }
 
   Widget _workstationCluster() {
+    // TODO remove loading settings since we switched to using target project from autocomplete
     var settings = ref.watch(gitSettingsProvider);
+
+    var projectId = ref.read(projectProvider).name;
+
+    if (projectId == "null")
+      return Container();
 
     return settings.when(
         loading: () => Text('Loading...'),
         error: (err, stack) => Text('Error: $err'),
         data: (settings) {
           String region = Environment.getRegion();
-          String projectId = settings.targetProject;
 
           final workstationClustersList = ref.watch(
               WorkstationClustersProvider(projectId: projectId, region: region));
 
           return workstationClustersList.when(
-              loading: () => Container(),
+              loading: () => LinearProgressIndicator(),
               error: (err, stack) => Container(),
               data: (clustersList) {
                 if (clustersList.isNotEmpty) {

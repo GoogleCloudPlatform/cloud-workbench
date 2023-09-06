@@ -19,9 +19,9 @@ class BuildService extends BaseService {
   /// Deploys selected template
   /// [projectId]
   /// [template]
-  /// [formFieldValuesMap]
+  /// [templateParameters]
   Future<BuildDetails> deployTemplate(String accessToken, String projectId, Template template,
-      Map<String, dynamic> formFieldValuesMap) async {
+      Map<String, dynamic> templateParameters) async {
     String result = "";
     BuildDetails? buildDetails;
     try {
@@ -42,7 +42,7 @@ class BuildService extends BaseService {
           "project_id": projectId,
           "template_id": "${template.id}",
           "cloudProvisionConfigUrl": "${template.cloudProvisionConfigUrl}",
-          "params": formFieldValuesMap,
+          "params": templateParameters,
           "catalogSource": catalogSource,
           "catalogUrl": "",
           "accessToken": accessToken
@@ -59,7 +59,7 @@ class BuildService extends BaseService {
         result = response.body;
       } else {
         sharedBuilds.BuildsService buildsService = new sharedBuilds.BuildsService(accessToken);
-        buildDetails = await buildsService.startBuild(projectId, formFieldValuesMap,
+        buildDetails = await buildsService.startBuild(projectId, templateParameters,
             template.cloudProvisionConfigUrl, "POST");
       }
     } catch (e) {

@@ -1,4 +1,6 @@
-import 'package:cloud_provision_shared/catalog/models/build_details.dart';
+import 'package:cloud_provision_shared/services/models/project.dart';
+import 'package:cloudprovision/modules/settings/application/project_service.dart';
+import 'package:cloudprovision/modules/settings/data/project_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -10,23 +12,16 @@ import '../../../widgets/summary_item.dart';
 
 import 'package:cloud_provision_shared/catalog/models/template.dart';
 
-import 'package:cloudprovision/modules/settings/models/git_settings.dart';
-import 'package:cloudprovision/modules/my_services/data/services_repository.dart';
-import 'package:cloudprovision/modules/settings/data/settings_repository.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import '../../auth/repositories/auth_provider.dart';
-import '../data/build_repository.dart';
+import '../../settings/project_widget.dart';
 import 'package:cloud_provision_shared/catalog/models/param.dart';
-import '../../my_services/models/service.dart';
-import '../data/build_service.dart';
 
 import '../data/template_repository.dart';
 import 'cloud_workstation_widget.dart';
+import 'deploy_controller.dart';
 import 'git_owners_dropdown.dart';
 
 class CatalogEntryDeployDialog extends ConsumerStatefulWidget {
@@ -69,7 +64,10 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                 children: [
                   TextButton(
                     child: Text('Close'),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () {
+                      ref.read(projectProvider.notifier).state = emptyProject;
+                      Navigator.of(context).pop();
+                    },
                   ),
                 ],
               ),
@@ -82,23 +80,21 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
   }
 
   Row _deployButton(Template template) {
+
+    final state = ref.watch(deployControllerProvider);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 10.0),
-          child: "state.instanceGitToken" != ""
-              ? ElevatedButton(
+          child: ElevatedButton(
                   child: Text(
                     'Deploy template',
                     style: AppText.buttonFontStyle,
                   ),
-                  onPressed: () => _deployTemplate(template),
-                )
-              : Text(
-                  "Please configure APIs integrations in the Settings section.",
-                  style:
-                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  onPressed: ref.watch(projectProvider).name == "null" || state.isLoading ? null :
+                      () => _deployTemplate(template),
                 ),
         ),
       ],
@@ -106,8 +102,6 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
   }
 
   _templateDetails(Template template, BuildContext context) {
-
-    final gitSettingsValue = ref.watch(gitSettingsProvider);
 
     return Column(
       children: [
@@ -165,18 +159,33 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                     ),
                   ),
                   Divider(),
-                  SummaryItem(
-                    label: "Target Project",
-                    child:
-                        gitSettingsValue.when(data: (settings) {
-                         return Text(settings.targetProject);
-                         },
-                         loading: () => Container(),
-                          error: (err, st) => Text(
-                            err.toString(),
-                            ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 200,
+                        child: SelectableText(
+                          'Target Project:',
+                          style: AppText.fontStyleBold,
                         ),
-                    ),
+                      ),
+                      Expanded(child: ProjectWidget(ref, "Select a project")),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                          Theme.of(context).primaryColor,
+                        ),
+                        child: Text("Bootstrap"),
+                        onPressed: ref.watch(projectProvider).name == "null" ? null :
+                        () async {
+                          Project project = ref.read(projectProvider);
+                          await ref.read(projectServiceProvider).bootstrapTargetProject(project);
+                        },
+                      )
+                    ],
+                  ),
                   Divider(),
                   // Template Inputs  Section
                   Text(
@@ -248,90 +257,25 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
       return;
     }
 
-    // String projectId = Environment.getProjectId();
+    final controller = ref.read(deployControllerProvider.notifier);
+    bool success = await controller.deployTemplate(template, _formFieldValues, _appId);
 
-    bool isCICDenabled = false;
-    template.inputs.forEach((element) {
-      if (element.param == "_INSTANCE_GIT_REPO_OWNER") {
-        isCICDenabled = true;
-      }
-    });
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Deployment started"),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+      );
 
-    GitSettings gitSettings =
-        await ref.read(settingsRepositoryProvider).loadGitSettings();
-
-    String projectId = gitSettings.targetProject;
-
-    if (isCICDenabled) {
-      _formFieldValues["_INSTANCE_GIT_REPO_OWNER"] =
-          gitSettings.instanceGitUsername;
-      _formFieldValues["_INSTANCE_GIT_REPO_TOKEN"] =
-          gitSettings.instanceGitToken;
-      _formFieldValues["_API_KEY"] = gitSettings.gcpApiKey;
-    }
-    _formFieldValues["_APP_ID"] = _appId;
-
-    try {
-
-      final authRepo = ref.watch(authRepositoryProvider);
-      var authClient = await authRepo.getAuthClient();
-      String accessToken = authClient.credentials.accessToken.data;
-
-      BuildDetails buildDetails = await BuildRepository(buildService: BuildService.withAccessToken(accessToken))
-          .deployTemplate(accessToken, projectId, template, _formFieldValues);
-
-      if (buildDetails != "") {
-        _formFieldValues["tags"] = template.tags.toString();
-
-        final user = FirebaseAuth.instance.currentUser!;
-
-        Service deployedService = Service(
-            user: user.displayName!,
-            userEmail: user.email!,
-            serviceId: _appId,
-            name: _formFieldValues["_APP_NAME"]!,
-            owner: gitSettings.instanceGitUsername,
-            instanceRepo:
-                "https://github.com/${_formFieldValues["_INSTANCE_GIT_REPO_OWNER"]}/${_appId}",
-            templateName: template.name,
-            templateId: template.id,
-            template: template,
-            region: _formFieldValues["_REGION"]!,
-            projectId: projectId,
-            cloudBuildId: buildDetails.id,
-            cloudBuildLogUrl: buildDetails.logUrl,
-            params: _formFieldValues,
-            deploymentDate: DateTime.now(),
-            workstationCluster: _formFieldValues.containsKey("_WS_CLUSTER") &&
-                    _formFieldValues["_WS_CLUSTER"]! != "Select a cluster"
-                ? _formFieldValues["_WS_CLUSTER"]!
-                : "",
-            workstationConfig: _formFieldValues.containsKey("_WS_CONFIG") &&
-                    _formFieldValues["_WS_CLUSTER"]! != "Select a cluster" &&
-                    _formFieldValues["_WS_CONFIG"]! != "Select a configuration"
-                ? _formFieldValues["_WS_CONFIG"]!
-                : "");
-
-        await ref.read(servicesRepositoryProvider).addService(deployedService);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Deployment started"),
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
-        );
-
-        context.go("/services");
-      }
-    } on Error catch (e, stacktrace) {
+      context.go("/services");
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Deployment failed"),
           backgroundColor: Colors.red,
         ),
       );
-
-      print("Error occurred: $e stackTrace: $stacktrace");
       Navigator.of(context).pop();
     }
   }

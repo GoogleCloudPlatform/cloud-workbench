@@ -15,18 +15,26 @@ final projectDropdownProvider = StateProvider<String>(
       (ref) => "Select a project",
 );
 
+Project emptyProject = new Project(projectId: "null", projectNumber: "null",
+name:  "null", createTime:  DateTime.now());
+
 final projectProvider = StateProvider<Project>(
-      (ref) => new Project(projectId: "null", projectNumber: "null",
-      name:  "null", createTime:  DateTime.now()),
+      (ref) => emptyProject,
 );
 
 @riverpod
 Future<List<Project>> projects(ProjectsRef ref) async {
   final authRepo = ref.watch(authRepositoryProvider);
 
-  var authClient = await authRepo.getAuthClient();
-  ProjectService projectService = new ProjectService(authClient!.credentials.accessToken.data);
-  return projectService.getProjects();
+  try {
+    var authClient = await authRepo.getAuthClient();
+    ProjectService projectService = new ProjectService(authClient!.credentials.accessToken.data);
+    return projectService.getProjects();
+  } catch (e) {
+    print(e);
+    return [];
+  }
+
 }
 
 
