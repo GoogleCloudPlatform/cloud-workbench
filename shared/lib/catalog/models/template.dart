@@ -80,7 +80,7 @@ class Template {
       'lastModified': lastModified.toIso8601String(),
       'owner': owner,
       'email': email,
-      'email': draft,
+      'draft': draft,
       'tags': tags,
       'inputs': tmpInputs,
       'metadata': tmpMetadata,
