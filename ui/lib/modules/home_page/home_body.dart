@@ -52,7 +52,7 @@ final Section cloudProvisionCatalogSection = Section(
     subTitle: "Create and deploy a new service from available templates",
     items: [
       SectionItem(
-        title: "Microservice Templates",
+        title: "Application Templates",
         subTitle: "Create a new application from a template",
         image: "appdistro@2x",
         dest: "/catalog",

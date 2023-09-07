@@ -102,7 +102,7 @@ class AppDrawer extends StatelessWidget {
                     iconData: Icons.format_list_bulleted_outlined),
                 Divider(),
                 _subTitle("Cloud Provision Catalog"),
-                _menuItem('Microservice Templates',
+                _menuItem('Application Templates',
                     "catalog?filter=application", context,
                     iconData: Icons.list_sharp),
                 _menuItem('Infra Templates', "catalog?filter=infra", context,
