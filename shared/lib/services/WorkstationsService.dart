@@ -104,19 +104,21 @@ class WorkstationsService extends BaseService {
           host = workstation["host"];
         }
 
-        workstations.add(Workstation(
-          name: name,
-          displayName: displayName,
-          uid: workstation["uid"],
-          etag: workstation["etag"],
-          state: workstation["state"],
-          host: host,
-          createTime: DateTime.parse(workstation["createTime"]),
-          updateTime: DateTime.parse(workstation["updateTime"]),
-          location: region,
-          clusterName: clusterName,
-          configName: configName,
-        ));
+        if (workstation.containsKey("state")) {
+          workstations.add(Workstation(
+            name: name,
+            displayName: displayName,
+            uid: workstation.containsKey("uid") ? workstation["uid"] : "",
+            etag: workstation.containsKey("etag") ? workstation["etag"] : "",
+            state: workstation.containsKey("state") ? workstation["state"] : "",
+            host: host,
+            createTime: DateTime.parse(workstation["createTime"]),
+            updateTime: DateTime.parse(workstation["updateTime"]),
+            location: region,
+            clusterName: clusterName,
+            configName: configName,
+          ));
+        }
       }
     }
 
@@ -176,6 +178,19 @@ class WorkstationsService extends BaseService {
 
     var client = getAuthenticatedClient();
     Response res = await client.delete(url);
+
+    return res;
+  }
+
+  Future<Response> checkWorkstationStatus(String projectId, String clusterName, String configName,
+      String workstationName, String region) async {
+    String endpointPath =
+        '/v1beta/projects/${projectId}/locations/${region}/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations/${workstationName}';
+
+    Uri url = Uri.https(wsUrl, endpointPath);
+
+    var client = getAuthenticatedClient();
+    Response res = await client.get(url);
 
     return res;
   }
