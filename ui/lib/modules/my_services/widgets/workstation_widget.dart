@@ -89,6 +89,7 @@ class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
                               wkstn.displayName,
                               widget.service.region);
 
+
                           ref.invalidate(workstationsProvider);
                         },
                         child: Text(
@@ -142,7 +143,7 @@ class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text("Workstation is in reconciling state."),
-                      backgroundColor: Colors.red,
+                      backgroundColor: Theme.of(context).primaryColor,
                     ),
                   );
                 }
