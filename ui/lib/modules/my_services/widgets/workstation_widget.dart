@@ -5,6 +5,7 @@ import 'package:cloudprovision/modules/my_services/models/service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../data/cloud_workstations_repository.dart';
@@ -79,6 +80,15 @@ class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
                                   wkstn.configName,
                                   wkstn.displayName,
                                   widget.service.region);
+
+                          await ref
+                              .watch(cloudWorkstationsRepositoryProvider)
+                              .checkInstanceStatus(widget.service.projectId,
+                              wkstn.clusterName,
+                              wkstn.configName,
+                              wkstn.displayName,
+                              widget.service.region);
+
                           ref.invalidate(workstationsProvider);
                         },
                         child: Text(
@@ -103,16 +113,39 @@ class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
           children.add(
             InkWell(
               onTap: () async {
-                await ref
+
+                Response response = await ref
                     .watch(cloudWorkstationsRepositoryProvider)
-                    .createInstance(
-                        widget.service.projectId,
-                        widget.service.workstationCluster,
-                        widget.service.workstationConfig,
-                        "${ldap}-${widget.service.workstationConfig}",
-                        widget.service.region,
-                        email!);
-                ref.invalidate(workstationsProvider);
+                    .checkInstanceStatus(widget.service.projectId,
+
+                    widget.service.workstationCluster,
+                    widget.service.workstationConfig,
+                    "${ldap}-${widget.service.workstationConfig}",
+                    widget.service.region);
+
+
+                if (response.statusCode == 404) {
+                  await ref
+                      .watch(cloudWorkstationsRepositoryProvider)
+                      .createInstance(
+                      widget.service.projectId,
+                      widget.service.workstationCluster,
+                      widget.service.workstationConfig,
+                      "${ldap}-${widget.service.workstationConfig}",
+                      widget.service.region,
+                      email!);
+
+                  await Future.delayed(Duration(seconds: 3));
+
+                  ref.invalidate(workstationsProvider);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Workstation is in reconciling state."),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               },
               child: Row(
                 children: [
@@ -254,6 +287,9 @@ class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
                     workstation.configName,
                     workstation.displayName,
                     widget.service.region);
+
+                await Future.delayed(Duration(seconds: 3));
+
                 ref.invalidate(workstationsProvider);
               },
             );
@@ -279,6 +315,9 @@ class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
               workstation.configName,
               workstation.displayName,
               widget.service.region);
+
+          await Future.delayed(Duration(seconds: 3));
+
           ref.invalidate(workstationsProvider);
 
         },
@@ -294,6 +333,9 @@ class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
               workstation.configName,
               workstation.displayName,
               widget.service.region);
+
+          await Future.delayed(Duration(seconds: 3));
+
           ref.invalidate(workstationsProvider);
         },
       );
