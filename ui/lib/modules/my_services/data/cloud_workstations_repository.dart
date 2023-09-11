@@ -299,6 +299,37 @@ class CloudWorkstationsRepository extends BaseService {
       print(stack);
     }
   }
+
+  checkInstanceStatus(String projectId, String clusterName, String configName,
+      String workstationName, String region) async {
+    try {
+      if (serverEnabled) {
+        Map<String, String> requestHeaders = await getRequestHeaders();
+
+        var endpointPath =
+            '/v1/workstationClusters/${clusterName}/workstationConfigs/${configName}/workstations/${workstationName}';
+
+        final queryParameters = {
+          'projectId': projectId,
+          'region': region,
+        };
+
+        var url = getUrl(endpointPath, queryParameters: queryParameters);
+
+        var response = await http
+            .get(url, headers: requestHeaders)
+            .timeout(Duration(seconds: 10));
+
+        return response;
+      } else {
+        WorkstationsService workstationsService = new WorkstationsService(accessToken);
+        return await workstationsService.checkWorkstationStatus(projectId, clusterName, configName, workstationName, region);
+      }
+    } catch (e, stack) {
+      print(e);
+      print(stack);
+    }
+  }
 }
 
 final clusterDropdownProvider = StateProvider.autoDispose<String>(
