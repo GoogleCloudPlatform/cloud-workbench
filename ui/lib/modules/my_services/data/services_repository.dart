@@ -47,15 +47,11 @@ class ServicesRepository {
   }
 
   Future<void> deleteService(Service service) async {
-    String buildDetails = await BuildRepository(buildService: BuildService())
-        .deleteService(service);
-
-    if (buildDetails != "") {
-      var document = await _servicesRef.doc(service.id);
-      return await document.delete();
-    } else {
-      print("Service deletion failed.");
-    }
+    var document = await _servicesRef.doc(service.id);
+    if (document != null)
+      await document.delete();
+    else
+      print("Service not found");
   }
 }
 

@@ -42,7 +42,7 @@ class ProjectService extends BaseService {
     return projectsList;
   }
 
-  enableAPIs(String projectId, String serviceName) async {
+  enableService(String projectId, String serviceName) async {
     if (projectId == "null")
       return;
 
@@ -57,6 +57,17 @@ class ProjectService extends BaseService {
       su.DisableServiceRequest request = new su.DisableServiceRequest();
       su.Operation disableRequest = await serviceUsageApi.services.disable(request, service);
     }*/
+  }
+
+  isServiceEnabled(String projectId, String serviceName) async {
+    if (projectId == "null")
+      return;
+
+    String service = 'projects/${projectId}/services/${serviceName}';
+    su.ServiceUsageApi serviceUsageApi = new su.ServiceUsageApi(getAuthenticatedClient());
+    su.GoogleApiServiceusageV1Service res = await serviceUsageApi.services.get(service);
+
+    return res.state == "ENABLED";
   }
 
   grantRoles(String projectId, String projectNumber) async {

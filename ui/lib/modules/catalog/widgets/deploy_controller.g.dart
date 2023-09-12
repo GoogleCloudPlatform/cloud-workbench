@@ -6,7 +6,7 @@ part of 'deploy_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$deployControllerHash() => r'd19e97e3c382914be6b645ce1c6e9536de417213';
+String _$deployControllerHash() => r'17e55f1c5b25b468dc644ac3e1120d3f869c6875';
 
 /// See also [DeployController].
 @ProviderFor(DeployController)

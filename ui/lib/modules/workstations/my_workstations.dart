@@ -144,7 +144,19 @@ class MyWorkstationsPage extends ConsumerWidget {
                 //   child: CloudTableCellText(text: workstation.host),
                 // ),
                 CloudTableCell(
-                    child: CloudTableCellText(text: workstation.state)),
+                    child: workstation.state == "STATE_RUNNING" ? Tooltip(
+                      message: workstation.state,
+                      child: Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                      ),
+                    ) : Tooltip(
+                      message: workstation.state,
+                      child: Icon(
+                        Icons.stop_circle,
+                        color: Colors.black,
+                      ),
+                    )),
 
                 CloudTableCell(
                   child: TextButton(

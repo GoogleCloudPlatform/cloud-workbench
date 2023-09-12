@@ -169,23 +169,10 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                         ),
                       ),
                       Expanded(child: ProjectWidget(ref, "Select a project")),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                          Theme.of(context).primaryColor,
-                        ),
-                        child: Text("Bootstrap"),
-                        onPressed: ref.watch(projectProvider).name == "null" ? null :
-                        () async {
-                          Project project = ref.read(projectProvider);
-                          await ref.read(projectServiceProvider).bootstrapTargetProject(project);
-                        },
-                      )
                     ],
                   ),
+                  ref.watch(projectProvider).name == "null" ? Container()
+                      :_buildServiceStatus(context),
                   Divider(),
                   // Template Inputs  Section
                   Text(
@@ -199,6 +186,127 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildServiceStatus(BuildContext context) {
+
+    Project project = ref.read(projectProvider);
+
+    var services = [
+      "cloudbuild.googleapis.com",
+      "workstations.googleapis.com",
+      "secretmanager.googleapis.com",
+      "cloudresourcemanager.googleapis.com",
+      "artifactregistry.googleapis.com",
+      "run.googleapis.com",
+      "container.googleapis.com",
+      "containeranalysis.googleapis.com",
+      "recommender.googleapis.com",
+      "containerscanning.googleapis.com",
+    ];
+
+
+
+    List<Widget> list = [];
+    for (String service in services) {
+      final serviceStatus = ref.watch(serviceStatusProvider(project: project, serviceName: service));
+
+      list.add(Row(
+        children: [
+          serviceStatus.when(
+          loading: () => SizedBox(
+            child: CircularProgressIndicator(),
+            height: 10.0,
+            width: 10.0,
+          ),
+          error: (err, stack) => Tooltip(
+            message: "Status unknown",
+            child: Icon(
+              Icons.question_mark,
+              color: Colors.red,
+            ),
+          ),
+          data: (enabled) {
+            return  enabled == true ?
+            Tooltip(
+              message: "Enabled",
+              child: Icon(
+                Icons.check_box,
+                color: Colors.green,
+              ),
+            ) :
+            Tooltip(
+              message: "Disabled",
+              child: Icon(
+                Icons.stop_circle,
+                color: Colors.amber,
+              ),
+            );
+          }
+          ),
+          TextButton(
+            onPressed: () async {
+              final Uri _url =
+              Uri.parse("https://console.cloud.google.com/apis/library/${service}?project=${project.projectId}");
+              if (!await launchUrl(_url)) {
+                throw 'Could not launch $_url';
+              }
+            },
+            child: Text(
+              service,
+              style: AppText.linkFontStyle,
+            ),
+          ),
+        ],
+      ));
+    }
+
+    return ExpansionTile(
+      initiallyExpanded: true,
+      expandedAlignment: Alignment.topLeft,
+      title: Text('APIs, Services and IAM Roles',
+        style: AppText.fontStyleBold,),
+      controlAffinity: ListTileControlAffinity.leading,
+      children: <Widget>[
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                    width: 300,
+                    child: Text("This solution uses the APIs and services listed below. Click \"Bootstrap\" button to enable the ones that aren’t already enabled. You are subject to the Terms of Service of each of these and you’ll start incurring charges for products in the solution after deployment.")),
+                SizedBox(height: 10,),
+                ...list,
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                    width: 300,
+                    child: Text("To deploy the solution, a Cloud Build service account will be granted the following roles.")),
+                SizedBox(height: 10,),
+                Container(color: Colors.black12,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("roles/run.admin"),
+                      Text("roles/secretmanager.admin"),
+                      Text("roles/iam.serviceAccountUser"),
+                    ],
+                  ),
+                ),)
+              ],
+            )
+          ],
+        )
+
+      ]
     );
   }
 

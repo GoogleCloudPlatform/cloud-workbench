@@ -6,25 +6,40 @@ class ProjectRepository extends BaseService {
   ProjectRepository(String accessToken) :
         super.withAccessToken(accessToken);
 
-  enableAPIs(String projectId) async {
+  var services = [
+    "cloudbuild.googleapis.com",
+    "workstations.googleapis.com",
+    "secretmanager.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "run.googleapis.com",
+    "container.googleapis.com",
+    "containeranalysis.googleapis.com",
+    "recommender.googleapis.com",
+    "containerscanning.googleapis.com",
+  ];
+
+  enableServices(String projectId) async {
     ProjectService projectService = new ProjectService(accessToken);
 
-    var apis = [
-      "cloudbuild.googleapis.com",
-      "workstations.googleapis.com",
-      "secretmanager.googleapis.com",
-      "cloudresourcemanager.googleapis.com",
-      "artifactregistry.googleapis.com",
-      "run.googleapis.com",
-      "container.googleapis.com",
-      "containeranalysis.googleapis.com",
-      "recommender.googleapis.com",
-      "containerscanning.googleapis.com",
-    ];
-
-    apis.forEach((serviceName) async {
-      await projectService.enableAPIs(projectId, serviceName);
+    services.forEach((serviceName) async {
+      await projectService.enableService(projectId, serviceName);
     });
+  }
+
+  verifyServices(String projectId) {
+    ProjectService projectService = new ProjectService(accessToken);
+
+    services.forEach((serviceName) async {
+      bool state = await projectService.isServiceEnabled(projectId, serviceName);
+      print("${serviceName} - enabled = ${state}");
+    });
+  }
+
+  Future<bool> verifyService(String projectId, String serviceName) async {
+    ProjectService projectService = new ProjectService(accessToken);
+    bool state = await projectService.isServiceEnabled(projectId, serviceName);
+    return state;
   }
 
   createArtifactRegistry(String projectId, String region, String name,

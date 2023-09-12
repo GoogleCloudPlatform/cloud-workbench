@@ -13,13 +13,12 @@ class ProjectService {
 
   Future<bool> bootstrapTargetProject(Project project) async {
     try {
-
       if (project.name != "null") {
-        final ProjectRepository projectRepository = ref.read(
-            projectRepositoryProvider);
-        projectRepository.enableAPIs(project.projectId);
+        final ProjectRepository projectRepository =
+            ref.read(projectRepositoryProvider);
+        projectRepository.enableServices(project.projectId);
 
-        // This could be moved to template scripts to setup the dependencies
+        // TODO This could be moved to template scripts to setup the dependencies
         projectRepository.createArtifactRegistry(
             project.projectId, "us-central1", "cp-repo", "DOCKER");
 
@@ -28,14 +27,28 @@ class ProjectService {
     } on Error catch (e, stacktrace) {
       print("Error occurred: $e stackTrace: $stacktrace");
       return false;
-      }
+    }
 
-      return true;
+    return true;
   }
 
+  Future<bool> isServiceEnabled(Project project, String serviceName) async {
+    final ProjectRepository projectRepository =
+        ref.read(projectRepositoryProvider);
+
+    return await projectRepository.verifyService(
+        project.projectId, serviceName);
+  }
 }
 
 @riverpod
 ProjectService projectService(ProjectServiceRef ref) {
   return ProjectService(ref);
+}
+
+@riverpod
+Future<bool> serviceStatus(ServiceStatusRef ref,
+    {required Project project, required String serviceName}) {
+  ProjectService projectService = ref.read(projectServiceProvider);
+  return projectService.isServiceEnabled(project, serviceName);
 }

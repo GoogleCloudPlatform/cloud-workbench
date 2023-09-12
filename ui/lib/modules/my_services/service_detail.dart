@@ -1,3 +1,4 @@
+import 'package:cloudprovision/modules/catalog/data/build_repository.dart';
 import 'package:cloudprovision/modules/my_services/widgets/workstation_widget.dart';
 import 'package:cloudprovision/widgets/summary_item.dart';
 import 'package:flutter/gestures.dart';
@@ -200,9 +201,18 @@ class _ServiceDetailState extends ConsumerState<ServiceDetail> {
         IconButton(
           tooltip: 'Delete',
           onPressed: () async {
-            await ref.read(servicesRepositoryProvider).deleteService(service);
-            ref.invalidate(servicesProvider);
-            //Navigator.of(context).pop();
+            String result = await ref
+                .read(buildRepositoryProvider)
+                .deleteService(service);
+
+            if (result != "") {
+              await ref
+                  .read(servicesRepositoryProvider)
+                  .deleteService(service);
+
+              ref.invalidate(servicesProvider);
+            }
+
             context.go("/services");
           },
           icon: Icon(

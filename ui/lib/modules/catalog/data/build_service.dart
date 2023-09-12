@@ -170,30 +170,45 @@ class BuildService extends BaseService {
 
   Future<String> deleteService(Service service) async {
     String result = "";
+    BuildDetails? buildDetails;
 
     try {
-      Map<String, String> requestHeaders = await getRequestHeaders();
+      if (serverEnabled) {
+        Map<String, String> requestHeaders = await getRequestHeaders();
 
-      var endpointPath = '/v1/builds';
+        var endpointPath = '/v1/builds';
 
-      var url = getUrl(endpointPath);
-      service.params.remove("tags");
-      var body = json.encode({
-        "project_id": service.projectId,
-        "cloudProvisionConfigUrl": "${service.template!.cloudProvisionConfigUrl}",
-        "params": service.params,
-      });
+        var url = getUrl(endpointPath);
+        service.params.remove("tags");
+        var body = json.encode({
+          "project_id": service.projectId,
+          "cloudProvisionConfigUrl": "${service.template!
+              .cloudProvisionConfigUrl}",
+          "params": service.params,
+        });
 
 
-      var response = await http
-          .delete(url, headers: requestHeaders, body: body)
-          .timeout(Duration(seconds: 10));
+        var response = await http
+            .delete(url, headers: requestHeaders, body: body)
+            .timeout(Duration(seconds: 10));
 
-      if (response.statusCode == 500) {
-        return result;
+        if (response.statusCode == 500) {
+          return result;
+        }
+
+        result = response.body;
+      } else {
+        sharedBuilds.BuildsService buildsService = new sharedBuilds.BuildsService(accessToken);
+
+        Map<String, String>? params =
+        service.params.map((key, value) => MapEntry(key, value.toString()));
+
+        params.remove("tags");
+
+        buildDetails = await buildsService.startBuild(service.projectId, params,
+            service.template!.cloudProvisionConfigUrl, "DELETE");
+        return buildDetails.toString();
       }
-
-      result = response.body;
     } catch (e) {
       print(e);
     }

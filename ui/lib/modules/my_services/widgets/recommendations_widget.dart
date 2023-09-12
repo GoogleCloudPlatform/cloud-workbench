@@ -106,6 +106,15 @@ class _RecommendationsWidgetState extends ConsumerState<RecommendationsWidget> {
           ],
         ));
       }
+
+      if (recommendations.isEmpty)
+        rows.add(Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text("Information will be available within 24 hours after service deployment"),
+          ],
+        ));
+
       return Column(
         children: rows,
       );
