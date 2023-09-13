@@ -84,6 +84,7 @@ class ProjectService extends BaseService {
     projectPolicy.bindings?.add(createNewBinding(saCloudBuild, "roles/run.admin"));
     projectPolicy.bindings?.add(createNewBinding(saCloudBuild, "roles/secretmanager.admin"));
     projectPolicy.bindings?.add(createNewBinding(saCloudBuild, "roles/iam.serviceAccountUser"));
+    projectPolicy.bindings?.add(createNewBinding(saCloudBuild, "roles/workstations.admin"));
 
     projectPolicy.bindings?.add(createNewBinding("serviceAccount:${projectNumber}-compute@developer.gserviceaccount.com", "roles/editor"));
     projectPolicy.bindings?.add(createNewBinding("serviceAccount:service-${projectNumber}@gcp-sa-cloudbuild.iam.gserviceaccount.com", "roles/secretmanager.admin"));

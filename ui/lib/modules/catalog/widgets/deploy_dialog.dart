@@ -297,6 +297,7 @@ class _MyTemplateDialogState extends ConsumerState<CatalogEntryDeployDialog> {
                     children: [
                       Text("roles/run.admin"),
                       Text("roles/secretmanager.admin"),
+                      Text("roles/workstations.admin"),
                       Text("roles/iam.serviceAccountUser"),
                     ],
                   ),
