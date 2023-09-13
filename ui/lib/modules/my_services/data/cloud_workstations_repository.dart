@@ -99,31 +99,39 @@ class CloudWorkstationsRepository extends BaseService {
     return workstationConfigs;
   }
 
-  Future<List<Workstation>> getAllWorkstations(
+  Future<List<Workstation>> getAllWorkstationsForCluster(
       String projectId, String clusterName, String region) async {
     List<Workstation> workstations = [];
 
     final configList = await getConfigurations(projectId, clusterName, region);
 
-    List<String> flatConfList = [];
-
-    configList.forEach((config) async {
-      final configNameSplit = config.name.split('/');
-
-      flatConfList.add(configNameSplit.last);
-    });
-
-    for (int i = 0; i < flatConfList.length; i++) {
-      final worklist = await getWorkstations(
+    for (WorkstationConfig wsConfig in configList) {
+      final workstationsList = await getWorkstations(
         projectId,
         clusterName,
-        flatConfList[i],
+        wsConfig.name.split('/').last,
         region,
       );
 
-      worklist.forEach((station) {
-        workstations.add(station);
-      });
+      workstations.addAll(workstationsList);
+    }
+
+    return workstations;
+  }
+
+  Future<List<Workstation>> getAllWorkstations(
+      String projectId, String region) async {
+    List<Workstation> workstations = [];
+
+    final clustersList = await getClusters(projectId, region);
+
+    for (Cluster cluster in clustersList) {
+      String clusterName = cluster.name.split('/').last;
+
+      final list = await getAllWorkstationsForCluster(projectId, clusterName, region);
+
+      workstations.addAll(list);
+
     }
 
     return workstations;
@@ -376,12 +384,20 @@ Future<List<WorkstationConfig>> workstationConfigs(WorkstationConfigsRef ref,
 }
 
 @riverpod
-Future<List<Workstation>> allWorkstations(AllWorkstationsRef ref,
+Future<List<Workstation>> allWorkstationsForCluster(AllWorkstationsRef ref,
     {required String projectId,
     required String clusterName,
     required String region}) {
   final servicesRepository = ref.watch(cloudWorkstationsRepositoryProvider);
-  return servicesRepository.getAllWorkstations(projectId, clusterName, region);
+  return servicesRepository.getAllWorkstationsForCluster(projectId, clusterName, region);
+}
+
+@riverpod
+Future<List<Workstation>> allWorkstations(AllWorkstationsRef ref,
+    {required String projectId,
+      required String region}) {
+  final servicesRepository = ref.watch(cloudWorkstationsRepositoryProvider);
+  return servicesRepository.getAllWorkstations(projectId, region);
 }
 
 @riverpod

@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:cloud_provision_shared/services/models/workstation.dart';
+import 'package:cloudprovision/modules/auth/repositories/auth_provider.dart';
 import 'package:cloudprovision/widgets/cloud_table.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -16,7 +16,7 @@ import '../settings/data/settings_repository.dart';
 class MyWorkstationsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = FirebaseAuth.instance.currentUser!;
+    final user = ref.read(authRepositoryProvider).currentUser()!;
 
     final ldap = user.email.toString().split('@')[0];
 
@@ -59,14 +59,12 @@ class MyWorkstationsPage extends ConsumerWidget {
 
   _buildWorkstationsList(
       {required BuildContext context, required WidgetRef ref}) {
-    // String projectId = Environment.getProjectId();
     String region = Environment.getRegion();
 
-    // String projectId = ref.read(projectDropdownProvider.notifier).state;
     var settings = ref.watch(gitSettingsProvider);
 
     return settings.when(
-      loading: () => Text('Loading...'),
+      loading: () => LinearProgressIndicator(),
       error: (err, stack) => Text('Error: $err'),
       data: (settings) {
 
@@ -74,11 +72,10 @@ class MyWorkstationsPage extends ConsumerWidget {
 
         final workstationsList = ref.watch(allWorkstationsProvider(
             projectId: projectId,
-            clusterName: Environment.getWorkstationCluster(),
             region: region));
 
         return workstationsList.when(
-          loading: () => Text('Loading...'),
+          loading: () => LinearProgressIndicator(),
           error: (err, stack) => Text('Error: $err'),
           data: (wrkList) {
             return _buildWorkstationRows(wrkList, ref, projectId, region);
@@ -112,7 +109,7 @@ class MyWorkstationsPage extends ConsumerWidget {
 
   Widget _buildWorkstationRows(List<Workstation> wrkList, WidgetRef ref,
       String projectId, String region) {
-    final user = FirebaseAuth.instance.currentUser!;
+    final user = ref.read(authRepositoryProvider).currentUser()!;
 
     final ldap = user.email.toString().split('@')[0];
 

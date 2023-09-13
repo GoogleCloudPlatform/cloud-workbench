@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:cloud_provision_shared/catalog/models/build_details.dart';
+import 'package:cloudprovision/modules/auth/repositories/auth_provider.dart';
 import 'package:cloudprovision/modules/settings/models/git_settings.dart';
 import 'package:cloudprovision/modules/my_services/data/services_repository.dart';
 import 'package:cloudprovision/modules/settings/data/settings_repository.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -158,7 +158,7 @@ class _CatalogConfigPageState extends ConsumerState<CatalogConfigPage> {
     if (buildDetails != "") {
       _formFieldValues["tags"] = template.tags.toString();
 
-      final user = FirebaseAuth.instance.currentUser!;
+      final user = ref.read(authRepositoryProvider).currentUser()!;
 
       Service deployedService = Service(
         user: user.displayName!,

@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:cloud_provision_shared/services/models/workstation.dart';
+import 'package:cloudprovision/modules/auth/repositories/auth_provider.dart';
 import 'package:cloudprovision/modules/my_services/models/service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart';
@@ -22,7 +22,7 @@ class WorkStationWidget extends ConsumerStatefulWidget {
 class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
+    final user = ref.read(authRepositoryProvider).currentUser()!;
     final ldap = user.email.toString().split('@')[0];
     final email = user.email;
 

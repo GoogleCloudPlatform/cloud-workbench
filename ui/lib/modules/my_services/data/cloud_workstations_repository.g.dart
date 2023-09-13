@@ -350,7 +350,110 @@ class WorkstationConfigsProvider
   }
 }
 
-String _$allWorkstationsHash() => r'e66875af19a30bdf09301e77f2afbabf94004660';
+String _$allWorkstationsForClusterHash() =>
+    r'f5ce46b3589836d358edbf754970daf2f39c5cef';
+typedef AllWorkstationsForClusterRef
+    = AutoDisposeFutureProviderRef<List<Workstation>>;
+
+/// See also [allWorkstationsForCluster].
+@ProviderFor(allWorkstationsForCluster)
+const allWorkstationsForClusterProvider = AllWorkstationsForClusterFamily();
+
+/// See also [allWorkstationsForCluster].
+class AllWorkstationsForClusterFamily
+    extends Family<AsyncValue<List<Workstation>>> {
+  /// See also [allWorkstationsForCluster].
+  const AllWorkstationsForClusterFamily();
+
+  /// See also [allWorkstationsForCluster].
+  AllWorkstationsForClusterProvider call({
+    required String projectId,
+    required String clusterName,
+    required String region,
+  }) {
+    return AllWorkstationsForClusterProvider(
+      projectId: projectId,
+      clusterName: clusterName,
+      region: region,
+    );
+  }
+
+  @override
+  AllWorkstationsForClusterProvider getProviderOverride(
+    covariant AllWorkstationsForClusterProvider provider,
+  ) {
+    return call(
+      projectId: provider.projectId,
+      clusterName: provider.clusterName,
+      region: provider.region,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'allWorkstationsForClusterProvider';
+}
+
+/// See also [allWorkstationsForCluster].
+class AllWorkstationsForClusterProvider
+    extends AutoDisposeFutureProvider<List<Workstation>> {
+  /// See also [allWorkstationsForCluster].
+  AllWorkstationsForClusterProvider({
+    required this.projectId,
+    required this.clusterName,
+    required this.region,
+  }) : super.internal(
+          (ref) => allWorkstationsForCluster(
+            ref,
+            projectId: projectId,
+            clusterName: clusterName,
+            region: region,
+          ),
+          from: allWorkstationsForClusterProvider,
+          name: r'allWorkstationsForClusterProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$allWorkstationsForClusterHash,
+          dependencies: AllWorkstationsForClusterFamily._dependencies,
+          allTransitiveDependencies:
+              AllWorkstationsForClusterFamily._allTransitiveDependencies,
+        );
+
+  final String projectId;
+  final String clusterName;
+  final String region;
+
+  @override
+  bool operator ==(Object other) {
+    return other is AllWorkstationsForClusterProvider &&
+        other.projectId == projectId &&
+        other.clusterName == clusterName &&
+        other.region == region;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, projectId.hashCode);
+    hash = _SystemHash.combine(hash, clusterName.hashCode);
+    hash = _SystemHash.combine(hash, region.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+String _$allWorkstationsHash() => r'653d00664f36e0e55a95611d0d02b8e5f4af82ce';
 typedef AllWorkstationsRef = AutoDisposeFutureProviderRef<List<Workstation>>;
 
 /// See also [allWorkstations].
@@ -365,12 +468,10 @@ class AllWorkstationsFamily extends Family<AsyncValue<List<Workstation>>> {
   /// See also [allWorkstations].
   AllWorkstationsProvider call({
     required String projectId,
-    required String clusterName,
     required String region,
   }) {
     return AllWorkstationsProvider(
       projectId: projectId,
-      clusterName: clusterName,
       region: region,
     );
   }
@@ -381,7 +482,6 @@ class AllWorkstationsFamily extends Family<AsyncValue<List<Workstation>>> {
   ) {
     return call(
       projectId: provider.projectId,
-      clusterName: provider.clusterName,
       region: provider.region,
     );
   }
@@ -407,13 +507,11 @@ class AllWorkstationsProvider
   /// See also [allWorkstations].
   AllWorkstationsProvider({
     required this.projectId,
-    required this.clusterName,
     required this.region,
   }) : super.internal(
           (ref) => allWorkstations(
             ref,
             projectId: projectId,
-            clusterName: clusterName,
             region: region,
           ),
           from: allWorkstationsProvider,
@@ -428,14 +526,12 @@ class AllWorkstationsProvider
         );
 
   final String projectId;
-  final String clusterName;
   final String region;
 
   @override
   bool operator ==(Object other) {
     return other is AllWorkstationsProvider &&
         other.projectId == projectId &&
-        other.clusterName == clusterName &&
         other.region == region;
   }
 
@@ -443,7 +539,6 @@ class AllWorkstationsProvider
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, projectId.hashCode);
-    hash = _SystemHash.combine(hash, clusterName.hashCode);
     hash = _SystemHash.combine(hash, region.hashCode);
 
     return _SystemHash.finish(hash);
