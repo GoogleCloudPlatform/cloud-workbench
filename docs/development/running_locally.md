@@ -1,5 +1,34 @@
 
+Complete installation steps in [installation.md](../getting_started/installation.md)
 
+## Front End
+
+For VSCode your `launch.json` file should look similar to this:
+
+```json
+        {
+            "name": "ui",
+            "cwd": "ui",
+            "request": "launch",
+            "type": "dart"
+        }
+```
+
+To start the front end from the command line execute the following:
+
+```bash
+cd ui
+
+flutter run lib/main.dart \
+    -d chrome \
+    --web-port=5000
+```
+
+For command above, add 'localhost:5000' to Authorized JavaScript origins under OAuth 2.0 Client in Cloud Console [APIs & Services, Credentials](https://console.cloud.google.com/apis/credentials).
+
+[Home](../README.md)
+
+# Deprecated
 
 ## Start backend service
 
