@@ -10,7 +10,10 @@ For VSCode your `launch.json` file should look similar to this:
             "name": "ui",
             "cwd": "ui",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+              "--web-port=5000"
+            ]
         }
 ```
 
