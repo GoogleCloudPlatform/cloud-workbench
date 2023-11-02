@@ -3,7 +3,7 @@
 
 A portal for creating new applications and infrastructure quickly and with minimal effort that conform to industry best practices and internal organizational policies.
 
-![Developer Portal - Main Dashboard](docs/img/image.png)
+![Developer Portal - Main Dashboard](docs/img/home-page.png)
 
 The application highlights and demonstrates
 
