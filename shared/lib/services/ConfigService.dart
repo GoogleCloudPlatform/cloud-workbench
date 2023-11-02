@@ -13,18 +13,28 @@
 // limitations under the License.
 
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
+import 'package:yaml/yaml.dart';
 
 class ConfigService {
-  /// Returns JSON document
+  /// Returns config document
   ///
-  /// [jsonDocUrl]
-  Future<Map<String, dynamic>> getJson(String jsonDocUrl) async {
-    final http.Client client = new http.Client();
+  /// [configUrl]
+  Future<Map<String, dynamic>> getJson(String configUrl,
+      [http.Client? client]) async {
+    client ??= http.Client();
+
     var response = await client
-        .get(Uri.parse(jsonDocUrl))
+        .get(Uri.parse(configUrl))
         .timeout(const Duration(seconds: 30));
-    return json.decode(response.body);
+
+    var config = response.body;
+
+    if (configUrl.endsWith(".yaml")) {
+      var yamlDoc = loadYaml(response.body);
+      config = json.encode(yamlDoc);
+    }
+
+    return json.decode(config);
   }
 }

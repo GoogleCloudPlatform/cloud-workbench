@@ -150,8 +150,6 @@ class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
                       widget.service.region,
                       email!);
 
-                  await Future.delayed(Duration(seconds: 3));
-
                   ref.invalidate(workstationsProvider);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -303,8 +301,6 @@ class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
                     workstation.displayName,
                     widget.service.region);
 
-                await Future.delayed(Duration(seconds: 3));
-
                 ref.invalidate(workstationsProvider);
               },
             );
@@ -331,8 +327,6 @@ class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
               workstation.displayName,
               widget.service.region);
 
-          await Future.delayed(Duration(seconds: 3));
-
           ref.invalidate(workstationsProvider);
 
         },
@@ -348,8 +342,6 @@ class _WorkStationWidgetState extends ConsumerState<WorkStationWidget> {
               workstation.configName,
               workstation.displayName,
               widget.service.region);
-
-          await Future.delayed(Duration(seconds: 3));
 
           ref.invalidate(workstationsProvider);
         },

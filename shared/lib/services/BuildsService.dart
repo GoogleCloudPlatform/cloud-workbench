@@ -18,12 +18,11 @@ import '../catalog/models/build_details.dart';
 import 'BaseService.dart';
 import 'ConfigService.dart';
 
-
 class BuildsService extends BaseService {
-
   BuildsService(String accessToken) : super(accessToken);
 
   ConfigService _configService = ConfigService();
+
   /// Returns Cloud Build details for specified parameters
   ///
   /// [projectId]
@@ -37,22 +36,18 @@ class BuildsService extends BaseService {
     return build;
   }
 
-  /// Starts Cloud Build build for specified configuration
+  /// Returns Cloud Build build request
   ///
-  /// [projectId]
+  /// [templateJsonConfig]
+  /// [method]
   /// [substitutionsMap]
-  /// [cloudProvisionJsonConfig]
-  Future<BuildDetails> startBuild(
-      projectId, substitutionsMap, templateConfigUrl, String method) async {
-
-    Map<String, dynamic> templateJsonConfig =
-    await _configService.getJson(templateConfigUrl);
-
+  Future<cb.Build> getBuildRequest(Map<String, dynamic> templateJsonConfig,
+      String method, substitutionsMap) async {
     var templateBuildSteps = templateJsonConfig['create']['steps'];
-    if (method == "DELETE")
-       templateBuildSteps = templateJsonConfig['destroy']['steps'];
 
-    String parent = "projects/${projectId}/locations/global";
+    if (method == "DELETE") {
+      templateBuildSteps = templateJsonConfig['destroy']['steps'];
+    }
 
     List<cb.BuildStep> buildSteps = [];
 
@@ -64,10 +59,26 @@ class BuildsService extends BaseService {
     cb.BuildOptions buildOptions = cb.BuildOptions();
     buildOptions.substitutionOption = 'ALLOW_LOOSE';
 
-    var buildRequest = cb.Build(
+    return cb.Build(
         substitutions: substitutionsMap,
         steps: buildSteps,
         options: buildOptions);
+  }
+
+  /// Starts Cloud Build build for specified configuration
+  ///
+  /// [projectId]
+  /// [substitutionsMap]
+  /// [cloudProvisionJsonConfig]
+  Future<BuildDetails> startBuild(
+      projectId, substitutionsMap, templateConfigUrl, String method) async {
+    Map<String, dynamic> templateJsonConfig =
+        await _configService.getJson(templateConfigUrl);
+
+    var buildRequest = await this
+        .getBuildRequest(templateJsonConfig, method, substitutionsMap);
+
+    String parent = "projects/${projectId}/locations/global";
 
     var cloudBuildApi = cb.CloudBuildApi(getAuthenticatedClient());
     cb.Operation buildOp = await cloudBuildApi.projects.builds
@@ -75,7 +86,7 @@ class BuildsService extends BaseService {
 
     Map<String, dynamic> details = Map.from(buildOp.metadata?['build']! as Map);
 
-    return new BuildDetails(details["id"] as String,
-        details["logUrl"] as String);
+    return new BuildDetails(
+        details["id"] as String, details["logUrl"] as String);
   }
 }
