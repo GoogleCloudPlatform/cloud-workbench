@@ -5,6 +5,7 @@ A portal for creating new applications and infrastructure quickly and with minim
 
 ![Developer Portal - Main Dashboard](docs/img/home-page.png)
 
+
 The application highlights and demonstrates
 
 - Developer interface for onboarding new applications
@@ -20,6 +21,7 @@ The application highlights and demonstrates
 This effort was initiated to highlight patterns and practices organizations can implement to streamline their Cloud Dev & Delivery efforts. Key discussion points focus on the use of application templates for streamlining onboarding, dashboards for efficient access, integrating with Google Cloud APIs for custom integrations and more.
 
 ![ ](docs/img/services-detail-page.png)
+
 Additionally the stack is built with Dart and Flutter to highlight robust capabilities of the framework. Companies looking to modernize are adopting Flutter so teams and developers can deliver apps across mobile, web and desktop with one language. This application demonstrates some of that capability and highlights how organizations might utilize flutter for their own robust use cases.
 
 ## Not an officially supported Google product
