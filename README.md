@@ -1,6 +1,12 @@
 # Cloud Developer Workbench
 ![ ](docs/img/../development/img/OverviewScreenshot.png)
 
+**Not an officially supported Google product**
+
+This repository demonstrates patterns and practices used by Cloud Platform Engineers, Cloud Developers and other Cloud Practitioners. This is not an official Google product.  This is prototype code intended for demonstration and discussion, it is not intended for direct production use. The software is provided as is with best effort support.
+
+## Overview
+
 A portal for creating new applications and infrastructure quickly and with minimal effort that conform to industry best practices and internal organizational policies.
 
 ![Developer Portal - Main Dashboard](docs/img/home-page.png)
@@ -23,7 +29,3 @@ This effort was initiated to highlight patterns and practices organizations can 
 ![ ](docs/img/services-detail-page.png)
 
 Additionally the stack is built with Dart and Flutter to highlight robust capabilities of the framework. Companies looking to modernize are adopting Flutter so teams and developers can deliver apps across mobile, web and desktop with one language. This application demonstrates some of that capability and highlights how organizations might utilize flutter for their own robust use cases.
-
-## Not an officially supported Google product
-
-This repository demonstrates patterns and practices used by Cloud Platform Engineers, Cloud Developers and other Cloud Practitioners. This is not an official Google product.  This is prototype code intended for demonstration and discussion, it is not intended for direct production use. The software is provided as is with best effort support.
